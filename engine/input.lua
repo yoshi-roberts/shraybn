@@ -50,7 +50,12 @@ function input:process_button(button, pressed)
 	-- end
 end
 
-function input:process_mouse_move() end
+function input:process_mouse_move(x, y, dx, dy)
+	if self.mouse_current.position.x ~= x or self.mouse_current.position.y ~= y then
+		self.mouse_current.position:set(x, y)
+		Event.fire(Event.code.EVENT_MOUSE_MOVE, nil, { x, y, dx, dy })
+	end
+end
 
 function input:key_down(key)
 	return input.keyboard_current[key] == true

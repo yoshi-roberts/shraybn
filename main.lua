@@ -1,14 +1,14 @@
 Engine = require("engine")
 
 local function ev_callback(code, sender, listener, data)
-	print(data)
+	print(data[1], data[2])
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
 	Engine.init()
 
-	-- Event.register(Event.code.EVENT_KEY_PRESS, nil, ev_callback)
+	Event.register(Event.code.EVENT_MOUSE_MOVE, nil, ev_callback)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

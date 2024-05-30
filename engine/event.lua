@@ -83,4 +83,8 @@ function love.mousereleased(x, y, button)
 	Input:process_button(button, false)
 end
 
+function love.mousemoved(x, y, dx, dy, istouch)
+	Input:process_mouse_move(x, y, dx, dy)
+end
+
 return event
