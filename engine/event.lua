@@ -48,14 +48,14 @@ event.register = function(code, listener, callback)
 	return true
 end
 
-event.fire = function(code, sender)
+event.fire = function(code, sender, data)
 	if event.registered[code] == nil then
 		return false
 	end
 
 	for i = 1, #event.registered[code], 1 do
-		event = event.registered[code][i]
-		if event.callback(code, sender, event.listener) then
+		local e = event.registered[code][i]
+		if e.callback(code, sender, e.listener, data) then
 			-- Event has been handled.
 			-- Do not send to other listeners.
 			return true
