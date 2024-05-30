@@ -69,8 +69,18 @@ end
 function love.keypressed(key)
 	Input:process_key(key, true)
 end
+
 function love.keyreleased(key)
 	Input:process_key(key, false)
+end
+
+---@diagnostic disable-next-line: duplicate-set-field
+function love.mousepressed(x, y, button)
+	Input:process_button(button, true)
+end
+
+function love.mousereleased(x, y, button)
+	Input:process_button(button, false)
 end
 
 return event

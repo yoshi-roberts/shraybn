@@ -13,6 +13,14 @@ end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.update(dt)
+	if Input:button_pressed(1) then
+		print("LEFT")
+	end
+
+	if Input:key_pressed("a") then
+		print("A")
+	end
+
 	Engine.update(dt)
 end
 
