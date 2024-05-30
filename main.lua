@@ -1,19 +1,20 @@
 Engine = require("engine")
 
 local function ev_callback(code, sender, listener, data)
-	print(data[1], data[2])
+	return true
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
 	Engine.init()
+	Window:init(1280, 720)
 
-	Event.register(Event.code.EVENT_MOUSE_MOVE, nil, ev_callback)
+	Event:register(EVENT_CODE.MOUSE_MOVE, nil, ev_callback)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.update(dt)
-	if Input:button_pressed(1) then
+	if Input:button_pressed(MOUSE_BUTTON.LEFT) then
 		print("LEFT")
 	end
 
