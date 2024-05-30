@@ -1,4 +1,8 @@
+require("libs.class")
+
 local engine = {}
+
+Event = require("engine.event")
 
 function engine.init() end
 
