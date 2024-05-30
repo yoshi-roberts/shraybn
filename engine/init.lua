@@ -1,17 +1,28 @@
-require("libs.class")
+Class = require("libs.class")
 
-local engine = {}
+Engine = {
+	layers = {},
+}
 
 require("engine.window")
 require("engine.event")
 require("engine.input")
+require("engine.layer")
 
-function engine.init() end
+function Engine.init() end
 
-function engine.update(dt)
+function Engine:update(dt)
+	for _, layer in pairs(self.layers) do
+		if layer.update ~= nil then
+			layer:update()
+		end
+	end
+
 	Input:update()
 end
 
-function engine.draw() end
+function Engine.draw() end
 
-return engine
+function Engine:new_layer(name, callbacks)
+	table.insert(self.layers, Layer(name, callbacks))
+end
