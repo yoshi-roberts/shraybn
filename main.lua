@@ -16,10 +16,6 @@ function love.update(dt)
 	Engine.update(dt)
 end
 
-function love.keypressed(key, scancode, isrepeat)
-	Event.fire(Event.code.EVENT_KEY_PRESS, nil, key)
-end
-
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.draw()
 	Engine.draw()

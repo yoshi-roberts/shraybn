@@ -66,4 +66,11 @@ event.fire = function(code, sender, data)
 	return false
 end
 
+function love.keypressed(key)
+	Input:process_key(key, true)
+end
+function love.keyreleased(key)
+	Input:process_key(key, false)
+end
+
 return event
