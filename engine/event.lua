@@ -21,29 +21,25 @@ EVENT_CODE = {
 	MAX_CODE = 15,
 }
 
-local event_registered = function()
-	return {
-		listener = nil,
-		callback = nil,
-	}
-end
-
 function Event:register(code, listener, callback)
 	if self.registered[code] == nil then
 		table.insert(self.registered, code, {})
+		print("Creating event list.")
 	end
 
-	for i = 1, #self.registered[code], 1 do
-		if self.registered[code][i].listener == listener then
-			-- TODO: Warn.
-			return false
+	if listener ~= nil then
+		for i = 1, #self.registered[code], 1 do
+			if self.registered[code][i].listener == listener then
+				-- TODO: Warn.
+				return false
+			end
 		end
 	end
 
-	local e = event_registered()
-	e.listener = listener
-	e.callback = callback
-	table.insert(self.registered[code], e)
+	table.insert(self.registered[code], #self.registered[code] + 1, {
+		listener = listener,
+		callback = callback,
+	})
 
 	return true
 end

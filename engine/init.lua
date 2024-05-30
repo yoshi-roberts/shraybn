@@ -4,19 +4,19 @@ Engine = {
 	layers = {},
 }
 
-require("engine.window")
 require("engine.event")
+require("engine.window")
 require("engine.input")
 require("engine.layer")
 
 function Engine.init() end
 
 function Engine:update(dt)
-	for _, layer in pairs(self.layers) do
-		if layer.update ~= nil then
-			layer:update()
-		end
-	end
+	-- for _, layer in pairs(self.layers) do
+	-- 	if layer.update ~= nil then
+	-- 		layer:update()
+	-- 	end
+	-- end
 
 	Input:update()
 end
