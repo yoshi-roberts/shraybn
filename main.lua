@@ -8,7 +8,7 @@ end
 function love.load()
 	Engine.init()
 
-	Event.register(Event.code.EVENT_KEY_PRESS, nil, ev_callback)
+	-- Event.register(Event.code.EVENT_KEY_PRESS, nil, ev_callback)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

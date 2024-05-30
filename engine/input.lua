@@ -22,4 +22,36 @@ function input:process_key(key, pressed)
 	end
 end
 
+function input:key_down(key)
+	return input.keyboard_current[key] == true
+end
+
+function input:key_up(key)
+	return input.keyboard_current[key] == false
+end
+
+function input:key_was_down(key)
+	return input.keyboard_previous[key] == true
+end
+
+function input:key_was_up(key)
+	return input.keyboard_previous[key] == false
+end
+
+function input:key_pressed(key)
+	if input:key_down(key) and not input:key_was_down(key) then
+		return true
+	end
+
+	return false
+end
+
+function input:key_released(key)
+	if input:key_up(key) and not input:key_was_up(key) then
+		return true
+	end
+
+	return false
+end
+
 return input
