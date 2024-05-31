@@ -2,10 +2,13 @@ Class = require("libs.class")
 
 Engine = {
 	layers = {},
+	canvases = {},
 }
 
 local timer = require("engine.time")
 Log = require("libs.log")
+
+require("engine.canvas")
 
 local function load_module(module)
 	local str = module:sub(1, 1):upper() .. module:sub(2, #module)
@@ -52,4 +55,10 @@ function Engine.draw() end
 
 function Engine:new_layer(name, callbacks)
 	table.insert(self.layers, Layer(name, callbacks))
+	return self.layers[#self.layers]
+end
+
+function Engine:new_canvas(width, height, filter)
+	table.insert(self.canvases, Canvas(width, height, filter))
+	return self.canvases[#self.canvases]
 end

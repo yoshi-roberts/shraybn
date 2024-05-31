@@ -11,6 +11,8 @@ end
 -- 	print("Attached")
 -- end
 
+local can
+
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
 	if not Engine.init() then
@@ -25,6 +27,7 @@ function love.load()
 	-- Engine:new_layer("test_layer", {
 	-- 	attach = l_attach,
 	-- })
+	can = Engine:new_canvas(480, 270, "nearest")
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
@@ -43,4 +46,11 @@ end
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.draw()
 	Engine.draw()
+
+	can:start()
+	love.graphics.setColor(1, 0, 0, 1)
+	love.graphics.circle("fill", 16, 16, 12)
+	can:finish()
+
+	can:draw()
 end

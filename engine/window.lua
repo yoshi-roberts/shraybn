@@ -20,7 +20,12 @@ function Window:process_resize(width, height)
 	if self.width ~= width or self.height ~= height then
 		self.width = width
 		self.height = height
-		Event:fire(EVENT_CODE.WINDOW_FOCUS, nil, { width, height })
+
+		for _, canvas in pairs(Engine.canvases) do
+			canvas:update()
+		end
+
+		Event:fire(EVENT_CODE.WINDOW_RESIZE, nil, { width, height })
 	end
 end
 
