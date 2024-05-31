@@ -4,12 +4,39 @@ Engine = {
 	layers = {},
 }
 
-require("engine.event")
-require("engine.window")
-require("engine.input")
-require("engine.layer")
+local timer = require("engine.time")
+Log = require("libs.log")
 
-function Engine.init() end
+local function load_module(module)
+	local str = module:sub(1, 1):upper() .. module:sub(2, #module)
+	local failed = false
+
+	if not require("engine." .. module) then
+		Log.error(str .. " system initialization failed.")
+		failed = true
+	end
+
+	Log.info(str .. " system initialized.")
+	return failed
+end
+
+function Engine.init()
+	local failed = false
+
+	failed = load_module("event")
+	failed = load_module("window")
+	failed = load_module("input")
+	failed = load_module("layer")
+
+	if failed then
+		return false
+	end
+
+	timer.framerate = 70
+
+	Log.info("Engine initialized.")
+	return true
+end
 
 function Engine:update(dt)
 	-- for _, layer in pairs(self.layers) do

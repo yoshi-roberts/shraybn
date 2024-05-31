@@ -21,3 +21,5 @@ function Layer:init(name, callbacks)
 		self:attach()
 	end
 end
+
+return true

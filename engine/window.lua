@@ -23,3 +23,5 @@ function Window:process_resize(width, height)
 		Event:fire(EVENT_CODE.WINDOW_FOCUS, nil, { width, height })
 	end
 end
+
+return true

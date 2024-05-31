@@ -123,3 +123,5 @@ function Input:button_released(button)
 
 	return false
 end
+
+return true

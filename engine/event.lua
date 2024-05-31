@@ -24,7 +24,6 @@ EVENT_CODE = {
 function Event:register(code, listener, callback)
 	if self.registered[code] == nil then
 		table.insert(self.registered, code, {})
-		print("Creating event list.")
 	end
 
 	if listener ~= nil then
@@ -86,3 +85,5 @@ end
 function love.resize(w, h)
 	Window:process_resize(w, h)
 end
+
+return true

@@ -1,11 +1,9 @@
 require("engine")
 
 local function mouse_x(code, sender, listener, data)
-	print("x: " .. data[1])
 	return false
 end
 local function mouse_y(code, sender, listener, data)
-	print("y: " .. data[2])
 	return true
 end
 
@@ -15,7 +13,9 @@ end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
-	Engine.init()
+	if not Engine.init() then
+		Log.fatal("Engine failed to initialize")
+	end
 	Window:init(1280, 720)
 
 	Event:register(EVENT_CODE.MOUSE_MOVE, nil, mouse_x)
