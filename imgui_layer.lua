@@ -42,7 +42,19 @@ local function imgui_update(dt)
 end
 
 local function imgui_draw()
-	Imgui.ShowDemoWindow()
+	local mouse_pos = Input:get_mouse_position()
+
+	local flags = Imgui.love.WindowFlags("NoMove", "NoResize", "AlwaysAutoResize")
+	local pos = Imgui.ImVec2_Float(16, 16)
+	local condition = Imgui.ImGuiCond_Always
+
+	Imgui.SetNextWindowPos(pos, condition)
+
+	Imgui.Begin("Debug Info", nil, flags)
+	Imgui.Text("FPS: " .. love.timer.getFPS())
+	Imgui.Text("Window Size: " .. Window.width .. "x" .. Window.height)
+	Imgui.Text("Mouse Position: (" .. mouse_pos.x .. ", " .. mouse_pos.y .. ")")
+	Imgui.End()
 
 	-- code to render imgui
 	Imgui.Render()

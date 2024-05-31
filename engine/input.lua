@@ -72,6 +72,10 @@ function Input:process_mouse_move(x, y, dx, dy)
 	end
 end
 
+function Input:get_mouse_position()
+	return self.mouse_current.position
+end
+
 function Input:key_down(key)
 	return Input.keyboard_current[key] == true
 end
