@@ -11,14 +11,23 @@ EVENT_CODE = {
 	WINDOW_MOVE = 5,
 	KEY_PRESS = 6,
 	KEY_RELEASE = 7,
-	MOUSE_PRESS = 8,
-	MOUSE_RELEASE = 9,
-	MOUSE_MOVE = 10,
-	MOUSE_SCROLL = 11,
-	MOUSE_LEAVE = 12,
-	MOUSE_ENTER = 13,
-	APP_QUIT = 14,
-	MAX_CODE = 15,
+	TEXT_INPUT = 8,
+	MOUSE_PRESS = 9,
+	MOUSE_RELEASE = 10,
+	MOUSE_MOVE = 11,
+	MOUSE_WHEEL = 12,
+	MOUSE_LEAVE = 13,
+	MOUSE_ENTER = 14,
+	APP_QUIT = 15,
+	MAX_CODE = 16,
+}
+
+EVENT_CATEGORY = {
+	NONE = nil,
+	WINDOW = { EVENT_CODE.WINDOW_RESIZE, EVENT_CODE.WINDOW_MOVE },
+	KEYBOARD = { EVENT_CODE.KEY_PRESS, EVENT_CODE.TEXT_INPUT },
+	MOUSE = { EVENT_CODE.MOUSE_PRESS, EVENT_CODE.MOUSE_ENTER },
+	INPUT = { EVENT_CODE.KEY_PRESS, EVENT_CODE.MOUSE_ENTER },
 }
 
 function Event:register(code, listener, callback)
@@ -61,12 +70,24 @@ function Event:fire(code, sender, data)
 	return false
 end
 
+function Event:register_category(category, listener, callback)
+	for _, code in pairs(EVENT_CODE) do
+		if code >= category[1] and code <= category[2] then
+			Event:register(code, listener, callback)
+		end
+	end
+end
+
 function love.keypressed(key)
 	Input:process_key(key, true)
 end
 
 function love.keyreleased(key)
 	Input:process_key(key, false)
+end
+
+function love.textinput(t)
+	Event:fire(EVENT_CODE.TEXT_INPUT, nil, t)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
@@ -80,6 +101,10 @@ end
 
 function love.mousemoved(x, y, dx, dy, istouch)
 	Input:process_mouse_move(x, y, dx, dy)
+end
+
+function love.wheelmoved(x, y)
+	Input:process_mouse_wheel(x, y)
 end
 
 function love.resize(w, h)

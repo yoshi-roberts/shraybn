@@ -53,10 +53,22 @@ function Input:process_button(button, pressed)
 	end
 end
 
+function Input:process_mouse_wheel(x, y)
+	Event:fire(EVENT_CODE.MOUSE_WHEEL, nil, {
+		x = x,
+		y = y,
+	})
+end
+
 function Input:process_mouse_move(x, y, dx, dy)
 	if self.mouse_current.position.x ~= x or self.mouse_current.position.y ~= y then
 		self.mouse_current.position:set(x, y)
-		Event:fire(EVENT_CODE.MOUSE_MOVE, nil, { x, y, dx, dy })
+		Event:fire(EVENT_CODE.MOUSE_MOVE, nil, {
+			x = x,
+			y = y,
+			dx = dx,
+			dy = dy,
+		})
 	end
 end
 

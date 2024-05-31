@@ -1,5 +1,7 @@
 Class = require("libs.class")
 
+Imgui = require("engine.imgui")
+
 Engine = {
 	layers = {},
 	canvases = {},
@@ -30,28 +32,45 @@ function Engine.init()
 	failed = load_module("window")
 	failed = load_module("input")
 	failed = load_module("layer")
+	failed = load_module("assets")
 
 	if failed then
 		return false
 	end
 
-	timer.framerate = 70
+	timer.framerate = 60
+
+	Assets:index()
 
 	Log.info("Engine initialized.")
 	return true
 end
 
+function Engine:shutdown()
+	for _, layer in pairs(self.layers) do
+		if layer.detach ~= nil then
+			layer.detach()
+		end
+	end
+end
+
 function Engine:update(dt)
-	-- for _, layer in pairs(self.layers) do
-	-- 	if layer.update ~= nil then
-	-- 		layer:update()
-	-- 	end
-	-- end
+	for _, layer in pairs(self.layers) do
+		if layer.update ~= nil then
+			layer.update(dt)
+		end
+	end
 
 	Input:update()
 end
 
-function Engine.draw() end
+function Engine:draw()
+	for _, layer in pairs(self.layers) do
+		if layer.draw ~= nil then
+			layer.draw()
+		end
+	end
+end
 
 function Engine:new_layer(name, callbacks)
 	table.insert(self.layers, Layer(name, callbacks))
