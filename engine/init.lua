@@ -40,7 +40,7 @@ function Engine.init()
 
 	timer.framerate = 60
 
-	Assets:index("test-assets")
+	Assets:init()
 
 	Log.info("Engine initialized.")
 	return true
