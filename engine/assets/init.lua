@@ -2,7 +2,6 @@ local pprint = require("libs.pprint")
 local binser = require("libs.binser")
 
 Assets = {
-	-- tree = {},
 	data = {
 		["image"] = {},
 		["audio"] = {},
@@ -27,32 +26,6 @@ local function valid_type(ext)
 	end
 
 	return false
-end
-
-local function build_tree(path)
-	local items = love.filesystem.getDirectoryItems(path)
-
-	for k, name in pairs(items) do
-		-- Get item info
-		local item_path = path .. "/" .. name
-		local info = love.filesystem.getInfo(item_path)
-
-		-- Create new branch if item is directory.
-		if info.type == "directory" then
-			-- branch[name] = {}
-			build_tree(item_path)
-		elseif info.type == "file" then
-			local ext = item_path:match("^.+%.(.+)$")
-			local type = valid_type(ext)
-
-			if type then
-				Assets.data[type][name:match("(.+)%..+$")] = {
-					type = type,
-					path = item_path,
-				}
-			end
-		end
-	end
 end
 
 function Assets:pack()
@@ -97,9 +70,10 @@ function Assets:index(path)
 
 	local full = root .. path
 
-	build_tree(full)
-	pprint(self.data)
-	self:pack()
+	local thread = love.thread.newThread("engine/assets/thread.lua")
+	thread:start(full)
+
+	-- build_tree(full)
 end
 
 return true
