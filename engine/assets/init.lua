@@ -2,16 +2,12 @@ local pprint = require("libs.pprint")
 local binser = require("libs.binser")
 
 Assets = {
-	data = {
-		["image"] = {},
-		["audio"] = {},
-		["script"] = {},
-		["shader"] = {},
-	},
+
+	data = nil,
 
 	path = "",
 	thread = nil,
-	pack_created = false,
+	pack_exists = false,
 }
 
 function Assets:init(path)
@@ -33,15 +29,32 @@ function Assets:init(path)
 	self.thread = love.thread.newThread("engine/assets/thread.lua")
 end
 
-function Assets:pack(path)
-	self.thread:start("pack", self.path .. path)
+function Assets:load(path)
+	self.thread:start(self.path .. path)
 end
 
-function Assets:is_pack_created()
-	local created = nil
-	created = love.thread.getChannel("pack_created"):pop()
-	self.pack_created = created or self.pack_created
-	print(self.pack_created)
+function Assets:update()
+	if not self.data then
+		self.data = love.thread.getChannel("asset_data"):pop()
+	end
+end
+
+function Assets:loaded()
+	return self.data ~= nil
+end
+
+function Assets:get(type, name)
+	if not self:loaded() then
+		Log.error("[ASSETS] No asset pack loaded. Can not load asset '" .. name .. "'")
+		return false
+	end
+
+	if not self.data[type][name] then
+		Log.error("[ASSETS] Asset '" .. name .. "' does not exist.")
+		return false
+	end
+
+	return self.data[type][name]
 end
 
 return true

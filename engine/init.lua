@@ -55,6 +55,8 @@ function Engine:shutdown()
 end
 
 function Engine:update(dt)
+	Assets:update()
+
 	for _, layer in pairs(self.layers) do
 		if layer.update ~= nil then
 			layer.update(dt)

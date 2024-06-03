@@ -6,7 +6,7 @@ local log = require("libs.log")
 local pprint = require("libs.pprint")
 local binser = require("libs.binser")
 
-local action, root = ...
+local root = ...
 
 log.info("[ASSETS] Starting process.")
 
@@ -16,7 +16,7 @@ local data = {
 	["script"] = {},
 	["shader"] = {},
 }
-local deserialized = nil
+local loaded = nil
 
 -- Lookup table for file types.
 local types = {
@@ -80,16 +80,16 @@ end
 
 local function create_all_data()
 	for type, items in pairs(data) do
-		for k, item in pairs(items) do
+		for name, item in pairs(items) do
 			-- Create data if it does not already exist.
 			if not item.data then
+				log.info("[ASSETS] Adding new asset '" .. name .. "'")
 				create_item_data(item)
 			end
 		end
 	end
 end
 
-local pack_loaded = false
 local function load_pack()
 	log.info("[ASSETS] Loading asset pack.")
 	-- Read file.
@@ -103,102 +103,95 @@ local function load_pack()
 	local decompressed = love.data.decompress("data", "lz4", str)
 	pack:close()
 
-	local d, l = binser.deserialize(decompressed:getString())
-	deserialized = d[1]
-
-	pack_loaded = true
-	love.thread.getChannel("pack_loaded"):push(pack_loaded)
+	local deserialized, length = binser.deserialize(decompressed:getString())
+	loaded = deserialized[1]
 end
 
 local function asset_added_or_changed()
-	local needed = false
+	local changed = false
 
 	for type, items in pairs(data) do
 		for name, item in pairs(items) do
 			-- Check if asset has been added.
-			if not deserialized[type][name] then
-				log.info("[ASSETS] Adding new asset '" .. name .. "'")
-				create_all_data()
-				needed = true
-			end
+			if not loaded[type][name] then
+				log.info("[ASSETS] Adding new asset '" .. item.path .. "'")
+				create_item_data(item)
+				changed = true
 
 			-- Check if asset has been changed.
-			if item.time ~= deserialized[type][name].time then
+			elseif item.time ~= loaded[type][name].time then
 				log.info("[ASSETS] Reloading asset '" .. name .. "'")
 				create_item_data(item)
-				needed = true
+				changed = true
 			end
 		end
 	end
 
-	return needed
+	return changed
 end
 
 -- Check if asset has been removed.
 local function asset_removed()
-	local needed = false
+	local changed = false
 
-	for type, items in pairs(deserialized) do
+	for type, items in pairs(loaded) do
 		for name, item in pairs(items) do
 			if not data[type][name] then
 				log.info("[ASSETS] Removing asset '" .. name .. "'")
-				needed = true
+				changed = true
 			end
 		end
 	end
 
-	return needed
+	return changed
 end
 
-local function repack_needed()
-	local needed = false
+local function pack_exists()
+	local info = love.filesystem.getInfo("assets.pak")
+	return info ~= nil
+end
 
-	if not love.filesystem.getInfo("assets.pak") then
-		-- Need to pack assets.
-		return true
-	else -- Pack exists, but has anything changed?
-		log.info("[ASSETS] Indexing items.")
-		index_items(root)
+local function create_pack()
+	-- Index items.
+	log.info("[ASSETS] Indexing items.")
+	index_items(root)
+
+	local write = false
+	if pack_exists() then
 		load_pack()
 
-		needed = asset_added_or_changed()
-		needed = asset_removed()
+		-- Update any added/changed/removed assets.
+		write = asset_added_or_changed() or asset_removed()
+	else
+		create_all_data()
+		write = true
 	end
 
-	return needed
-end
-
-local pack_created = false
-local function create_pack()
-	local needed = repack_needed()
-	if not needed then
+	if not write then
 		log.info("[ASSETS] No assets have changed.")
-		return
+		return true
 	end
 
+	log.info("[ASSETS] Writing asset pack.")
 	local serialized = binser.serialize(data)
 	-- A compression level of 9 means we are using LZ4-HC.
 	local compressed = love.data.compress("data", "lz4", serialized, 9)
 
 	-- Write file.
-	local pak = io.open("assets.pak", "wb")
-	if not pak then
+	local pack = io.open("assets.pak", "wb")
+	if not pack then
 		Log.error("[ASSETS] Failed to open pack.")
 		return false
 	end
 
 	---@diagnostic disable-next-line: param-type-mismatch
-	pak:write(compressed:getString())
-	pak:close()
+	pack:write(compressed:getString())
+	pack:close()
 
-	deserialized = nil
-	pack_created = true
-	love.thread.getChannel("pack_created"):push(pack_created)
+	loaded = nil
+	return true
 end
 
-if action == "pack" then
-	create_pack()
-elseif action == "load" then
-	load_pack()
-end
+create_pack()
+love.thread.getChannel("asset_data"):push(data)
 log.info("[ASSETS] Process completed.")

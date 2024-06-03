@@ -9,13 +9,12 @@ function love.load()
 
 	require("imgui_layer")
 
-	Assets:pack("test-assets")
+	Assets:load("test-assets")
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.update(dt)
 	Engine:update(dt)
-	-- Assets:is_pack_created()
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

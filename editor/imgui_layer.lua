@@ -50,13 +50,10 @@ local function imgui_draw()
 
 	Imgui.SetNextWindowPos(pos, condition)
 
-	Imgui.Begin("Debug Info", nil, flags)
+	Imgui.Begin("EDITOR", nil, flags)
 	Imgui.Text("FPS: " .. love.timer.getFPS())
 	Imgui.Text("Window Size: " .. Window.width .. "x" .. Window.height)
 	Imgui.Text("Mouse Position: (" .. mouse_pos.x .. ", " .. mouse_pos.y .. ")")
-	if not Assets:loaded() then
-		Imgui.Text("Assets Loading...")
-	end
 	Imgui.End()
 
 	-- code to render imgui
