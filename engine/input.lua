@@ -29,46 +29,38 @@ function Input:update()
 	self.mouse_previous.position:replace(self.mouse_current.position)
 end
 
-function Input:process_key(key, pressed)
-	if self.keyboard_current[key] ~= pressed then
-		self.keyboard_current[key] = pressed
+function Input:process_key(data, pressed)
+	if self.keyboard_current[data.key] ~= pressed then
+		self.keyboard_current[data.key] = pressed
 
 		if pressed then
-			Event:fire(EVENT_CODE.KEY_PRESS, nil, key)
+			Event:fire(EVENT_CODE.KEY_PRESS, nil, data)
 		else
-			Event:fire(EVENT_CODE.KEY_RELEASE, nil, key)
+			Event:fire(EVENT_CODE.KEY_RELEASE, nil, data)
 		end
 	end
 end
 
-function Input:process_button(button, pressed)
-	if self.mouse_current.buttons[button] ~= pressed then
-		Input.mouse_current.buttons[button] = pressed
+function Input:process_button(data, pressed)
+	if self.mouse_current.buttons[data.button] ~= pressed then
+		Input.mouse_current.buttons[data.button] = pressed
 
 		if pressed then
-			Event:fire(EVENT_CODE.MOUSE_PRESS, nil, button)
+			Event:fire(EVENT_CODE.MOUSE_PRESS, nil, data)
 		else
-			Event:fire(EVENT_CODE.MOUSE_RELEASE, nil, button)
+			Event:fire(EVENT_CODE.MOUSE_RELEASE, nil, data)
 		end
 	end
 end
 
-function Input:process_mouse_wheel(x, y)
-	Event:fire(EVENT_CODE.MOUSE_WHEEL, nil, {
-		x = x,
-		y = y,
-	})
+function Input:process_mouse_wheel(data)
+	Event:fire(EVENT_CODE.MOUSE_WHEEL, nil, data)
 end
 
-function Input:process_mouse_move(x, y, dx, dy)
-	if self.mouse_current.position.x ~= x or self.mouse_current.position.y ~= y then
-		self.mouse_current.position:set(x, y)
-		Event:fire(EVENT_CODE.MOUSE_MOVE, nil, {
-			x = x,
-			y = y,
-			dx = dx,
-			dy = dy,
-		})
+function Input:process_mouse_move(data)
+	if self.mouse_current.position.x ~= data.x or self.mouse_current.position.y ~= data.y then
+		self.mouse_current.position:set(data.x, data.y)
+		Event:fire(EVENT_CODE.MOUSE_MOVE, nil, data)
 	end
 end
 

@@ -7,7 +7,7 @@ function love.load()
 	end
 	Window:init(1280, 720)
 
-	require("editor.imgui_layer")
+	require("editor.nuklear_layer")
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

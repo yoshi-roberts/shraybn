@@ -78,12 +78,19 @@ function Event:register_category(category, listener, callback)
 	end
 end
 
-function love.keypressed(key)
-	Input:process_key(key, true)
+function love.keypressed(key, scancode, isrepeat)
+	Input:process_key({
+		key = key,
+		scancode = scancode,
+		isrepeat = isrepeat,
+	}, true)
 end
 
-function love.keyreleased(key)
-	Input:process_key(key, false)
+function love.keyreleased(key, scancode)
+	Input:process_key({
+		key = key,
+		scancode = scancode,
+	}, false)
 end
 
 function love.textinput(t)
@@ -91,20 +98,41 @@ function love.textinput(t)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
-function love.mousepressed(x, y, button)
-	Input:process_button(button, true)
+function love.mousepressed(x, y, button, istouch, presses)
+	Input:process_button({
+		x = x,
+		y = y,
+		button = button,
+		istouch = istouch,
+		presses = presses,
+	}, true)
 end
 
-function love.mousereleased(x, y, button)
-	Input:process_button(button, false)
+function love.mousereleased(x, y, button, istouch, presses)
+	Input:process_button({
+		x = x,
+		y = y,
+		button = button,
+		istouch = istouch,
+		presses = presses,
+	}, false)
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)
-	Input:process_mouse_move(x, y, dx, dy)
+	Input:process_mouse_move({
+		x = x,
+		y = y,
+		dx = dx,
+		dy = dy,
+		istouch = istouch,
+	})
 end
 
 function love.wheelmoved(x, y)
-	Input:process_mouse_wheel(x, y)
+	Input:process_mouse_wheel({
+		x = x,
+		y = y,
+	})
 end
 
 function love.resize(w, h)

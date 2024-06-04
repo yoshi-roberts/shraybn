@@ -7,7 +7,7 @@ function love.load()
 	end
 	Window:init(1280, 720)
 
-	require("imgui_layer")
+	require("nuklear_layer")
 
 	Assets:load("test-assets")
 end

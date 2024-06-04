@@ -1,6 +1,5 @@
 Class = require("libs.class")
-
-Imgui = require("engine.imgui")
+Nuklear = require("nuklear").newUI()
 
 Engine = {
 	layers = {},
