@@ -7,9 +7,7 @@ function love.load()
 	end
 	Window:init(1280, 720)
 
-	require("nuklear_layer")
-
-	Assets:load("test-assets")
+	require("ui_layer")
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

@@ -54,7 +54,14 @@ function Assets:get(type, name)
 		return false
 	end
 
-	return self.data[type][name]
+	local asset = self.data[type][name]
+	-- pprint(asset)
+
+	-- if asset.type == "image" and not asset.data:getData() then
+	-- 	asset.data = love.graphics.newImage(asset.data)
+	-- end
+	--
+	-- return asset.data
 end
 
 return true

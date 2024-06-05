@@ -1,5 +1,5 @@
 Class = require("libs.class")
-Nuklear = require("nuklear").newUI()
+require("engine.imgui")
 
 Engine = {
 	layers = {},
@@ -40,6 +40,7 @@ function Engine.init()
 	timer.framerate = 60
 
 	Assets:init()
+	Assets:load("test-assets")
 
 	Log.info("Engine initialized.")
 	return true
