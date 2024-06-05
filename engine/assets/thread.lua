@@ -168,6 +168,7 @@ local function create_pack()
 	end
 
 	if not write then
+		data = loaded
 		log.info("[ASSETS] No assets have changed.")
 		return true
 	end
