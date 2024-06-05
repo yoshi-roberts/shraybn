@@ -58,10 +58,8 @@ function Input:process_mouse_wheel(data)
 end
 
 function Input:process_mouse_move(data)
-	if self.mouse_current.position.x ~= data.x or self.mouse_current.position.y ~= data.y then
-		self.mouse_current.position:set(data.x, data.y)
-		Event:fire(EVENT_CODE.MOUSE_MOVE, nil, data)
-	end
+	self.mouse_current.position:set(data.x, data.y)
+	Event:fire(EVENT_CODE.MOUSE_MOVE, nil, data)
 end
 
 function Input:get_mouse_position()

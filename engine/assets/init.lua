@@ -3,12 +3,38 @@ local binser = require("libs.binser")
 
 Assets = {
 
+	file_tree = {},
 	data = nil,
 
 	path = "",
 	thread = nil,
 	pack_exists = false,
 }
+
+local function create_tree(path, branch)
+	local items = love.filesystem.getDirectoryItems(path)
+
+	for k, name in pairs(items) do
+		-- Ignore hidden files.
+		if name:sub(1, 1) == "." then
+			goto continue
+		end
+
+		-- Get item info
+		local item_path = path .. "/" .. name
+		local info = love.filesystem.getInfo(item_path)
+
+		if info.type == "directory" then
+			print(item_path)
+			branch[name] = {}
+			create_tree(item_path, branch[name])
+		elseif info.type == "file" then
+			table.insert(branch, name)
+		end
+
+		::continue::
+	end
+end
 
 function Assets:init(path)
 	-- Get the games root dir and mount it if needed.
@@ -26,6 +52,7 @@ function Assets:init(path)
 		self.path = ""
 	end
 
+	create_tree(self.path .. "/test-assets", self.file_tree)
 	self.thread = love.thread.newThread("engine/assets/thread.lua")
 end
 
