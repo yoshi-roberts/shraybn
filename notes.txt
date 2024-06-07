@@ -1,0 +1,10 @@
+Assets Process.
+
+Index files.
+
+Does a pack exist:
+	Yes:
+		Load the pack.
+
+	No:
+		Create all data.

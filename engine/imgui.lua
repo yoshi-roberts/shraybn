@@ -13,7 +13,6 @@ function ImguiEvent(code, data)
 	elseif code == EVENT_CODE.KEY_RELEASE then
 		Imgui.love.KeyReleased(data.key)
 		handled = Imgui.love.GetWantCaptureKeyboard()
-		handled = Imgui.love.GetWantCaptureMouse()
 	elseif code == EVENT_CODE.MOUSE_PRESS then
 		Imgui.love.MousePressed(data.button)
 		handled = Imgui.love.GetWantCaptureMouse()

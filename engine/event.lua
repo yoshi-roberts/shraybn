@@ -1,7 +1,9 @@
+---@class Event
 Event = {
 	registered = {},
 }
 
+---@enum event_code
 EVENT_CODE = {
 	NONE = nil,
 	WINDOW_RESIZE = 1,
@@ -22,6 +24,7 @@ EVENT_CODE = {
 	MAX_CODE = 16,
 }
 
+---@enum event_category
 EVENT_CATEGORY = {
 	NONE = nil,
 	WINDOW = { EVENT_CODE.WINDOW_RESIZE, EVENT_CODE.WINDOW_MOVE },
@@ -30,8 +33,15 @@ EVENT_CATEGORY = {
 	INPUT = { EVENT_CODE.KEY_PRESS, EVENT_CODE.MOUSE_ENTER },
 }
 
+---@alias event_callback fun(code: event_code, sender: any, listener: any, data: table): boolean
+
+---@param code event_code
+---@param listener any
+---@param callback event_callback
+---@return boolean
 function Event:register(code, listener, callback)
 	if self.registered[code] == nil then
+		---@cast code integer
 		table.insert(self.registered, code, {})
 	end
 
@@ -52,6 +62,10 @@ function Event:register(code, listener, callback)
 	return true
 end
 
+---@param code event_code
+---@param sender any
+---@param data table
+---@return boolean
 function Event:fire(code, sender, data)
 	if self.registered[code] == nil then
 		return false
@@ -70,6 +84,9 @@ function Event:fire(code, sender, data)
 	return false
 end
 
+---@param category event_category
+---@param listener any
+---@param callback event_callback
 function Event:register_category(category, listener, callback)
 	for _, code in pairs(EVENT_CODE) do
 		if code >= category[1] and code <= category[2] then

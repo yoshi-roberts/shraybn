@@ -25,7 +25,6 @@ local function create_tree(path, branch)
 		local info = love.filesystem.getInfo(item_path)
 
 		if info.type == "directory" then
-			print(item_path)
 			branch[name] = {}
 			create_tree(item_path, branch[name])
 		elseif info.type == "file" then
@@ -82,13 +81,15 @@ function Assets:get(type, name)
 	end
 
 	local asset = self.data[type][name]
-	-- pprint(asset)
 
-	-- if asset.type == "image" and not asset.data:getData() then
-	-- 	asset.data = love.graphics.newImage(asset.data)
-	-- end
-	--
-	-- return asset.data
+	if not asset.resource then
+		if asset.type == "image" then
+			asset.resource = love.graphics.newImage(asset.data)
+		end
+		asset.data = nil
+	end
+
+	return asset.resource
 end
 
 return true

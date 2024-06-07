@@ -42,8 +42,14 @@ end
 local function ui_draw()
 	dockspace()
 
+	Imgui.Begin("Scene", nil)
+	Imgui.End()
+
 	Imgui.Begin("Assets", nil)
 	tree(Assets.file_tree)
+	Imgui.End()
+
+	Imgui.Begin("Inspector", nil)
 	Imgui.End()
 
 	-- code to render imgui
