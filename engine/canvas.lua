@@ -1,21 +1,16 @@
-Canvas = Class({
+Canvas = Object:extend()
 
-	width = 0,
-	height = 0,
-	target = nil,
-
-	-- Only use internally.
-	x = 0,
-	y = 0,
-	scale = 0,
-})
-
-function Canvas:init(width, height, filter)
+function Canvas:new(width, height, filter)
 	self.width = width
 	self.height = height
-	self.target = love.graphics.newCanvas(width, height)
 
+	self.target = love.graphics.newCanvas(width, height)
 	self.target:setFilter(filter or "linear", filter or "linear")
+
+	self.x = 0
+	self.y = 0
+	self.scale = 0
+
 	self:update()
 end
 

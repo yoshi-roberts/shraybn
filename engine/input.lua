@@ -1,5 +1,4 @@
 require("engine.util")
-local vector = require("libs.vector")
 
 Input = {
 
@@ -7,11 +6,11 @@ Input = {
 	keyboard_previous = {},
 
 	mouse_current = {
-		position = vector(0, 0),
+		position = Vec2(0, 0),
 		buttons = {},
 	},
 	mouse_previous = {
-		position = vector(0, 0),
+		position = Vec2(0, 0),
 		buttons = {},
 	},
 }

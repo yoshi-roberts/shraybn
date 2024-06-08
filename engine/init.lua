@@ -1,4 +1,13 @@
-Class = require("libs.class")
+Object = require("libs.classic")
+Vec2 = require("libs.vector")
+
+local concord = require("libs.concord")
+Entity = concord.entity
+Component = concord.component
+System = concord.system
+World = concord.world
+Components = concord.components
+
 require("engine.imgui")
 
 Engine = {
@@ -37,6 +46,8 @@ function Engine.init()
 		return false
 	end
 
+	concord.utils.loadNamespace("engine/components")
+
 	timer.framerate = 60
 
 	Assets:init()
@@ -72,11 +83,6 @@ function Engine:draw()
 			layer.draw()
 		end
 	end
-end
-
-function Engine:new_layer(name, callbacks)
-	table.insert(self.layers, Layer(name, callbacks))
-	return self.layers[#self.layers]
 end
 
 function Engine:new_canvas(width, height, filter)

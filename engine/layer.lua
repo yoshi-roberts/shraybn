@@ -1,12 +1,6 @@
-Layer = Class({
-	name = "",
-	attach = nil,
-	detach = nil,
-	update = nil,
-	draw = nil,
-})
+Layer = Object:extend()
 
-function Layer:init(name, callbacks)
+function Layer:new(name, callbacks)
 	self.name = name
 
 	if not callbacks then
@@ -20,6 +14,9 @@ function Layer:init(name, callbacks)
 	if self.attach then
 		self:attach()
 	end
+
+	table.insert(Engine.layers, self)
+	return Engine.layers[#Engine.layers]
 end
 
 return true
