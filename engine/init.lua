@@ -84,8 +84,3 @@ function Engine:draw()
 		end
 	end
 end
-
-function Engine:new_canvas(width, height, filter)
-	table.insert(self.canvases, Canvas(width, height, filter))
-	return self.canvases[#self.canvases]
-end

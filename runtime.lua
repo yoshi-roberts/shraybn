@@ -20,8 +20,8 @@ function love.draw()
 	Engine:draw()
 
 	if Assets:loaded() then
-		local animals = Assets:get("image", "animals.png")
-		love.graphics.draw(animals, 256, 256)
+		local items = Assets:get("image", "rogues.items")
+		love.graphics.draw(items, 256, 256)
 	end
 end
 

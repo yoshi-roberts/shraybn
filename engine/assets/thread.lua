@@ -95,6 +95,19 @@ local function valid_type(ext)
 	return false, nil
 end
 
+local function path_to_key(path)
+	local p = path:match("(.+)%..+")
+	local pos = string.find(p, "/")
+
+	if not pos then
+		return path
+	end
+
+	local removed = string.sub(p, pos + 1)
+	local replaced = removed:gsub("/", ".")
+	return replaced
+end
+
 ---@param path string
 ---@param dest table
 local function index_items(path, dest)
@@ -112,8 +125,10 @@ local function index_items(path, dest)
 			local ext = item_path:match("^.+%.(.+)$")
 			local valid, type = valid_type(ext)
 
+			local key = path_to_key(item_path)
+
 			if valid then
-				dest[type][name] = {
+				dest[type][key] = {
 					type = type,
 					path = item_path,
 				}
