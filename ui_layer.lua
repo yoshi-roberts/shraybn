@@ -1,10 +1,10 @@
-local function ui_event(code, sender, listener, data)
+local function ui_event(code, data)
 	return ImguiEvent(code, data)
 end
 
 local function ui_attach()
 	Imgui.love.Init()
-	Event:register_category(EVENT_CATEGORY.INPUT, nil, ui_event)
+	Event:register_category(EVENT_CATEGORY.INPUT, ui_event)
 end
 
 local function ui_detach()

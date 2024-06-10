@@ -33,9 +33,9 @@ function Input:process_key(data, pressed)
 		self.keyboard_current[data.key] = pressed
 
 		if pressed then
-			Event:fire(EVENT_CODE.KEY_PRESS, nil, data)
+			Event:fire(EVENT_CODE.KEY_PRESS, data)
 		else
-			Event:fire(EVENT_CODE.KEY_RELEASE, nil, data)
+			Event:fire(EVENT_CODE.KEY_RELEASE, data)
 		end
 	end
 end
@@ -45,20 +45,20 @@ function Input:process_button(data, pressed)
 		Input.mouse_current.buttons[data.button] = pressed
 
 		if pressed then
-			Event:fire(EVENT_CODE.MOUSE_PRESS, nil, data)
+			Event:fire(EVENT_CODE.MOUSE_PRESS, data)
 		else
-			Event:fire(EVENT_CODE.MOUSE_RELEASE, nil, data)
+			Event:fire(EVENT_CODE.MOUSE_RELEASE, data)
 		end
 	end
 end
 
 function Input:process_mouse_wheel(data)
-	Event:fire(EVENT_CODE.MOUSE_WHEEL, nil, data)
+	Event:fire(EVENT_CODE.MOUSE_WHEEL, data)
 end
 
 function Input:process_mouse_move(data)
 	self.mouse_current.position:set(data.x, data.y)
-	Event:fire(EVENT_CODE.MOUSE_MOVE, nil, data)
+	Event:fire(EVENT_CODE.MOUSE_MOVE, data)
 end
 
 function Input:get_mouse_position()

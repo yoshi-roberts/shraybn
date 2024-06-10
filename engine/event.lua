@@ -33,64 +33,40 @@ EVENT_CATEGORY = {
 	INPUT = { EVENT_CODE.KEY_PRESS, EVENT_CODE.MOUSE_ENTER },
 }
 
----@alias event_callback fun(code: event_code, sender: any, listener: any, data: table): boolean
+---@alias event_callback fun(code: event_code, data: table): boolean
 
----@param code event_code
----@param listener any
----@param callback event_callback
----@return boolean
-function Event:register(code, listener, callback)
-	if self.registered[code] == nil then
-		---@cast code integer
-		table.insert(self.registered, code, {})
+function Event:register(code, callback)
+	if not self.registered[code] then
+		self.registered[code] = {}
+		-- table.insert(self.registered, code, {})
 	end
 
-	if listener ~= nil then
-		for i = 1, #self.registered[code], 1 do
-			if self.registered[code][i].listener == listener then
-				-- TODO: Warn.
-				return false
+	table.insert(self.registered[code], callback)
+end
+
+function Event:fire(code, data)
+	if not self.registered[code] then
+		print("Not registered: " .. code)
+		return false
+	end
+
+	for _, callbacks in pairs(self.registered) do
+		for _, callback in pairs(callbacks) do
+			if callback(code, data) then
+				-- Event handled.
+				return true
 			end
 		end
 	end
 
-	table.insert(self.registered[code], #self.registered[code] + 1, {
-		listener = listener,
-		callback = callback,
-	})
-
-	return true
-end
-
----@param code event_code
----@param sender any
----@param data table
----@return boolean
-function Event:fire(code, sender, data)
-	if self.registered[code] == nil then
-		return false
-	end
-
-	for i = 1, #self.registered[code], 1 do
-		local e = self.registered[code][i]
-		if e.callback(code, sender, e.listener, data) then
-			-- Event has been handled.
-			-- Do not send to other listeners.
-			return true
-		end
-	end
-
-	-- Not found.
+	-- Event not handled.
 	return false
 end
 
----@param category event_category
----@param listener any
----@param callback event_callback
-function Event:register_category(category, listener, callback)
+function Event:register_category(category, callback)
 	for _, code in pairs(EVENT_CODE) do
 		if code >= category[1] and code <= category[2] then
-			Event:register(code, listener, callback)
+			Event:register(code, callback)
 		end
 	end
 end
@@ -111,7 +87,7 @@ function love.keyreleased(key, scancode)
 end
 
 function love.textinput(t)
-	Event:fire(EVENT_CODE.TEXT_INPUT, nil, t)
+	Event:fire(EVENT_CODE.TEXT_INPUT, t)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

@@ -25,7 +25,7 @@ function Window:process_resize(width, height)
 			canvas:update()
 		end
 
-		Event:fire(EVENT_CODE.WINDOW_RESIZE, nil, { width, height })
+		Event:fire(EVENT_CODE.WINDOW_RESIZE, { width, height })
 	end
 end
 

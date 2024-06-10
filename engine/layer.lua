@@ -15,8 +15,8 @@ function Layer:new(name, callbacks)
 		self:attach()
 	end
 
-	table.insert(Engine.layers, self)
-	return Engine.layers[#Engine.layers]
+	table.insert(Engine.active_scene.layers, self)
+	return Engine.active_scene.layers[#Engine.active_scene.layers]
 end
 
 return true

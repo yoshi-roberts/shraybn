@@ -1,6 +1,6 @@
 local dockspace = require("editor.dockspace")
 
-local function ui_event(code, sender, listener, data)
+local function ui_event(code, data)
 	return ImguiEvent(code, data)
 end
 
@@ -10,7 +10,7 @@ local function ui_attach()
 	local io = Imgui.GetIO()
 	io.ConfigFlags = bit.bor(io.ConfigFlags, Imgui.ImGuiConfigFlags_DockingEnable)
 
-	Event:register_category(EVENT_CATEGORY.INPUT, nil, ui_event)
+	Event:register_category(EVENT_CATEGORY.INPUT, ui_event)
 end
 
 local function ui_detach()
@@ -23,16 +23,16 @@ local function ui_update(dt)
 end
 
 local selected_asset = 0
-local function tree(branch)
+local function tree(path, branch)
 	for k, item in pairs(branch) do
 		if type(item) ~= "table" then
-			-- Imgui.Text(item)
-			if Imgui.Selectable_Bool(item, selected_asset == item) then
-				selected_asset = item
+			local key = path .. item:match("(.+)%..+")
+			if Imgui.Selectable_Bool(item, selected_asset == key) then
+				selected_asset = key
 			end
 		else
 			if Imgui.TreeNode_Str(k) then
-				tree(item)
+				tree(path .. k .. ".", item)
 				Imgui.TreePop()
 			end
 		end
@@ -46,10 +46,17 @@ local function ui_draw()
 	Imgui.End()
 
 	Imgui.Begin("Assets", nil)
-	tree(Assets.file_tree)
+	tree("", Assets.file_tree)
 	Imgui.End()
 
 	Imgui.Begin("Inspector", nil)
+
+	if Assets:loaded() and selected_asset ~= 0 then
+		local img = Assets:get("image", selected_asset)
+		local size = Imgui.ImVec2_Float(img:getDimensions())
+		Imgui.Image(img, size)
+	end
+
 	Imgui.End()
 
 	-- code to render imgui
@@ -57,7 +64,7 @@ local function ui_draw()
 	Imgui.love.RenderDrawLists()
 end
 
-Engine:new_layer("ui_layer", {
+Layer("ui_layer", {
 	attach = ui_attach,
 	detach = ui_detach,
 	update = ui_update,

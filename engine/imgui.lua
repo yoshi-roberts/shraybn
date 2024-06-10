@@ -5,7 +5,7 @@ package.cpath = string.format("%s;%s/?.%s", package.cpath, lib_path, extension)
 Imgui = require("libs.cimgui")
 
 function ImguiEvent(code, data)
-	local handled = false
+	local handled = true
 
 	if code == EVENT_CODE.KEY_PRESS then
 		Imgui.love.KeyPressed(data.key)

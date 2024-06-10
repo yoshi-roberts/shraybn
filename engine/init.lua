@@ -8,10 +8,12 @@ System = concord.system
 World = concord.world
 Components = concord.components
 
-require("engine.imgui")
-
 Engine = {
-	layers = {},
+	---@type {[string]: Scene}
+	scenes = {},
+	---@type Scene
+	active_scene = nil,
+
 	canvases = {},
 }
 
@@ -41,6 +43,7 @@ function Engine.init()
 	failed = load_module("input")
 	failed = load_module("layer")
 	failed = load_module("assets")
+	failed = load_module("scene")
 
 	if failed then
 		return false
@@ -58,29 +61,19 @@ function Engine.init()
 end
 
 function Engine:shutdown()
-	for _, layer in pairs(self.layers) do
-		if layer.detach ~= nil then
-			layer.detach()
-		end
-	end
+	self.active_scene:shutdown()
 end
 
 function Engine:update(dt)
 	Assets:update()
-
-	for _, layer in pairs(self.layers) do
-		if layer.update ~= nil then
-			layer.update(dt)
-		end
-	end
-
+	self.active_scene:update(dt)
 	Input:update()
 end
 
 function Engine:draw()
-	for _, layer in pairs(self.layers) do
-		if layer.draw ~= nil then
-			layer.draw()
-		end
-	end
+	self.active_scene:draw()
+end
+
+function Engine:set_scene(name)
+	self.active_scene = self.scenes[name]
 end

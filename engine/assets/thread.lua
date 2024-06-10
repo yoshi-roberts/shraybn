@@ -95,6 +95,8 @@ local function valid_type(ext)
 	return false, nil
 end
 
+---@param path string
+---@return string
 local function path_to_key(path)
 	local p = path:match("(.+)%..+")
 	local pos = string.find(p, "/")
