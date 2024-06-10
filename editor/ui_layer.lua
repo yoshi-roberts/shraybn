@@ -1,4 +1,5 @@
 local dockspace = require("editor.dockspace")
+ProjManager = require("editor.project_manager")
 
 local function ui_event(code, data)
 	return ImguiEvent(code, data)
@@ -58,6 +59,7 @@ local function ui_draw()
 	end
 
 	Imgui.End()
+	ProjManager.display()
 
 	-- code to render imgui
 	Imgui.Render()

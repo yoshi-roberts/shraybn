@@ -36,27 +36,13 @@ local function create_tree(path, branch)
 end
 
 function Assets:init(path)
-	-- Get the games root dir and mount it if needed.
-	if love.filesystem.isFused() then
-		local base_dir = love.filesystem.getSourceBaseDirectory()
-		local success = love.filesystem.mount(base_dir, "root")
-
-		if not success then
-			Log.error("Assets failed to mount directory.")
-			return false
-		end
-
-		self.path = "root/"
-	else
-		self.path = ""
-	end
-
-	create_tree(self.path .. "/test-assets", self.file_tree)
+	self.path = path
+	create_tree(path, self.file_tree)
 	self.thread = love.thread.newThread("engine/assets/thread.lua")
 end
 
-function Assets:load(path)
-	self.thread:start(self.path .. path)
+function Assets:load()
+	self.thread:start(self.path)
 end
 
 function Assets:update()

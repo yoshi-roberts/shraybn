@@ -1,5 +1,6 @@
 Object = require("libs.classic")
 Vec2 = require("libs.vector")
+Nativefs = require("libs.nativefs")
 
 local concord = require("libs.concord")
 Entity = concord.entity
@@ -49,12 +50,11 @@ function Engine.init()
 		return false
 	end
 
+	timer.framerate = 60
 	concord.utils.loadNamespace("engine/components")
 
-	timer.framerate = 60
-
-	Assets:init()
-	Assets:load("test-assets")
+	Assets:init("test-assets")
+	Assets:load()
 
 	Log.info("Engine initialized.")
 	return true
