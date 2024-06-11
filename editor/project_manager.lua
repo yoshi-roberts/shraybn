@@ -1,4 +1,5 @@
 local ffi = require("ffi")
+
 local win_flags = Imgui.love.WindowFlags(
 	"NoDocking",
 	"NoCollapse",
@@ -16,7 +17,8 @@ local proj_manager = {
 	selected = 1,
 	warning = "",
 	create_new = false,
-	name = "New_Project",
+	name = "New Project",
+	buf = ffi.new("char[?]", 128, "New Project"),
 }
 
 local win_size = Imgui.ImVec2_Float(0.0, 0.0)
@@ -39,13 +41,23 @@ local function create_project(name)
 	Nativefs.setWorkingDirectory("projects/" .. name)
 
 	Nativefs.createDirectory("assets")
-	Nativefs.write("proj.sep", "", 0)
+	Nativefs.createDirectory("scenes")
+
+	local proj = Project.new(name)
+	local serialized = Binser.serialize(proj)
+	Nativefs.write("proj.sep", serialized, #serialized)
 
 	return true
 end
 
+local function open_project(name)
+	local proj = Project.load(name)
+	Editor.loaded_project = proj
+end
+
 function proj_manager.display()
 	if proj_manager.open[0] == false then
+		proj_manager.create_new = false
 		return
 	end
 
@@ -59,6 +71,21 @@ function proj_manager.display()
 		local pos_y = (screen_h - win_size.y) / 2
 
 		Imgui.SetWindowPos_Vec2(Imgui.ImVec2_Float(pos_x, pos_y))
+
+		if Imgui.Button("Open") then
+			local name = proj_manager.projects[proj_manager.selected]
+			open_project(name)
+			proj_manager.open[0] = false
+		end
+
+		Imgui.SameLine()
+		if Imgui.Button("Delete") then
+		end
+
+		Imgui.SameLine()
+		if Imgui.Button("New") then
+			proj_manager.create_new = true
+		end
 
 		if Imgui.BeginListBox("##Projects", nil) then
 			for k, v in pairs(proj_manager.projects) do
@@ -76,22 +103,9 @@ function proj_manager.display()
 			Imgui.EndListBox()
 		end
 
-		if Imgui.Button("Open") then
-		end
-
-		Imgui.SameLine()
-		if Imgui.Button("Delete") then
-		end
-
-		Imgui.SameLine()
-		if Imgui.Button("New") then
-			proj_manager.create_new = true
-		end
-
 		if proj_manager.create_new == true then
-			local buf = ffi.new("char[?]", 128, proj_manager.name) -- Create a new buffer with the initial text
-			if Imgui.InputText("Project Name", buf, 128) then
-				proj_manager.name = ffi.string(buf) -- Update inputText if the user has edited the text
+			if Imgui.InputText("##project_name", proj_manager.buf, 128) then
+				proj_manager.name = ffi.string(proj_manager.buf) -- Update inputText if the user has edited the text
 			end
 
 			if #proj_manager.warning > 0 then

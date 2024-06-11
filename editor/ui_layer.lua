@@ -1,5 +1,6 @@
 local dockspace = require("editor.dockspace")
 ProjManager = require("editor.project_manager")
+local scene_panel = require("editor.scene_panel")
 
 local function ui_event(code, data)
 	return ImguiEvent(code, data)
@@ -43,8 +44,7 @@ end
 local function ui_draw()
 	dockspace()
 
-	Imgui.Begin("Scene", nil)
-	Imgui.End()
+	scene_panel()
 
 	Imgui.Begin("Assets", nil)
 	tree("", Assets.file_tree)

@@ -1,6 +1,14 @@
 require("engine")
 require("engine.imgui")
 
+require("editor.project")
+Binser = require("libs.binser")
+
+Editor = {
+	loaded_project = nil,
+	current_scene = nil,
+}
+
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
 	if not Engine.init() then
