@@ -16,7 +16,7 @@ function Project.load(name)
 	Nativefs.setWorkingDirectory("projects/" .. name)
 	local contents = Nativefs.read("proj.sep")
 	local deserialized = Binser.deserialize(contents)
-	local proj = deserialized[1]
+	return deserialized[1]
 end
 
 function Project.save(project) end

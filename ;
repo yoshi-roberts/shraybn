@@ -1,0 +1,12 @@
+SceneData = {}
+
+function SceneData.new(name)
+	local scene = {
+		name = name,
+		layers = {},
+	}
+
+	return scene
+end
+
+return SceneData

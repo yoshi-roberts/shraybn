@@ -1,4 +1,5 @@
 local ffi = require("ffi")
+local pprint = require("libs.pprint")
 
 local win_flags = Imgui.love.WindowFlags(
 	"NoDocking",
@@ -47,12 +48,19 @@ local function create_project(name)
 	local serialized = Binser.serialize(proj)
 	Nativefs.write("proj.sep", serialized, #serialized)
 
+	-- Update project list.
+	Nativefs.setWorkingDirectory("..")
+	proj_manager.projects = Nativefs.getDirectoryItems("./")
+
 	return true
 end
 
 local function open_project(name)
 	local proj = Project.load(name)
 	Editor.loaded_project = proj
+
+	Nativefs.setWorkingDirectory("..")
+	FilePanel:create_tree(name, FilePanel.tree)
 end
 
 function proj_manager.display()

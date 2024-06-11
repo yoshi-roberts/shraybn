@@ -1,5 +1,4 @@
 local dockspace = require("editor.dockspace")
-ProjManager = require("editor.project_manager")
 local scene_panel = require("editor.scene_panel")
 
 local function ui_event(code, data)
@@ -24,39 +23,20 @@ local function ui_update(dt)
 	Imgui.NewFrame()
 end
 
-local selected_asset = 0
-local function tree(path, branch)
-	for k, item in pairs(branch) do
-		if type(item) ~= "table" then
-			local key = path .. item:match("(.+)%..+")
-			if Imgui.Selectable_Bool(item, selected_asset == key) then
-				selected_asset = key
-			end
-		else
-			if Imgui.TreeNode_Str(k) then
-				tree(path .. k .. ".", item)
-				Imgui.TreePop()
-			end
-		end
-	end
-end
-
 local function ui_draw()
 	dockspace()
 
 	scene_panel()
 
-	Imgui.Begin("Assets", nil)
-	tree("", Assets.file_tree)
-	Imgui.End()
+	FilePanel:display()
 
 	Imgui.Begin("Inspector", nil)
 
-	if Assets:loaded() and selected_asset ~= 0 then
-		local img = Assets:get("image", selected_asset)
-		local size = Imgui.ImVec2_Float(img:getDimensions())
-		Imgui.Image(img, size)
-	end
+	-- if Assets:loaded() and selected_asset ~= 0 then
+	-- 	local img = Assets:get("image", selected_asset)
+	-- 	local size = Imgui.ImVec2_Float(img:getDimensions())
+	-- 	Imgui.Image(img, size)
+	-- end
 
 	Imgui.End()
 	ProjManager.display()

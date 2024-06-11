@@ -4,6 +4,10 @@ require("engine.imgui")
 require("editor.project")
 Binser = require("libs.binser")
 
+SceneData = require("editor.scene_data")
+ProjManager = require("editor.project_manager")
+require("editor.file_panel")
+
 Editor = {
 	loaded_project = nil,
 	current_scene = nil,
