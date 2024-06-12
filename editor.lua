@@ -10,6 +10,7 @@ require("editor.file_panel")
 
 Editor = {
 	loaded_project = nil,
+	open_scenes = {},
 	current_scene = nil,
 }
 
@@ -22,6 +23,13 @@ function love.load()
 
 	Scene("default_scene")
 	Engine:set_scene("default_scene")
+
+	-- Make sure projects dir exists and is our working dir.
+	local proj_dir_exists = Nativefs.getInfo("projects/")
+	if not proj_dir_exists then
+		Nativefs.createDirectory("projects")
+	end
+	Nativefs.setWorkingDirectory("projects")
 
 	require("editor.ui_layer")
 end

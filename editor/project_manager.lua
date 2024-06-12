@@ -25,21 +25,15 @@ local proj_manager = {
 local win_size = Imgui.ImVec2_Float(0.0, 0.0)
 
 local function create_project(name)
-	local proj_dir_exists = Nativefs.getInfo("projects/")
-
-	if not proj_dir_exists then
-		Nativefs.createDirectory("projects")
-	end
-
-	local proj_exists = Nativefs.getInfo("projects/" .. name)
+	local proj_exists = Nativefs.getInfo(name)
 	if proj_exists then
 		print("Exists!")
 		proj_manager.warning = "Project '" .. name .. "' already exists."
 		return false
 	end
 
-	Nativefs.createDirectory("projects/" .. name)
-	Nativefs.setWorkingDirectory("projects/" .. name)
+	Nativefs.createDirectory(name)
+	Nativefs.setWorkingDirectory(name)
 
 	Nativefs.createDirectory("assets")
 	Nativefs.createDirectory("scenes")
@@ -59,7 +53,7 @@ local function open_project(name)
 	local proj = Project.load(name)
 	Editor.loaded_project = proj
 
-	Nativefs.setWorkingDirectory("..")
+	-- Nativefs.setWorkingDirectory("..")
 	FilePanel:create_tree(name, FilePanel.tree)
 end
 

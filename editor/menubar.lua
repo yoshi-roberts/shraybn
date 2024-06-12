@@ -44,6 +44,7 @@ local function menubar()
 
 		if Imgui.Button("Create") then
 			local scene = SceneData.new(new_scene_name)
+			FilePanel:create_tree(Editor.loaded_project.name, FilePanel.tree)
 			Imgui.CloseCurrentPopup()
 		end
 

@@ -6,6 +6,28 @@ FilePanel = {
 	},
 }
 
+local filetypes = {
+	["sep"] = "project",
+	["scd"] = "scene",
+}
+
+local function open_file(file)
+	local ext = file:match("^.+%.([^.]+)$")
+
+	Nativefs.setWorkingDirectory(Editor.loaded_project.name)
+
+	if ext == "scd" then
+		if not Editor.open_scenes[file] then
+			Editor.open_scenes[file] = SceneData.load("scenes/" .. file)
+		end
+
+		Editor.current_scene = Editor.open_scenes[file]
+		print(Editor.current_scene)
+	end
+
+	Nativefs.setWorkingDirectory("..")
+end
+
 function FilePanel:create_tree(path, branch)
 	local items = Nativefs.getDirectoryItems(path)
 
@@ -17,22 +39,29 @@ function FilePanel:create_tree(path, branch)
 			branch.dirs[item] = { dirs = {}, files = {} }
 			self:create_tree(item_path, branch.dirs[item])
 		elseif info.type == "file" then
-			table.insert(branch.files, item)
+			if not branch.files[item] then
+				local ext = item:match("^.+%.([^.]+)$")
+				branch.files[item] = filetypes[ext]
+			end
 		end
 	end
 end
 
 function FilePanel:display_tree(branch)
-	for k, item in pairs(branch.dirs) do
-		if Imgui.TreeNode_Str(k) then
+	for name, item in pairs(branch.dirs) do
+		if Imgui.TreeNode_Str(name) then
 			self:display_tree(item)
 			Imgui.TreePop()
 		end
 	end
 
-	for k, item in pairs(branch.files) do
-		if Imgui.Selectable_Bool(item, self.selected == k) then
-			self.selected = k
+	for name, item in pairs(branch.files) do
+		Imgui.Selectable_Bool(name, self.selected == name)
+
+		-- Double click item to open.
+		if Imgui.IsItemHovered() and Imgui.IsMouseDoubleClicked(0) then
+			self.selected = name
+			open_file(self.selected)
 		end
 	end
 end

@@ -13,9 +13,9 @@ function Project.new(name)
 end
 
 function Project.load(name)
-	Nativefs.setWorkingDirectory("projects/" .. name)
-	local contents = Nativefs.read("proj.sep")
+	local contents = Nativefs.read(name .. "/" .. "proj.sep")
 	local deserialized = Binser.deserialize(contents)
+
 	return deserialized[1]
 end
 

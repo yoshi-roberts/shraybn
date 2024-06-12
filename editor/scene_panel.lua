@@ -6,21 +6,8 @@ local function scene_panel()
 		return
 	end
 
-	if Imgui.BeginListBox("##layers", nil) then
-		for k, v in pairs(Editor.current_scene.layers) do
-			local selected = (k == proj_manager.selected)
-
-			if Imgui.Selectable_Bool(v, selected) then
-				proj_manager.selected = k
-			end
-
-			if selected then
-				Imgui.SetItemDefaultFocus()
-			end
-		end
-
-		Imgui.EndListBox()
-	end
+	local btn_width = Imgui.GetContentRegionAvail().x
+	Imgui.Button("New Layer", Imgui.ImVec2_Float(btn_width, 0))
 
 	Imgui.End()
 end
