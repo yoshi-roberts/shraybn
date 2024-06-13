@@ -7,11 +7,13 @@ Binser = require("libs.binser")
 SceneData = require("editor.scene_data")
 ProjManager = require("editor.project_manager")
 require("editor.file_panel")
+require("editor.scene_viewer")
 
 Editor = {
 	loaded_project = nil,
 	open_scenes = {},
 	current_scene = nil,
+	selected_layer = nil,
 }
 
 ---@diagnostic disable-next-line: duplicate-set-field

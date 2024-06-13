@@ -1,3 +1,4 @@
+local apply_theme = require("editor.theme")
 local dockspace = require("editor.dockspace")
 local scene_panel = require("editor.scene_panel")
 
@@ -10,6 +11,9 @@ local function ui_attach()
 
 	local io = Imgui.GetIO()
 	io.ConfigFlags = bit.bor(io.ConfigFlags, Imgui.ImGuiConfigFlags_DockingEnable)
+
+	-- print(apply_theme)
+	apply_theme()
 
 	Event:register_category(EVENT_CATEGORY.INPUT, ui_event)
 end
@@ -29,6 +33,8 @@ local function ui_draw()
 	scene_panel()
 
 	FilePanel:display()
+
+	SceneViewer:display()
 
 	Imgui.Begin("Inspector", nil)
 

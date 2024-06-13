@@ -14,6 +14,10 @@ local function menubar()
 			if Imgui.MenuItem_Bool("New", nil, nil) then
 				new_scene_popup = true
 			end
+			if Imgui.MenuItem_Bool("Save", nil, nil) then
+			end
+			if Imgui.MenuItem_Bool("Save All", nil, nil) then
+			end
 
 			Imgui.EndMenu()
 		end
@@ -21,7 +25,7 @@ local function menubar()
 		Imgui.EndDisabled(no_proj)
 
 		if Imgui.BeginMenu("Project") then
-			if Imgui.MenuItem_Bool("Manager", nil, nil) then
+			if Imgui.MenuItem_Bool("Open", nil, nil) then
 				ProjManager.open[0] = true
 			end
 			Imgui.MenuItem_Bool("Settings", nil, nil)

@@ -27,4 +27,11 @@ function SceneData.load(file)
 	return deserialized[1]
 end
 
+function SceneData.new_layer(scene)
+	local name = "Layer" .. (#scene.layers + 1)
+	table.insert(scene.layers, {
+		name = name,
+	})
+end
+
 return SceneData
