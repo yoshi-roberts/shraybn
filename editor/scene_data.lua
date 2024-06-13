@@ -9,6 +9,7 @@ function SceneData.new(name)
 	end
 
 	local scene = {
+		unsaved = false,
 		name = name,
 		layers = {},
 	}
@@ -32,11 +33,13 @@ function SceneData.new_layer(scene)
 	table.insert(scene.layers, {
 		name = name,
 	})
+	scene.unsaved = true
 end
 
 function SceneData.save(scene)
 	Nativefs.setWorkingDirectory(Editor.loaded_project.name)
 
+	scene.unsaved = false
 	local serialized = Binser.serialize(scene)
 	Nativefs.write("scenes/" .. scene.name .. ".scd", serialized, #serialized)
 

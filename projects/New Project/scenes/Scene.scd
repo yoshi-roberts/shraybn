@@ -1,1 +1,0 @@
-ÏÎ!layersÏÏÎnameÎ!Layer1Ğ Î Scene

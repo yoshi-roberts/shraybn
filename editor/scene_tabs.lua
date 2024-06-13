@@ -7,7 +7,12 @@ local function scene_tabs()
 		end
 
 		for k, scene in pairs(Editor.open_scenes) do
-			if Imgui.BeginTabItem(scene.name) then
+			local text = scene.name
+			if scene.unsaved == true then
+				text = text .. "(*)"
+			end
+
+			if Imgui.BeginTabItem(text) then
 				Editor.current_scene = scene
 				Imgui.EndTabItem()
 			end
