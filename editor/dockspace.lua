@@ -1,4 +1,5 @@
 local menubar = require("editor.menubar")
+local scene_tabs = require("editor.scene_tabs")
 
 local window_flags = Imgui.love.WindowFlags(
 	"MenuBar",
@@ -27,22 +28,7 @@ local function dockspace()
 	Imgui.PopStyleVar()
 	Imgui.PopStyleVar(2)
 
-	-- Tabs of all the open scenes.
-	if Imgui.BeginTabBar("##scene_tabs") then
-		if not Editor.current_scene then
-			if Imgui.BeginTabItem("[empty]") then
-				Imgui.EndTabItem()
-			end
-		end
-
-		for k, scene in pairs(Editor.open_scenes) do
-			if Imgui.BeginTabItem(scene.name) then
-				Imgui.EndTabItem()
-			end
-		end
-
-		Imgui.EndTabBar()
-	end
+	scene_tabs()
 
 	local dockspace_id = Imgui.GetID_Str("Dockspace")
 	Imgui.DockSpace(dockspace_id, Imgui.ImVec2_Float(0.0, 0.0), Imgui.ImGuiDockNodeFlags_PassthruCentralNode)

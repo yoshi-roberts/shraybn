@@ -34,4 +34,13 @@ function SceneData.new_layer(scene)
 	})
 end
 
+function SceneData.save(scene)
+	Nativefs.setWorkingDirectory(Editor.loaded_project.name)
+
+	local serialized = Binser.serialize(scene)
+	Nativefs.write("scenes/" .. scene.name .. ".scd", serialized, #serialized)
+
+	Nativefs.setWorkingDirectory("..")
+end
+
 return SceneData

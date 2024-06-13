@@ -16,6 +16,16 @@ Editor = {
 	selected_layer = nil,
 }
 
+function Editor:save_scene()
+	SceneData.save(self.current_scene)
+end
+
+function Editor:save_all_scenes()
+	for _, scene in pairs(self.open_scenes) do
+		SceneData.save(scene)
+	end
+end
+
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
 	if not Engine.init() then

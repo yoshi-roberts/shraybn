@@ -15,8 +15,10 @@ local function menubar()
 				new_scene_popup = true
 			end
 			if Imgui.MenuItem_Bool("Save", nil, nil) then
+				Editor:save_scene()
 			end
 			if Imgui.MenuItem_Bool("Save All", nil, nil) then
+				Editor:save_all_scenes()
 			end
 
 			Imgui.EndMenu()
