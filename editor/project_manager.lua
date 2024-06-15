@@ -40,7 +40,7 @@ local function create_project(name)
 
 	local proj = Project.new(name)
 	local serialized = Binser.serialize(proj)
-	Nativefs.write("proj.sep", serialized, #serialized)
+	Nativefs.write("proj.spd", serialized, #serialized)
 
 	-- Update project list.
 	Nativefs.setWorkingDirectory("..")
@@ -53,8 +53,11 @@ local function open_project(name)
 	local proj = Project.load(name)
 	Editor.loaded_project = proj
 
-	-- Nativefs.setWorkingDirectory("..")
-	FilePanel:create_tree(name, FilePanel.tree)
+	-- print(Nativefs.getWorkingDirectory())
+	-- FilePanel:create_tree(name, FilePanel.tree)
+
+	Assets:init(proj.name)
+	Assets:load()
 end
 
 function proj_manager.display()

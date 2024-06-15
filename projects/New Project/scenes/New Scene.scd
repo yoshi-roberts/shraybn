@@ -1,1 +1,0 @@
-ÏÎ"unsavedÍÎ!layersÏÏÎnameÎ!Layer1ÏĞ!Î!Layer2ÏĞ!Î!Layer3Ğ!Î$New Scene

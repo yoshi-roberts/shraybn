@@ -5,6 +5,7 @@ require("love.filesystem")
 local log = require("libs.log")
 local pprint = require("libs.pprint")
 local binser = require("libs.binser")
+local nativefs = require("libs.nativefs")
 
 local root = ...
 
@@ -42,8 +43,9 @@ local processes = {
 	---@param data string
 	---@return love.ImageData
 	["image"] = function(name, data)
-		local file_data = love.filesystem.newFileData(data, name)
-		return love.image.newImageData(file_data)
+		local byte_data = love.data.newByteData(data)
+		---@diagnostic disable-next-line: param-type-mismatch
+		return love.image.newImageData(byte_data)
 	end,
 }
 
@@ -98,22 +100,26 @@ end
 ---@param path string
 ---@return string
 local function path_to_key(path)
-	local p = path:match("(.+)%..+")
-	local pos = string.find(p, "/")
+	-- local p = path:match("(.+)%..+")
 
-	if not pos then
-		return path
+	local parts = {}
+	-- Seperate the path by the backslashes.
+	for str in string.gmatch(path, "([^/]+)") do
+		table.insert(parts, str)
 	end
 
-	local removed = string.sub(p, pos + 1)
-	local replaced = removed:gsub("/", ".")
-	return replaced
+	-- Remove the first two parts.
+	table.remove(parts, 1)
+	table.remove(parts, 1)
+
+	-- Concat the parts park into a string seperated by "." instead of "/"
+	return table.concat(parts, ".")
 end
 
 ---@param path string
 ---@param dest table
 local function index_items(path, dest)
-	local items = love.filesystem.getDirectoryItems(path)
+	local items = nativefs.getDirectoryItems(path)
 
 	for _, name in pairs(items) do
 		if name:sub(1, 1) == "." then
@@ -121,7 +127,7 @@ local function index_items(path, dest)
 		end
 
 		local item_path = path .. "/" .. name
-		local item_info = love.filesystem.getInfo(item_path)
+		local item_info = nativefs.getInfo(item_path)
 
 		if item_info.type == "file" then
 			local ext = item_path:match("^.+%.(.+)$")
@@ -144,8 +150,8 @@ local function index_items(path, dest)
 end
 
 local function load_file_data()
-	for _, items in pairs(assets) do
-		for _, item in pairs(items) do
+	for type, items in pairs(assets) do
+		for k, item in pairs(items) do
 			if not item.data then
 				item.data = file_read(item.path)
 			end
@@ -156,7 +162,7 @@ end
 local function load_pack()
 	log.info("[ASSETS] Loading pack.")
 
-	local compressed = file_read("assets.sap")
+	local compressed = file_read(root .. "/assets.sad")
 	local decompressed = love.data.decompress("string", "lz4", compressed --[[@as string]])
 	local deserialized = binser.deserialize(decompressed)
 	assets = deserialized[1]
@@ -173,7 +179,7 @@ local function process_data()
 end
 
 local function pack_exists()
-	local info = love.filesystem.getInfo("assets.sap")
+	local info = nativefs.getInfo(root .. "/assets.sad")
 	return info ~= nil
 end
 
@@ -218,16 +224,18 @@ end
 
 local function create_pack()
 	log.info("[ASSETS] Indexing items.")
-	index_items("test-assets", assets)
+	index_items(root .. "/assets", assets)
 
 	local write = false
 	if not pack_exists() then
+		log.info("[ASSETS] No pack exists.")
 		load_file_data()
 		write = true
 	else
+		log.info("[ASSETS] Pack exists.")
 		load_pack()
 
-		index_items("test-assets", temp_index)
+		index_items(root .. "/assets", temp_index)
 		write = asset_removed() or asset_update()
 		temp_index = nil
 	end
@@ -236,12 +244,14 @@ local function create_pack()
 		log.info("[ASSETS] Writing pack.")
 		local serialized = binser.serialize(assets)
 		local compressed = love.data.compress("string", "lz4", serialized, 9)
-		file_write("assets.sap", compressed --[[@as string]])
+		file_write(root .. "/assets.sad", compressed --[[@as string]])
 	end
 
 	process_data()
 end
 
 create_pack()
+
 love.thread.getChannel("asset_data"):push(assets)
+love.thread.getChannel("assets_processing"):push(false)
 log.info("[ASSETS] Process completed.")

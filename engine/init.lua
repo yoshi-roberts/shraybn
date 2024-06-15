@@ -53,9 +53,6 @@ function Engine.init()
 	timer.framerate = 60
 	concord.utils.loadNamespace("engine/components")
 
-	Assets:init("test-assets")
-	Assets:load()
-
 	Log.info("Engine initialized.")
 	return true
 end

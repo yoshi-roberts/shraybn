@@ -36,15 +36,8 @@ local function ui_draw()
 
 	SceneViewer:display()
 
-	Imgui.Begin("Inspector", nil)
+	Inspector:display()
 
-	-- if Assets:loaded() and selected_asset ~= 0 then
-	-- 	local img = Assets:get("image", selected_asset)
-	-- 	local size = Imgui.ImVec2_Float(img:getDimensions())
-	-- 	Imgui.Image(img, size)
-	-- end
-
-	Imgui.End()
 	ProjManager.display()
 
 	-- code to render imgui

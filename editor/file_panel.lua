@@ -1,4 +1,7 @@
+local pprint = require("libs.pprint")
+
 FilePanel = {
+	reload_needed = true,
 	selected = 0,
 	tree = {
 		dirs = {},
@@ -7,43 +10,66 @@ FilePanel = {
 }
 
 local filetypes = {
-	["sep"] = "project",
+	["spd"] = "project",
+	["sad"] = "assets",
 	["scd"] = "scene",
+	["png"] = "image",
+	["jpg"] = "image",
+	["jpeg"] = "image",
 }
 
 local function open_file(file)
 	local ext = file:match("^.+%.([^.]+)$")
 
-	Nativefs.setWorkingDirectory(Editor.loaded_project.name)
-
 	if ext == "scd" then
 		if not Editor.open_scenes[file] then
-			Editor.open_scenes[file] = SceneData.load("scenes/" .. file)
+			Editor.open_scenes[file] = SceneData.load(file)
 		end
 
 		Editor.current_scene = Editor.open_scenes[file]
-		print(Editor.current_scene)
+	elseif ext == "png" then
+		print(file)
+		-- Inspector.viewer_image = Assets:get("image", file)
 	end
-
-	Nativefs.setWorkingDirectory("..")
 end
 
 function FilePanel:create_tree(path, branch)
 	local items = Nativefs.getDirectoryItems(path)
 
-	for _, item in pairs(items) do
-		local item_path = path .. "/" .. item
+	for _, name in pairs(items) do
+		-- Skip hidden files.
+		if name:sub(1, 1) == "." then
+			goto continue
+		end
+
+		local item_path = path .. "/" .. name
 		local info = Nativefs.getInfo(item_path)
 
 		if info.type == "directory" then
-			branch.dirs[item] = { dirs = {}, files = {} }
-			self:create_tree(item_path, branch.dirs[item])
+			branch.dirs[name] = { dirs = {}, files = {} }
+			self:create_tree(item_path, branch.dirs[name])
 		elseif info.type == "file" then
-			if not branch.files[item] then
-				local ext = item:match("^.+%.([^.]+)$")
-				branch.files[item] = filetypes[ext]
+			local ext = name:match("^.+%.([^.]+)$")
+			local type = filetypes[ext]
+
+			if type and not branch.files[name] then
+				branch.files[name] = item_path
 			end
 		end
+
+		::continue::
+	end
+end
+
+function FilePanel:update()
+	if not Editor.loaded_project or Assets.processing then
+		return
+	end
+
+	if self.reload_needed == true then
+		self.reload_needed = false
+		Log.info("[EDITOR] Rebuilding file tree.")
+		self:create_tree(Editor.loaded_project.name, self.tree)
 	end
 end
 
@@ -56,11 +82,11 @@ function FilePanel:display_tree(branch)
 	end
 
 	for name, item in pairs(branch.files) do
-		Imgui.Selectable_Bool(name, self.selected == name)
+		Imgui.Selectable_Bool(name, self.selected == item)
 
 		-- Double click item to open.
 		if Imgui.IsItemHovered() and Imgui.IsMouseDoubleClicked(0) then
-			self.selected = name
+			self.selected = item
 			open_file(self.selected)
 		end
 	end
