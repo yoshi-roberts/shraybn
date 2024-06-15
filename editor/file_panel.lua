@@ -11,12 +11,28 @@ FilePanel = {
 
 local filetypes = {
 	["spd"] = "project",
-	["sad"] = "assets",
 	["scd"] = "scene",
 	["png"] = "image",
 	["jpg"] = "image",
 	["jpeg"] = "image",
 }
+
+---@param path string
+---@return string
+local function path_to_key(path)
+	local parts = {}
+	-- Seperate the path by the backslashes.
+	for str in string.gmatch(path, "([^/]+)") do
+		table.insert(parts, str)
+	end
+
+	-- Remove the first two parts.
+	table.remove(parts, 1)
+	table.remove(parts, 1)
+
+	-- Concat the parts park into a string seperated by "." instead of "/"
+	return table.concat(parts, ".")
+end
 
 local function open_file(file)
 	local ext = file:match("^.+%.([^.]+)$")
@@ -28,8 +44,9 @@ local function open_file(file)
 
 		Editor.current_scene = Editor.open_scenes[file]
 	elseif ext == "png" then
-		print(file)
-		-- Inspector.viewer_image = Assets:get("image", file)
+		local key = path_to_key(file)
+		print(key)
+		Inspector.viewer_image = Assets:get("image", key)
 	end
 end
 

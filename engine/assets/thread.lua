@@ -100,8 +100,6 @@ end
 ---@param path string
 ---@return string
 local function path_to_key(path)
-	-- local p = path:match("(.+)%..+")
-
 	local parts = {}
 	-- Seperate the path by the backslashes.
 	for str in string.gmatch(path, "([^/]+)") do

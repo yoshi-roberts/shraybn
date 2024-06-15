@@ -1,5 +1,5 @@
 local function scene_tabs()
-	if Imgui.BeginTabBar("##scene_tabs") then
+	if Imgui.BeginTabBar("##scene_tabs", Imgui.ImGuiTabBarFlags_AutoSelectNewTabs) then
 		if not Editor.current_scene then
 			if Imgui.BeginTabItem("[empty]") then
 				Imgui.EndTabItem()
