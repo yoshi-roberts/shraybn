@@ -7,7 +7,7 @@ local function scene_panel()
 	end
 
 	local btn_width = Imgui.GetContentRegionAvail().x
-	if Imgui.Button("New Layer", Imgui.ImVec2_Float(btn_width, 0)) then
+	if Imgui.Button(string.format("%s New Layer", FONT_ICONS.ICON_PLUS), Imgui.ImVec2_Float(btn_width, 0)) then
 		SceneData.new_layer(Editor.current_scene)
 	end
 

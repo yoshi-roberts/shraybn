@@ -7,7 +7,7 @@ local function scene_tabs()
 		end
 
 		for k, scene in pairs(Editor.open_scenes) do
-			local text = scene.name
+			local text = string.format("%s %s", FONT_ICONS.ICON_BOOK, scene.name)
 			if scene.unsaved == true then
 				text = text .. "(*)"
 			end

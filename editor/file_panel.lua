@@ -92,17 +92,17 @@ end
 
 function FilePanel:display_tree(branch)
 	for name, item in pairs(branch.dirs) do
-		if Imgui.TreeNode_Str(name) then
+		if Imgui.TreeNode_Str(string.format("%s %s", FONT_ICONS.ICON_FOLDER, name)) then
 			self:display_tree(item)
 			Imgui.TreePop()
 		end
 	end
 
 	for name, item in pairs(branch.files) do
-		Imgui.Selectable_Bool(name, self.selected == item)
+		Imgui.Selectable_Bool(FONT_ICONS.ICON_FILE .. " " .. name, self.selected == item)
 
 		-- Double click item to open.
-		if Imgui.IsItemHovered() and Imgui.IsMouseDoubleClicked(0) then
+		if Imgui.IsItemHovered() and Imgui.IsMouseDoubleClicked_Nil(0) then
 			self.selected = item
 			open_file(self.selected)
 		end

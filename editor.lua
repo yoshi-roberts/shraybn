@@ -4,6 +4,8 @@ require("engine.imgui")
 require("editor.project")
 Binser = require("libs.binser")
 
+FONT_ICONS = require("editor.font_awesome")
+
 require("editor.dockspace")
 SceneData = require("editor.scene_data")
 ProjManager = require("editor.project_manager")

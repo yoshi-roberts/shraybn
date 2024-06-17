@@ -11,13 +11,13 @@ local function menubar()
 		Imgui.BeginDisabled(no_proj)
 
 		if Imgui.BeginMenu("Scene") then
-			if Imgui.MenuItem_Bool("New", nil, nil) then
+			if Imgui.MenuItem_Bool(string.format("%s New", FONT_ICONS.ICON_PLUS), nil, nil) then
 				new_scene_popup = true
 			end
-			if Imgui.MenuItem_Bool("Save", nil, nil) then
+			if Imgui.MenuItem_Bool(string.format("%s Save", FONT_ICONS.ICON_FLOPPY_O), nil, nil) then
 				Editor:save_scene()
 			end
-			if Imgui.MenuItem_Bool("Save All", nil, nil) then
+			if Imgui.MenuItem_Bool(string.format("%s Save All", FONT_ICONS.ICON_FLOPPY_O), nil, nil) then
 				Editor:save_all_scenes()
 			end
 
@@ -27,11 +27,11 @@ local function menubar()
 		Imgui.EndDisabled(no_proj)
 
 		if Imgui.BeginMenu("Project") then
-			if Imgui.MenuItem_Bool("Open", nil, nil) then
+			if Imgui.MenuItem_Bool(string.format("%s Open", FONT_ICONS.ICON_FILE), nil, nil) then
 				ProjManager.open[0] = true
 			end
-			Imgui.MenuItem_Bool("Settings", nil, nil)
-			Imgui.MenuItem_Bool("Save", nil, nil)
+			Imgui.MenuItem_Bool(string.format("%s Settings", FONT_ICONS.ICON_COG), nil, nil)
+			Imgui.MenuItem_Bool(string.format("%s Save", FONT_ICONS.ICON_FLOPPY_O), nil, nil)
 			Imgui.EndMenu()
 		end
 		Imgui.EndMenuBar()
