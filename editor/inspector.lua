@@ -34,7 +34,9 @@ function Inspector:display()
 	-- Resize the canvas if needed.
 	if self.viewer_width ~= win_width then
 		self.viewer_width = win_width
-		self.viewer_canvas = love.graphics.newCanvas(self.viewer_width, self.viewer_height)
+		if self.viewer_width > 0 and self.viewer_height > 0 then
+			self.viewer_canvas = love.graphics.newCanvas(self.viewer_width, self.viewer_height)
+		end
 	end
 
 	if self.viewer_image then

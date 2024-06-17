@@ -34,6 +34,26 @@ local function menubar()
 			Imgui.MenuItem_Bool(string.format("%s Save", FONT_ICONS.ICON_FLOPPY_O), nil, nil)
 			Imgui.EndMenu()
 		end
+
+		if Imgui.BeginMenu("Editor") then
+			if Imgui.BeginMenu(string.format("%s Layout", FONT_ICONS.ICON_ALIGN_JUSTIFY)) then
+				if Imgui.MenuItem_Bool("Default", nil, nil) then
+					Dockspace:layout("default")
+				end
+				if Imgui.MenuItem_Bool("Left", nil, nil) then
+					Dockspace:layout("left")
+				end
+				if Imgui.MenuItem_Bool("Right", nil, nil) then
+					Dockspace:layout("right")
+				end
+				if Imgui.MenuItem_Bool("Center", nil, nil) then
+					Dockspace:layout("center")
+				end
+				Imgui.EndMenu()
+			end
+			Imgui.EndMenu()
+		end
+
 		Imgui.EndMenuBar()
 	end
 

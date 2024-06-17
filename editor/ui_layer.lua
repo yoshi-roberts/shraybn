@@ -28,7 +28,6 @@ end
 
 local function ui_draw()
 	Dockspace:display()
-	Dockspace:layout()
 
 	scene_panel()
 

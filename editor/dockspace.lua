@@ -3,7 +3,6 @@ local scene_tabs = require("editor.scene_tabs")
 local ffi = require("ffi")
 
 Dockspace = {
-	layout_applied = false,
 	id = 0,
 }
 
@@ -18,38 +17,63 @@ local window_flags = Imgui.love.WindowFlags(
 	"NoNavFocus"
 )
 
-function Dockspace:layout()
-	if self.layout_applied then
-		return
-	end
+Dockspace.layouts = {
+	default = function(id)
+		Imgui.DockBuilderDockWindow("Scene", id.left_top[0])
+		Imgui.DockBuilderDockWindow("Files", id.left_bottom[0])
+		Imgui.DockBuilderDockWindow("Inspector", id.right[0])
+		Imgui.DockBuilderDockWindow("Viewport", id.center[0])
+	end,
 
+	left = function(id)
+		Imgui.DockBuilderDockWindow("Viewport", id.center[0])
+		Imgui.DockBuilderDockWindow("Scene", id.left_top[0])
+		Imgui.DockBuilderDockWindow("Inspector", id.left_top[0])
+		Imgui.DockBuilderDockWindow("Files", id.left_top[0])
+	end,
+
+	right = function(id)
+		Imgui.DockBuilderDockWindow("Viewport", id.center[0])
+		Imgui.DockBuilderDockWindow("Scene", id.right[0])
+		Imgui.DockBuilderDockWindow("Inspector", id.right[0])
+		Imgui.DockBuilderDockWindow("Files", id.right[0])
+	end,
+
+	center = function(id)
+		Imgui.DockBuilderDockWindow("Files", id.center[0])
+		Imgui.DockBuilderDockWindow("Scene", id.center[0])
+		Imgui.DockBuilderDockWindow("Inspector", id.center[0])
+		Imgui.DockBuilderDockWindow("Viewport", id.center[0])
+	end,
+}
+
+function Dockspace:layout(name)
 	local viewport = Imgui.GetMainViewport()
 	Imgui.DockBuilderRemoveNode(self.id)
 	Imgui.DockBuilderAddNode(self.id, Imgui.ImGuiDockNodeFlags_DockSpace)
 	Imgui.DockBuilderSetNodeSize(self.id, viewport.Size)
 
-	local left_id = ffi.new("ImGuiID[1]")
-	local right_id = ffi.new("ImGuiID[1]")
-	Imgui.DockBuilderSplitNode(self.id, Imgui.ImGuiDir_Left, 0.25, left_id, right_id)
+	local id = {
+		left = ffi.new("ImGuiID[1]"),
+		right = ffi.new("ImGuiID[1]"),
+		left_top = ffi.new("ImGuiID[1]"),
+		left_bottom = ffi.new("ImGuiID[1]"),
+		center = ffi.new("ImGuiID[1]"),
+	}
 
-	-- Left top/bottom nodes.
-	local left_top_id = ffi.new("ImGuiID[1]")
-	local left_bottom_id = ffi.new("ImGuiID[1]")
-	Imgui.DockBuilderSplitNode(left_id[0], Imgui.ImGuiDir_Down, 0.50, left_bottom_id, left_top_id)
+	-- local left_id = ffi.new("ImGuiID[1]")
+	local right_id = ffi.new("ImGuiID[1]")
+	Imgui.DockBuilderSplitNode(self.id, Imgui.ImGuiDir_Left, 0.25, id.left, right_id)
+
+	Imgui.DockBuilderSplitNode(id.left[0], Imgui.ImGuiDir_Down, 0.50, id.left_bottom, id.left_top)
 
 	-- Center and right-hand side nodes.
-	local right_side_id = ffi.new("ImGuiID[1]")
-	local center_id = ffi.new("ImGuiID[1]")
-	Imgui.DockBuilderSplitNode(right_id[0], Imgui.ImGuiDir_Right, 0.25, right_side_id, center_id)
+	Imgui.DockBuilderSplitNode(right_id[0], Imgui.ImGuiDir_Right, 0.25, id.right, id.center)
 
-	-- Dock windows.
-	Imgui.DockBuilderDockWindow("Scene", left_top_id[0])
-	Imgui.DockBuilderDockWindow("Files", left_bottom_id[0])
-	Imgui.DockBuilderDockWindow("Inspector", right_side_id[0])
-	Imgui.DockBuilderDockWindow("Viewport", center_id[0])
+	local fn = self.layouts[name]
+	fn(id)
 
 	Imgui.DockBuilderFinish(self.id)
-	self.layout_applied = true
 end
 
 function Dockspace:display()
