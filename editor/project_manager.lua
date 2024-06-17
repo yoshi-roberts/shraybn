@@ -53,8 +53,7 @@ local function open_project(name)
 	local proj = Project.load(name)
 	Editor.loaded_project = proj
 
-	-- print(Nativefs.getWorkingDirectory())
-	-- FilePanel:create_tree(name, FilePanel.tree)
+	SceneViewer.canvas = love.graphics.newCanvas(proj.game_width, proj.game_height)
 
 	Assets:init(proj.name)
 	Assets:load()

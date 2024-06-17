@@ -1,5 +1,4 @@
 local apply_theme = require("editor.theme")
-local dockspace = require("editor.dockspace")
 local scene_panel = require("editor.scene_panel")
 
 local function ui_event(code, data)
@@ -28,7 +27,8 @@ local function ui_update(dt)
 end
 
 local function ui_draw()
-	dockspace()
+	Dockspace:display()
+	Dockspace:layout()
 
 	scene_panel()
 

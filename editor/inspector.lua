@@ -8,6 +8,24 @@ Inspector = {
 Inspector.bk_grid = love.graphics.newImage("editor/bk_grid.png")
 Inspector.viewer_canvas = love.graphics.newCanvas(Inspector.viewer_width, Inspector.viewer_height)
 
+local function get_mem(bytes)
+	local number = nil
+	local suffix = "B"
+
+	if bytes >= math.pow(10, 9) then
+		suffix = "GB"
+		number = bytes / math.pow(10, 9)
+	elseif bytes >= math.pow(10, 6) then
+		suffix = "MB"
+		number = bytes / math.pow(10, 6)
+	elseif bytes >= 1000 then
+		suffix = "KB"
+		number = bytes / 1000
+	end
+
+	return number .. suffix
+end
+
 function Inspector:display()
 	Imgui.Begin("Inspector", nil)
 
@@ -20,44 +38,42 @@ function Inspector:display()
 	end
 
 	if self.viewer_image then
-		-- Draw grid to canvas.
 		love.graphics.setCanvas(self.viewer_canvas)
 
-		local ts = 32
-		local xt = math.ceil(self.viewer_width / ts)
-		local yt = math.ceil(self.viewer_height / ts)
+		local tile_size = 32
+		local x_tiles = math.ceil(self.viewer_width / tile_size)
+		local y_tiles = math.ceil(self.viewer_height / tile_size)
 
-		for x = 1, xt, 1 do
-			for y = 1, yt, 1 do
-				local xp = (x - 1) * ts
-				local yp = (y - 1) * ts
+		-- Draw grid to canvas.
+		for x = 1, x_tiles, 1 do
+			for y = 1, y_tiles, 1 do
+				local pos_x = (x - 1) * tile_size
+				local pos_y = (y - 1) * tile_size
 
-				love.graphics.draw(self.bk_grid, xp, yp)
+				love.graphics.draw(self.bk_grid, pos_x, pos_y)
 			end
 		end
 
-		local xs = self.viewer_canvas:getWidth() / self.viewer_image:getWidth()
-		local ys = self.viewer_canvas:getHeight() / self.viewer_image:getHeight()
-		local scale = math.min(xs, ys)
+		local img = self.viewer_image.resource
 
-		local width = self.viewer_image:getWidth() * scale
-		local height = self.viewer_image:getHeight() * scale
+		local scale_x = self.viewer_canvas:getWidth() / img:getWidth()
+		local scale_y = self.viewer_canvas:getHeight() / img:getHeight()
+		local scale = math.min(scale_x, scale_y)
+
+		local width = img:getWidth() * scale
+		local height = img:getHeight() * scale
 		local x = (self.viewer_canvas:getWidth() / 2) - (width / 2)
 		local y = (self.viewer_canvas:getHeight() / 2) - (height / 2)
 
-		love.graphics.draw(self.viewer_image, x, y, 0, scale, scale)
+		love.graphics.draw(img, x, y, 0, scale)
 
 		love.graphics.setCanvas()
+
+		Imgui.TextWrapped(self.viewer_image.path)
 
 		local size = Imgui.ImVec2_Float(self.viewer_canvas:getDimensions())
 		Imgui.Image(self.viewer_canvas, size)
 	end
-
-	-- if Assets:loaded() and selected_asset ~= 0 then
-	-- 	local img = Assets:get("image", selected_asset)
-	-- 	local size = Imgui.ImVec2_Float(img:getDimensions())
-	-- 	Imgui.Image(img, size)
-	-- end
 
 	Imgui.End()
 end

@@ -1,0 +1,3 @@
+igGetTypingSelectRequest: flags=ImGuiTypingSelectFlags_None
+igOpenPopupEx: popup_flags=ImGuiPopupFlags_None
+igRenderNavHighlight: flags=ImGuiNavHighlightFlags_None

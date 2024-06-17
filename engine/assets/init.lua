@@ -54,7 +54,7 @@ function Assets:get(type, name)
 		asset.data = nil
 	end
 
-	return asset.resource
+	return asset
 end
 
 return true
