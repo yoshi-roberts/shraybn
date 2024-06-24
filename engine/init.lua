@@ -16,6 +16,8 @@ Engine = {
 	active_scene = nil,
 
 	canvases = {},
+	entities = {},
+	systems = {},
 }
 
 local timer = require("engine.time")
@@ -36,7 +38,7 @@ local function load_module(module)
 	return failed
 end
 
-function Engine.init()
+function Engine:init()
 	local failed = false
 
 	failed = load_module("event")
@@ -52,6 +54,8 @@ function Engine.init()
 
 	timer.framerate = 60
 	concord.utils.loadNamespace("engine/components")
+	concord.utils.loadNamespace("engine/entities", self.entities)
+	concord.utils.loadNamespace("engine/systems", self.systems)
 
 	Log.info("Engine initialized.")
 	return true
@@ -73,4 +77,10 @@ end
 
 function Engine:set_scene(name)
 	self.active_scene = self.scenes[name]
+end
+
+function Engine:entity_add(type, ...)
+	local entity = Entity()
+	entity:assemble(type, ...)
+	self.active_scene.world:addEntity(entity)
 end

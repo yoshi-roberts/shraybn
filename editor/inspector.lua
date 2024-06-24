@@ -1,5 +1,6 @@
 Inspector = {
-	selected_resource = nil,
+	item = nil, -- The "item" we are inspecting.
+	type = nil,
 	viewer_width = 256,
 	viewer_height = 384,
 	viewer_image = nil,
@@ -26,9 +27,23 @@ local function get_mem(bytes)
 	return number .. suffix
 end
 
-function Inspector:display()
-	Imgui.Begin("Inspector", nil)
+---@param type string
+---| "layer"
+---| "image"
+---@param item any
+function Inspector:inspect(type, item)
+	self.item = item
+	self.type = type
+end
 
+function Inspector:layer()
+	local first = self.item.type:sub(1, 1):upper()
+	local last = self.item.type:sub(2, #self.item.type)
+	local str = first .. last
+	Imgui.Text(str .. " layer.")
+end
+
+function Inspector:image()
 	local win_width = Imgui.GetContentRegionAvail().x
 
 	-- Resize the canvas if needed.
@@ -39,42 +54,52 @@ function Inspector:display()
 		end
 	end
 
-	if self.viewer_image then
-		love.graphics.setCanvas(self.viewer_canvas)
+	love.graphics.setCanvas(self.viewer_canvas)
 
-		local tile_size = 32
-		local x_tiles = math.ceil(self.viewer_width / tile_size)
-		local y_tiles = math.ceil(self.viewer_height / tile_size)
+	local tile_size = 32
+	local x_tiles = math.ceil(self.viewer_width / tile_size)
+	local y_tiles = math.ceil(self.viewer_height / tile_size)
 
-		-- Draw grid to canvas.
-		for x = 1, x_tiles, 1 do
-			for y = 1, y_tiles, 1 do
-				local pos_x = (x - 1) * tile_size
-				local pos_y = (y - 1) * tile_size
+	-- Draw grid to canvas.
+	for x = 1, x_tiles, 1 do
+		for y = 1, y_tiles, 1 do
+			local pos_x = (x - 1) * tile_size
+			local pos_y = (y - 1) * tile_size
 
-				love.graphics.draw(self.bk_grid, pos_x, pos_y)
-			end
+			love.graphics.draw(self.bk_grid, pos_x, pos_y)
 		end
+	end
 
-		local img = self.viewer_image.resource
+	local img = self.item.resource
 
-		local scale_x = self.viewer_canvas:getWidth() / img:getWidth()
-		local scale_y = self.viewer_canvas:getHeight() / img:getHeight()
-		local scale = math.min(scale_x, scale_y)
+	local scale_x = self.viewer_canvas:getWidth() / img:getWidth()
+	local scale_y = self.viewer_canvas:getHeight() / img:getHeight()
+	local scale = math.min(scale_x, scale_y)
 
-		local width = img:getWidth() * scale
-		local height = img:getHeight() * scale
-		local x = (self.viewer_canvas:getWidth() / 2) - (width / 2)
-		local y = (self.viewer_canvas:getHeight() / 2) - (height / 2)
+	local width = img:getWidth() * scale
+	local height = img:getHeight() * scale
+	local x = (self.viewer_canvas:getWidth() / 2) - (width / 2)
+	local y = (self.viewer_canvas:getHeight() / 2) - (height / 2)
 
-		love.graphics.draw(img, x, y, 0, scale)
+	love.graphics.draw(img, x, y, 0, scale)
 
-		love.graphics.setCanvas()
+	love.graphics.setCanvas()
 
-		Imgui.TextWrapped(self.viewer_image.path)
+	Imgui.TextWrapped(self.item.path)
 
-		local size = Imgui.ImVec2_Float(self.viewer_canvas:getDimensions())
-		Imgui.Image(self.viewer_canvas, size)
+	local size = Imgui.ImVec2_Float(self.viewer_canvas:getDimensions())
+	Imgui.Image(self.viewer_canvas, size)
+end
+
+function Inspector:display()
+	Imgui.Begin("Inspector", nil)
+
+	if self.item then
+		if self.type == "image" then
+			self:image()
+		elseif self.type == "layer" then
+			self:layer()
+		end
 	end
 
 	Imgui.End()

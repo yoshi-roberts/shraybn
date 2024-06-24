@@ -46,7 +46,7 @@ local function open_file(file)
 	elseif ext == "png" then
 		local key = path_to_key(file)
 		print(key)
-		Inspector.viewer_image = Assets:get("image", key)
+		Inspector:inspect("image", Assets:get("image", key))
 	end
 end
 

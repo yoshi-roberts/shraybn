@@ -11,8 +11,9 @@ local function ui_attach()
 	local io = Imgui.GetIO()
 	io.ConfigFlags = bit.bor(io.ConfigFlags, Imgui.ImGuiConfigFlags_DockingEnable)
 
-	-- print(apply_theme)
 	apply_theme()
+
+	Viewport:init()
 
 	Event:register_category(EVENT_CATEGORY.INPUT, ui_event)
 end
@@ -33,7 +34,7 @@ local function ui_draw()
 
 	FilePanel:display()
 
-	SceneViewer:display()
+	Viewport:display()
 
 	Inspector:display()
 

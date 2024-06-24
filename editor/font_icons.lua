@@ -1,4 +1,3 @@
----@enum FONT_ICON
 local FONT_ICON = {
 	FILE_NAME_FK = "forkawesome-webfont.ttf",
 

@@ -2,18 +2,17 @@ local ffi = require("ffi")
 
 local function apply_icons()
 	local imio = Imgui.GetIO()
-	local FONT_ICON = require("editor.font_awesome")
 	local font_size = 16
 	local icon_font_size = font_size
 
-	local icon_ranges = ffi.new("const ImWchar[3]", { FONT_ICON.ICON_MIN, FONT_ICON.ICON_MAX, 0 })
+	local icon_ranges = ffi.new("const ImWchar[3]", { FONT_ICONS.ICON_MIN, FONT_ICONS.ICON_MAX, 0 })
 
 	local config = Imgui.ImFontConfig()
 	config.MergeMode = true
 	config.PixelSnapH = true
 	config.GlyphMinAdvanceX = icon_font_size
 
-	local icon_font_path = "../editor/" .. FONT_ICON.FILE_NAME_FK
+	local icon_font_path = "../editor/" .. FONT_ICONS.FILE_NAME_FK
 	imio.Fonts:AddFontFromFileTTF(icon_font_path, icon_font_size, config, icon_ranges)
 
 	Imgui.love.BuildFontAtlas()

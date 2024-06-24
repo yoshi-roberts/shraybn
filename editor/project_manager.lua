@@ -53,10 +53,10 @@ local function open_project(name)
 	local proj = Project.load(name)
 	Editor.loaded_project = proj
 
-	SceneViewer.canvas = love.graphics.newCanvas(proj.game_width, proj.game_height)
-
 	Assets:init(proj.name)
 	Assets:load()
+
+	Viewport:center()
 end
 
 function proj_manager.display()

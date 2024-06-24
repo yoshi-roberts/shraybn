@@ -5,6 +5,8 @@ function Scene:new(name)
 	self.layers = {}
 	self.world = World() -- New ECS world.
 
+	self.world:addSystem(Engine.systems.sprite_render)
+
 	Engine.scenes[name] = self
 	return Engine.scenes[name]
 end
@@ -44,5 +46,9 @@ end
 function Scene:remove_entity(entity)
 	self.world:remove_entity(entity)
 end
+
+-- function Scene.world:onEntityAdded(entity)
+-- Entity has been added to world.
+-- end
 
 return true

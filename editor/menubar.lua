@@ -30,8 +30,9 @@ local function menubar()
 			if Imgui.MenuItem_Bool(string.format("%s Open", FONT_ICONS.ICON_FILE), nil, nil) then
 				ProjManager.open[0] = true
 			end
-			Imgui.MenuItem_Bool(string.format("%s Settings", FONT_ICONS.ICON_COG), nil, nil)
-			Imgui.MenuItem_Bool(string.format("%s Save", FONT_ICONS.ICON_FLOPPY_O), nil, nil)
+			Imgui.MenuItem_Bool(FONT_ICONS.ICON_COG .. " Settings", nil, nil)
+			Imgui.MenuItem_Bool(FONT_ICONS.ICON_PLAY .. " Run", nil, nil)
+			Imgui.MenuItem_Bool(FONT_ICONS.ICON_FLOPPY_O .. " Save", nil, nil)
 			Imgui.EndMenu()
 		end
 

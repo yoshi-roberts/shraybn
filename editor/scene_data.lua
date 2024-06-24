@@ -42,11 +42,21 @@ function SceneData.load(file)
 end
 
 ---@param scene scene_data
-function SceneData.new_layer(scene)
+---@param type string
+---| "image"
+---| "trigger"
+function SceneData.new_layer(scene, type)
 	local name = "Layer" .. (#scene.layers + 1)
 	table.insert(scene.layers, {
 		name = name,
+		type = type,
 	})
+
+	scene.unsaved = true
+end
+
+function SceneData.remove_layer(scene, index)
+	table.remove(scene.layers, index)
 	scene.unsaved = true
 end
 

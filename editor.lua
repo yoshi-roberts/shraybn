@@ -4,14 +4,14 @@ require("engine.imgui")
 require("editor.project")
 Binser = require("libs.binser")
 
-FONT_ICONS = require("editor.font_awesome")
+FONT_ICONS = require("editor.font_icons")
 
 require("editor.dockspace")
 SceneData = require("editor.scene_data")
 ProjManager = require("editor.project_manager")
 require("editor.file_panel")
 require("editor.inspector")
-require("editor.scene_viewer")
+require("editor.viewport")
 
 Editor = {
 	loaded_project = nil,
@@ -32,7 +32,7 @@ end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
-	if not Engine.init() then
+	if not Engine:init() then
 		Log.fatal("Engine failed to initialize")
 	end
 	Window:init(1280, 720)
@@ -59,6 +59,10 @@ end
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.draw()
 	Engine:draw()
+
+	love.graphics.setColor(1, 0, 0, 1)
+	love.graphics.circle("fill", Viewport.pos.x, Viewport.pos.y, 4)
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 function love.quit()
