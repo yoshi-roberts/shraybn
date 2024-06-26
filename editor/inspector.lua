@@ -1,3 +1,5 @@
+local ffi = require("ffi")
+
 Inspector = {
 	item = nil, -- The "item" we are inspecting.
 	type = nil,
@@ -36,14 +38,7 @@ function Inspector:inspect(type, item)
 	self.type = type
 end
 
-function Inspector:layer()
-	local first = self.item.type:sub(1, 1):upper()
-	local last = self.item.type:sub(2, #self.item.type)
-	local str = first .. last
-	Imgui.Text(str .. " layer.")
-end
-
-function Inspector:image()
+function Inspector:image(image)
 	local win_width = Imgui.GetContentRegionAvail().x
 
 	-- Resize the canvas if needed.
@@ -70,25 +65,57 @@ function Inspector:image()
 		end
 	end
 
-	local img = self.item.resource
+	local res = image.resource
 
-	local scale_x = self.viewer_canvas:getWidth() / img:getWidth()
-	local scale_y = self.viewer_canvas:getHeight() / img:getHeight()
+	local scale_x = self.viewer_canvas:getWidth() / res:getWidth()
+	local scale_y = self.viewer_canvas:getHeight() / res:getHeight()
 	local scale = math.min(scale_x, scale_y)
 
-	local width = img:getWidth() * scale
-	local height = img:getHeight() * scale
+	local width = res:getWidth() * scale
+	local height = res:getHeight() * scale
 	local x = (self.viewer_canvas:getWidth() / 2) - (width / 2)
 	local y = (self.viewer_canvas:getHeight() / 2) - (height / 2)
 
-	love.graphics.draw(img, x, y, 0, scale)
+	love.graphics.draw(res, x, y, 0, scale)
 
 	love.graphics.setCanvas()
 
-	Imgui.TextWrapped(self.item.path)
+	Imgui.TextWrapped(image.path)
 
 	local size = Imgui.ImVec2_Float(self.viewer_canvas:getDimensions())
 	Imgui.Image(self.viewer_canvas, size)
+end
+
+function Inspector:layer()
+	local layer = self.item
+
+	local first = layer.type:sub(1, 1):upper()
+	local last = layer.type:sub(2, #layer.type)
+	local str = first .. last
+	Imgui.Text(str .. " layer.")
+
+	if layer.type == "image" then
+		if not layer.image then
+			Imgui.Text("No Image.")
+		end
+
+		if Imgui.BeginDragDropTarget() then
+			local payload = Imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
+			if Imgui.IsMouseReleased_Nil(0) then
+				if payload then
+					local data = ffi.string(payload.Data)
+					local key = Util.path_to_key(data)
+					layer.image = Assets:get("image", key)
+				end
+			end
+
+			Imgui.EndDragDropTarget()
+		end
+
+		if layer.image then
+			self:image(layer.image)
+		end
+	end
 end
 
 function Inspector:display()
@@ -96,7 +123,7 @@ function Inspector:display()
 
 	if self.item then
 		if self.type == "image" then
-			self:image()
+			self:image(self.item)
 		elseif self.type == "layer" then
 			self:layer()
 		end

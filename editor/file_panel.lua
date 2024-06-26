@@ -1,5 +1,3 @@
-local pprint = require("libs.pprint")
-
 FilePanel = {
 	reload_needed = true,
 	selected = 0,
@@ -17,23 +15,6 @@ local filetypes = {
 	["jpeg"] = "image",
 }
 
----@param path string
----@return string
-local function path_to_key(path)
-	local parts = {}
-	-- Seperate the path by the backslashes.
-	for str in string.gmatch(path, "([^/]+)") do
-		table.insert(parts, str)
-	end
-
-	-- Remove the first two parts.
-	table.remove(parts, 1)
-	table.remove(parts, 1)
-
-	-- Concat the parts park into a string seperated by "." instead of "/"
-	return table.concat(parts, ".")
-end
-
 local function open_file(file)
 	local ext = file:match("^.+%.([^.]+)$")
 
@@ -44,7 +25,7 @@ local function open_file(file)
 
 		Editor.current_scene = Editor.open_scenes[file]
 	elseif ext == "png" then
-		local key = path_to_key(file)
+		local key = Util.path_to_key(file)
 		print(key)
 		Inspector:inspect("image", Assets:get("image", key))
 	end
@@ -105,6 +86,12 @@ function FilePanel:display_tree(branch)
 		if Imgui.IsItemHovered() and Imgui.IsMouseDoubleClicked_Nil(0) then
 			self.selected = item
 			open_file(self.selected)
+		end
+
+		if Imgui.BeginDragDropSource(Imgui.ImGuiDragDropFlags_None) then
+			Imgui.SetDragDropPayload("DRAG_DROP_FILE", item, #item)
+			Imgui.Text(name)
+			Imgui.EndDragDropSource()
 		end
 	end
 end

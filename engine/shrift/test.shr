@@ -1,0 +1,22 @@
+$found_key true
+$errors 0
+
+# Start
+
+= found_key true
+	Charles: I knew it!
+	Charles: You had it this whole time!
+	? Yes... I did. 
+		@Truth
+	? No! I just found it!
+		@Lie
+
+# Truth
+	Charles: I can't believe it.
+	Charles: Why didn't you tell me?
+	+ $errors 1
+
+# Lie
+	Charles: Hmm...
+	Charles: Where?
+	You need to think of something.

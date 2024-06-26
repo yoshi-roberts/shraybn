@@ -6,6 +6,7 @@ Binser = require("libs.binser")
 
 FONT_ICONS = require("editor.font_icons")
 
+require("editor.util")
 require("editor.dockspace")
 SceneData = require("editor.scene_data")
 ProjManager = require("editor.project_manager")

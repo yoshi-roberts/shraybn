@@ -83,6 +83,15 @@ function Viewport:display()
 
 	if Editor.loaded_project then
 		love.graphics.setColor(1, 1, 1, 1)
+
+		if Editor.current_scene then
+			for k, layer in pairs(Editor.current_scene.layers) do
+				if layer.type == "image" and layer.image then
+					love.graphics.draw(layer.image.resource)
+				end
+			end
+		end
+
 		love.graphics.rectangle("line", 0, 0, Editor.loaded_project.game_width, Editor.loaded_project.game_height)
 	end
 
