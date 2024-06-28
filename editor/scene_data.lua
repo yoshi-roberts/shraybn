@@ -38,6 +38,13 @@ end
 function SceneData.load(file)
 	local contents = Nativefs.read(file)
 	local deserialized = Binser.deserialize(contents)
+
+	-- for _, layer in pairs(deserialized[1]) do
+	-- 	if layer.type == "image" then
+	-- 		print(layer.image)
+	-- 	end
+	-- end
+
 	return deserialized[1]
 end
 
@@ -50,6 +57,7 @@ function SceneData.new_layer(scene, type)
 	table.insert(scene.layers, {
 		name = name,
 		type = type,
+		visible = true,
 	})
 
 	scene.unsaved = true

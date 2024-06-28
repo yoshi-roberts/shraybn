@@ -104,8 +104,7 @@ function Inspector:layer()
 			if Imgui.IsMouseReleased_Nil(0) then
 				if payload then
 					local data = ffi.string(payload.Data)
-					local key = Util.path_to_key(data)
-					layer.image = Assets:get("image", key)
+					layer.image = data
 				end
 			end
 
@@ -113,7 +112,8 @@ function Inspector:layer()
 		end
 
 		if layer.image then
-			self:image(layer.image)
+			local key = Util.path_to_key(layer.image)
+			self:image(Assets:get("image", key))
 		end
 	end
 end

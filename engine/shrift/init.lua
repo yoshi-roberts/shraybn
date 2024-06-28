@@ -1,10 +1,10 @@
-require("engine.shrift.lexer")
+local lexer = require("engine.shrift.lexer")
+local shrift = {
+	lexer = nil,
+}
 
-local function test_next_token()
-	local input = "=+()$"
-
-	local lexer = Lexer:new(input)
-
-	for c in input:gmatch(".") do
-	end
+function shrift:lex(input)
+	self.lexer = lexer:new(input)
 end
+
+return shrift

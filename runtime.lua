@@ -1,5 +1,6 @@
 require("engine")
 require("engine.imgui")
+local shrift = require("engine.shrift")
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
@@ -12,6 +13,8 @@ function love.load()
 	Engine:set_scene("default_scene")
 
 	Engine:entity_add(Engine.entities.sprite, nil, Vec2(256, 256))
+
+	shrift:lex("$+()")
 
 	require("ui_layer")
 end
