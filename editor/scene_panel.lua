@@ -43,11 +43,13 @@ local function scene_panel()
 			eye = FONT_ICONS.ICON_EYE_SLASH
 		end
 
-		if Imgui.Button(eye) then
+		if Imgui.Button(eye .. "##" .. layer.name) then
 			layer.visible = not layer.visible
 		end
+
 		Imgui.SameLine()
 		local node_open = Imgui.TreeNodeEx_Str(icon .. " " .. layer.name, node_flags)
+
 		if Imgui.IsItemClicked() then
 			Editor.selected_layer = layer
 			Inspector:inspect("layer", Editor.selected_layer)

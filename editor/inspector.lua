@@ -105,6 +105,7 @@ function Inspector:layer()
 				if payload then
 					local data = ffi.string(payload.Data)
 					layer.image = data
+					Editor.current_scene.saved = false
 				end
 			end
 
