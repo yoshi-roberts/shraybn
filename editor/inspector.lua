@@ -65,22 +65,24 @@ function Inspector:image(image)
 		end
 	end
 
-	local res = image.resource
+	if image then
+		local res = image.resource
 
-	local scale_x = self.viewer_canvas:getWidth() / res:getWidth()
-	local scale_y = self.viewer_canvas:getHeight() / res:getHeight()
-	local scale = math.min(scale_x, scale_y)
+		local scale_x = self.viewer_canvas:getWidth() / res:getWidth()
+		local scale_y = self.viewer_canvas:getHeight() / res:getHeight()
+		local scale = math.min(scale_x, scale_y)
 
-	local width = res:getWidth() * scale
-	local height = res:getHeight() * scale
-	local x = (self.viewer_canvas:getWidth() / 2) - (width / 2)
-	local y = (self.viewer_canvas:getHeight() / 2) - (height / 2)
+		local width = res:getWidth() * scale
+		local height = res:getHeight() * scale
+		local x = (self.viewer_canvas:getWidth() / 2) - (width / 2)
+		local y = (self.viewer_canvas:getHeight() / 2) - (height / 2)
 
-	love.graphics.draw(res, x, y, 0, scale)
+		love.graphics.draw(res, x, y, 0, scale)
+	end
 
 	love.graphics.setCanvas()
 
-	Imgui.TextWrapped(image.path)
+	-- Imgui.TextWrapped(image.path)
 
 	local size = Imgui.ImVec2_Float(self.viewer_canvas:getDimensions())
 	Imgui.Image(self.viewer_canvas, size)
@@ -95,16 +97,18 @@ function Inspector:layer()
 	Imgui.Text(str .. " layer.")
 
 	if layer.type == "image" then
-		if not layer.image then
-			Imgui.Text("No Image.")
+		local image_path = "No Image."
+		if layer.image then
+			image_path = layer.image
 		end
+		Imgui.Text(image_path)
 
 		if Imgui.BeginDragDropTarget() then
-			local payload = Imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
+			Imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
 			if Imgui.IsMouseReleased_Nil(0) then
-				if payload then
-					local data = ffi.string(payload.Data)
-					layer.image = data
+				if Editor.drag_payload then
+					layer.image = Editor.drag_payload
+					Editor.drag_payload = nil
 					Editor.current_scene.saved = false
 				end
 			end
@@ -112,10 +116,13 @@ function Inspector:layer()
 			Imgui.EndDragDropTarget()
 		end
 
+		local key, asset
 		if layer.image then
-			local key = Util.path_to_key(layer.image)
-			self:image(Assets:get("image", key))
+			key = Util.path_to_key(layer.image)
+			asset = Assets:get("image", key)
 		end
+
+		self:image(asset)
 	end
 end
 

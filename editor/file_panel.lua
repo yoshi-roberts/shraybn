@@ -90,6 +90,7 @@ function FilePanel:display_tree(branch)
 
 		if Imgui.BeginDragDropSource(Imgui.ImGuiDragDropFlags_None) then
 			Imgui.SetDragDropPayload("DRAG_DROP_FILE", item, #item)
+			Editor.drag_payload = item
 			Imgui.Text(name)
 			Imgui.EndDragDropSource()
 		end

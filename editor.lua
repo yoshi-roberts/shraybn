@@ -19,6 +19,7 @@ Editor = {
 	open_scenes = {},
 	current_scene = nil,
 	selected_layer = nil,
+	drag_payload = nil,
 }
 
 function Editor:save_scene()
