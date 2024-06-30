@@ -3,6 +3,8 @@ Viewport = {
 	image = nil,
 	scale = 1,
 	grid_size = 32,
+	mouse_x = 0,
+	mouse_y = 0,
 	pos = { x = 0, y = 0 },
 	offset = { x = 0, y = 0 },
 	bg_color = { 0.15, 0.15, 0.15, 1 },
@@ -33,6 +35,12 @@ function Viewport:center()
 	local y = (height - (gh * scale))
 	self.offset.x = (x / 2)
 	self.offset.y = (y / 2)
+end
+
+function Viewport:update_mouse()
+	local mouse_pos = Input:get_mouse_position()
+	self.mouse_x = ((mouse_pos.x - (self.pos.x + self.offset.x)) / self.scale)
+	self.mouse_y = ((mouse_pos.y - (self.pos.y + self.offset.y)) / self.scale)
 end
 
 function Viewport:display()
@@ -66,6 +74,8 @@ function Viewport:display()
 		end
 	end
 	width, height = self.canvas:getDimensions()
+
+	self:update_mouse()
 
 	local win_pos = Imgui.GetWindowPos()
 	local cursor_pos = Imgui.GetCursorPos()
@@ -111,6 +121,9 @@ function Viewport:display()
 
 		love.graphics.rectangle("line", 0, 0, Editor.loaded_project.game_width, Editor.loaded_project.game_height)
 	end
+
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.circle("fill", self.mouse_x, self.mouse_y, 12)
 
 	love.graphics.pop()
 
