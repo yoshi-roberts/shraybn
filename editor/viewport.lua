@@ -23,10 +23,16 @@ function Viewport:center()
 	local gw = Editor.loaded_project.game_width
 	local gh = Editor.loaded_project.game_height
 
-	local x = width - gw
-	local y = height - gh
-	self.offset.x = x / 2
-	self.offset.y = y / 2
+	local sx = width / gw
+	local sy = height / gh
+	local scale = math.min(sx, sy)
+	self.scale = scale
+	print(self.scale)
+
+	local x = (width - (gw * scale))
+	local y = (height - (gh * scale))
+	self.offset.x = (x / 2)
+	self.offset.y = (y / 2)
 end
 
 function Viewport:display()
@@ -42,7 +48,7 @@ function Viewport:display()
 	end
 
 	Imgui.SameLine()
-	local scale_percentage = self.scale * 100
+	local scale_percentage = math.floor(self.scale * 100)
 	Imgui.Text(scale_percentage .. "%%")
 
 	Imgui.SameLine()
