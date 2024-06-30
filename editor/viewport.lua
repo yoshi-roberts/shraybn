@@ -66,13 +66,14 @@ function Viewport:display()
 	self.pos.x = win_pos.x + cursor_pos.x
 	self.pos.y = win_pos.y + cursor_pos.y
 
+	-- Start rendering to viewport canvas.
 	love.graphics.setCanvas(self.canvas)
 	love.graphics.push()
 
 	love.graphics.clear(self.bg_color)
 
 	love.graphics.translate(self.offset.x, self.offset.y)
-	-- love.graphics.scale(self.scale, self.scale)
+	love.graphics.scale(self.scale, self.scale)
 
 	love.graphics.setColor(1, 0, 0, 1)
 	love.graphics.circle("fill", 256 * 2, 256, 64)
@@ -86,6 +87,7 @@ function Viewport:display()
 		love.graphics.setColor(1, 1, 1, 1)
 
 		if Editor.current_scene then
+			-- Render scene layers.
 			for k, layer in pairs(Editor.current_scene.layers) do
 				if not layer.visible then
 					goto continue
@@ -108,25 +110,31 @@ function Viewport:display()
 
 	-- Grid.
 
+	love.graphics.push()
+	love.graphics.translate(self.offset.x, self.offset.y)
+
 	local gs = self.grid_size * self.scale
-	local xt = math.ceil(Window.width / gs)
-	local yt = math.ceil(Window.height / gs)
+
+	local xt = math.ceil((self.canvas:getWidth() - self.offset.x) / gs)
+	local yt = math.ceil((self.canvas:getHeight() - self.offset.y) / gs)
+
+	local start_x = math.floor(-self.offset.x / gs)
+	local start_y = math.floor(-self.offset.y / gs)
 
 	love.graphics.setColor(1, 1, 1, 0.15)
-	for x = 1, xt, 1 do
-		for y = 1, yt, 1 do
-			local posx = (x - 1) * gs
-			local posy = (y - 1) * gs
+	for x = start_x, xt, 1 do
+		for y = start_y, yt, 1 do
+			local posx = (x * gs)
+			local posy = (y * gs)
 			love.graphics.rectangle("line", posx, posy, gs, gs)
 		end
 	end
 
+	love.graphics.pop()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setCanvas()
 
 	local size = Imgui.ImVec2_Float(self.canvas:getDimensions())
-
-	-- Imgui.SetCursorPos(Imgui.GetCursorPos() + (region - size) * 0.5)
 	Imgui.Image(self.canvas, size)
 
 	Imgui.End()
