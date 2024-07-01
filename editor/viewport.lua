@@ -90,7 +90,9 @@ function Viewport:display()
 
 	Imgui.SameLine()
 	local scale_percentage = math.floor(self.scale * 100)
-	Imgui.Text(scale_percentage .. "%%")
+	if Imgui.Button(scale_percentage .. "%") then
+		self.scale = 1
+	end
 
 	Imgui.SameLine()
 	if Imgui.Button(FONT_ICONS.ICON_PLUS) then
@@ -122,14 +124,6 @@ function Viewport:display()
 	love.graphics.translate(self.offset.x, self.offset.y)
 	love.graphics.scale(self.scale, self.scale)
 
-	love.graphics.setColor(1, 0, 0, 1)
-	love.graphics.circle("fill", 256 * 2, 256, 64)
-
-	love.graphics.setColor(1, 0, 0, 1)
-	love.graphics.line(-width, 0, width, 0)
-	love.graphics.setColor(1, 1, 0, 1)
-	love.graphics.line(0, -height, 0, height)
-
 	if Editor.loaded_project then
 		love.graphics.setColor(1, 1, 1, 1)
 
@@ -149,8 +143,6 @@ function Viewport:display()
 				::continue::
 			end
 		end
-
-		love.graphics.rectangle("line", 0, 0, Editor.loaded_project.game_width, Editor.loaded_project.game_height)
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)
@@ -162,6 +154,18 @@ function Viewport:display()
 
 	love.graphics.push()
 	love.graphics.translate(self.offset.x, self.offset.y)
+
+	love.graphics.setLineStyle("rough")
+
+	if Editor.loaded_project then
+		love.graphics.rectangle(
+			"line",
+			0,
+			0,
+			Editor.loaded_project.game_width * self.scale,
+			Editor.loaded_project.game_height * self.scale
+		)
+	end
 
 	local gs = self.grid_size * self.scale
 
@@ -180,6 +184,16 @@ function Viewport:display()
 		end
 	end
 
+	-- Axis lines.
+
+	-- love.graphics.setColor(1, 1, 0, 1)
+	-- local lsx = -self.offset.x / self.scale
+	-- local lsy = -self.offset.y / gs
+	-- local lh = yt * gs
+	-- print(lh)
+	-- love.graphics.line(0, lsy, 0, lh)
+
+	love.graphics.setLineStyle("smooth")
 	love.graphics.pop()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setCanvas()
