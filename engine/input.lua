@@ -7,10 +7,12 @@ Input = {
 
 	mouse_current = {
 		position = Vec2(0, 0),
+		wheel = Vec2(0, 0),
 		buttons = {},
 	},
 	mouse_previous = {
 		position = Vec2(0, 0),
+		wheel = Vec2(0, 0),
 		buttons = {},
 	},
 }
@@ -22,18 +24,17 @@ MOUSE_BUTTON = {
 }
 
 function Input:update()
-	-- self.keyboard_previous = table.copy(self.keyboard_current)
-	-- self.mouse_previous.buttons = table.copy(self.mouse_current.buttons)
-	-- Mouse
-	-- self.mouse_previous.buttons = table.copy(self.mouse_current.buttons)
-	-- self.mouse_previous.buttons = table.clone(self.mouse_current.buttons)
 	for key, pressed in pairs(self.keyboard_current) do
 		self.keyboard_previous[key] = pressed
 	end
+
+	-- Mouse.
 	for button, pressed in pairs(self.mouse_current.buttons) do
 		self.mouse_previous.buttons[button] = pressed
 	end
+
 	self.mouse_previous.position:replace(self.mouse_current.position)
+	self.mouse_previous.wheel:replace(self.mouse_current.wheel)
 end
 
 function Input:process_key(data, pressed)
@@ -61,16 +62,14 @@ function Input:process_button(data, pressed)
 end
 
 function Input:process_mouse_wheel(data)
+	self.mouse_current.wheel.x = data.x
+	self.mouse_current.wheel.y = data.y
 	Event:fire(EVENT_CODE.MOUSE_WHEEL, data)
 end
 
 function Input:process_mouse_move(data)
 	self.mouse_current.position:set(data.x, data.y)
 	Event:fire(EVENT_CODE.MOUSE_MOVE, data)
-end
-
-function Input:get_mouse_position()
-	return self.mouse_current.position
 end
 
 function Input:key_down(key)
@@ -137,8 +136,30 @@ function Input:button_released(button)
 	return false
 end
 
+function Input:get_mouse_position()
+	return self.mouse_current.position
+end
+
 function Input:mouse_moved()
 	if self.mouse_current.position ~= self.mouse_previous.position then
+		return true
+	end
+
+	return false
+end
+
+function Input:wheel_up()
+	if self.mouse_current.wheel.y > self.mouse_previous.wheel.y then
+		self.mouse_current.wheel:set(0, 0)
+		return true
+	end
+
+	return false
+end
+
+function Input:wheel_down()
+	if self.mouse_current.wheel.y < self.mouse_previous.wheel.y then
+		self.mouse_current.wheel:set(0, 0)
 		return true
 	end
 

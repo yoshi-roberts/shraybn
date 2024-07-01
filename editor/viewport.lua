@@ -46,8 +46,6 @@ function Viewport:update_mouse()
 end
 
 function Viewport:update()
-	self:update_mouse()
-
 	if self.mouse_over then
 		local mpos = Input:get_mouse_position()
 
@@ -65,7 +63,17 @@ function Viewport:update()
 			self.offset.x = mpos.x - self.dragging.diffx
 			self.offset.y = mpos.y - self.dragging.diffy
 		end
+
+		if Input:wheel_up() then
+			self.scale = self.scale + 0.1
+		end
+
+		if Input:wheel_down() then
+			self.scale = self.scale - 0.1
+		end
 	end
+
+	self:update_mouse()
 end
 
 function Viewport:display()
