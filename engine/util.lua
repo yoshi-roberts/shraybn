@@ -1,14 +1,13 @@
-function table.copy(list)
-	if type(list) ~= "table" then
-		return list
-	end
-	local res = {}
-	for k, v in pairs(list) do
-		if type(v) ~= "table" then
-			res[k] = v
-		else
-			res[k] = table.copy(v)
+function table.copy(t)
+	local orig_type = type(t)
+	local copy
+	if orig_type == "table" then
+		copy = {}
+		for orig_key, orig_value in pairs(t) do
+			copy[orig_key] = orig_value
 		end
+	else -- number, string, boolean, etc
+		copy = t
 	end
-	return res
+	return copy
 end

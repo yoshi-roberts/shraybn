@@ -3,10 +3,12 @@ Viewport = {
 	image = nil,
 	scale = 1,
 	grid_size = 32,
+	mouse_over = false,
 	mouse_x = 0,
 	mouse_y = 0,
 	pos = { x = 0, y = 0 },
 	offset = { x = 0, y = 0 },
+	dragging = { acitve = false, diffx = 0, diffy = 0 },
 	bg_color = { 0.15, 0.15, 0.15, 1 },
 }
 
@@ -43,6 +45,29 @@ function Viewport:update_mouse()
 	self.mouse_y = ((mouse_pos.y - (self.pos.y + self.offset.y)) / self.scale)
 end
 
+function Viewport:update()
+	self:update_mouse()
+
+	if self.mouse_over then
+		local mpos = Input:get_mouse_position()
+
+		if Input:button_pressed(MOUSE_BUTTON.MIDDLE) then
+			self.dragging.acitve = true
+			self.dragging.diffx = mpos.x - self.offset.x
+			self.dragging.diffy = mpos.y - self.offset.y
+		end
+
+		if Input:button_released(MOUSE_BUTTON.MIDDLE) then
+			self.dragging.acitve = false
+		end
+
+		if self.dragging.acitve then
+			self.offset.x = mpos.x - self.dragging.diffx
+			self.offset.y = mpos.y - self.dragging.diffy
+		end
+	end
+end
+
 function Viewport:display()
 	Imgui.Begin("Viewport", nil, nil)
 
@@ -74,8 +99,6 @@ function Viewport:display()
 		end
 	end
 	width, height = self.canvas:getDimensions()
-
-	self:update_mouse()
 
 	local win_pos = Imgui.GetWindowPos()
 	local cursor_pos = Imgui.GetCursorPos()
@@ -155,6 +178,8 @@ function Viewport:display()
 
 	local size = Imgui.ImVec2_Float(self.canvas:getDimensions())
 	Imgui.Image(self.canvas, size)
+
+	self.mouse_over = Imgui.IsItemHovered()
 
 	Imgui.End()
 end

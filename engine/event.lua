@@ -46,7 +46,6 @@ end
 
 function Event:fire(code, data)
 	if not self.registered[code] then
-		print("Not registered: " .. code)
 		return false
 	end
 

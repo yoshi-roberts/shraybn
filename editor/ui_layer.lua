@@ -25,6 +25,8 @@ end
 local function ui_update(dt)
 	Imgui.love.Update(dt)
 	Imgui.NewFrame()
+
+	Viewport:update()
 end
 
 local function ui_draw()

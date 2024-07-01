@@ -17,14 +17,22 @@ Input = {
 
 MOUSE_BUTTON = {
 	LEFT = 1,
-	MIDDLE = 2,
-	RIGHT = 3,
+	RIGHT = 2,
+	MIDDLE = 3,
 }
 
 function Input:update()
-	self.keyboard_previous = table.copy(self.keyboard_current)
+	-- self.keyboard_previous = table.copy(self.keyboard_current)
+	-- self.mouse_previous.buttons = table.copy(self.mouse_current.buttons)
 	-- Mouse
-	self.mouse_previous.buttons = table.copy(self.mouse_current.buttons)
+	-- self.mouse_previous.buttons = table.copy(self.mouse_current.buttons)
+	-- self.mouse_previous.buttons = table.clone(self.mouse_current.buttons)
+	for key, pressed in pairs(self.keyboard_current) do
+		self.keyboard_previous[key] = pressed
+	end
+	for button, pressed in pairs(self.mouse_current.buttons) do
+		self.mouse_previous.buttons[button] = pressed
+	end
 	self.mouse_previous.position:replace(self.mouse_current.position)
 end
 
@@ -66,23 +74,23 @@ function Input:get_mouse_position()
 end
 
 function Input:key_down(key)
-	return Input.keyboard_current[key] == true
+	return self.keyboard_current[key] == true
 end
 
 function Input:key_up(key)
-	return Input.keyboard_current[key] == false
+	return self.keyboard_current[key] == false
 end
 
 function Input:key_was_down(key)
-	return Input.keyboard_previous[key] == true
+	return self.keyboard_previous[key] == true
 end
 
 function Input:key_was_up(key)
-	return Input.keyboard_previous[key] == false
+	return self.keyboard_previous[key] == false
 end
 
 function Input:key_pressed(key)
-	if Input:key_down(key) and not Input:key_was_down(key) then
+	if self:key_down(key) and not self:key_was_down(key) then
 		return true
 	end
 
@@ -90,7 +98,7 @@ function Input:key_pressed(key)
 end
 
 function Input:key_released(key)
-	if Input:key_up(key) and not Input:key_was_up(key) then
+	if self:key_up(key) and not self:key_was_up(key) then
 		return true
 	end
 
@@ -98,23 +106,23 @@ function Input:key_released(key)
 end
 
 function Input:button_down(button)
-	return Input.mouse_current.buttons[button] == true
+	return self.mouse_current.buttons[button] == true
 end
 
 function Input:button_up(button)
-	return Input.mouse_current.buttons[button] == false
+	return self.mouse_current.buttons[button] == false
 end
 
 function Input:button_was_down(button)
-	return Input.mouse_previous.buttons[button] == true
+	return self.mouse_previous.buttons[button] == true
 end
 
 function Input:button_was_up(button)
-	return Input.mouse_previous.buttons[button] == false
+	return self.mouse_previous.buttons[button] == false
 end
 
 function Input:button_pressed(button)
-	if Input:button_down(button) and not Input:button_was_down(button) then
+	if self:button_down(button) and not self:button_was_down(button) then
 		return true
 	end
 
@@ -122,7 +130,15 @@ function Input:button_pressed(button)
 end
 
 function Input:button_released(button)
-	if Input:button_up(button) and not Input:button_was_up(button) then
+	if self:button_up(button) and not self:button_was_up(button) then
+		return true
+	end
+
+	return false
+end
+
+function Input:mouse_moved()
+	if self.mouse_current.position ~= self.mouse_previous.position then
 		return true
 	end
 
