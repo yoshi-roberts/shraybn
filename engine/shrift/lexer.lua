@@ -58,7 +58,8 @@ local parse_function = {
 			error(num, "Title name missing.")
 		end
 
-		print("Title: " .. title)
+		self.tree[title] = {}
+		self.section = self.tree[title]
 	end,
 
 	["choice"] = function(self, line, num)
