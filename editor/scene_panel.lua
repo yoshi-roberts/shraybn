@@ -45,6 +45,7 @@ local function scene_panel()
 
 		if Imgui.Button(eye .. "##" .. layer.name) then
 			layer.visible = not layer.visible
+			Editor.current_scene.unsaved = true
 		end
 
 		Imgui.SameLine()

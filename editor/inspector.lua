@@ -11,24 +11,6 @@ Inspector = {
 Inspector.bk_grid = love.graphics.newImage("editor/bk_grid.png")
 Inspector.viewer_canvas = love.graphics.newCanvas(Inspector.viewer_width, Inspector.viewer_height)
 
-local function get_mem(bytes)
-	local number = nil
-	local suffix = "B"
-
-	if bytes >= math.pow(10, 9) then
-		suffix = "GB"
-		number = bytes / math.pow(10, 9)
-	elseif bytes >= math.pow(10, 6) then
-		suffix = "MB"
-		number = bytes / math.pow(10, 6)
-	elseif bytes >= 1000 then
-		suffix = "KB"
-		number = bytes / 1000
-	end
-
-	return number .. suffix
-end
-
 ---@param type string
 ---| "layer"
 ---| "image"
@@ -82,8 +64,6 @@ function Inspector:image(image)
 
 	love.graphics.setCanvas()
 
-	-- Imgui.TextWrapped(image.path)
-
 	local size = Imgui.ImVec2_Float(self.viewer_canvas:getDimensions())
 	Imgui.Image(self.viewer_canvas, size)
 end
@@ -109,7 +89,7 @@ function Inspector:layer()
 				if Editor.drag_payload then
 					layer.image = Editor.drag_payload
 					Editor.drag_payload = nil
-					Editor.current_scene.saved = false
+					Editor.current_scene.unsaved = true
 				end
 			end
 

@@ -1,98 +1,130 @@
 local lexer = Object:extend()
+local pprint = require("libs.pprint")
 
----@enum TOKEN
-TOKEN = {
-	ILLEGAL = "ILLEGAL",
-	EOF = "EOF",
+local function trim_whitespace(line)
+	return line:gsub("^%s*(.-)%s*$", "%1")
+end
 
-	IDENT = "IDENT",
-	INT = "INT",
+local function error(num, message)
+	Log.error("[SHRIFT] Error at line " .. num .. ". " .. message)
+end
 
-	COMPARE = "=",
-	PLUS = "+",
-
-	LPAREN = "(",
-	RPAREN = ")",
-	DEFINE = "$",
+local prefix = {
+	["%a"] = "text",
+	["%$"] = "assign",
+	["?"] = "evaluate",
+	["#"] = "section",
+	["*"] = "choice",
+	["@"] = "command",
 }
 
----@alias tokenType string
----@alias token table<tokenType, string, integer>
+---@alias parse_fun fun(self: table, line: string, num: integer)
+---@type {[string]: parse_fun}
+local parse_function = {
+	["text"] = function(self, line, num)
+		local colon_pos = line:find(":")
 
----@param type string
----@param literal string
----@param line integer
----@return token
-local function token_new(type, literal, line)
-	return {
-		type = type,
-		literal = literal,
-		line = line,
-	}
-end
+		local data = {
+			type = "text",
+		}
 
----@param input string
-function lexer:new(input)
-	self.input = input
-	self.position = 0
-	self.read_position = 0
-	self.ch = ""
+		-- Dialogue.
+		if colon_pos then
+			local name = line:sub(1, colon_pos - 1)
+			data.name = trim_whitespace(name)
 
-	self:read_char()
-end
+			local contents = line:sub(colon_pos + 1, #line)
+			contents = trim_whitespace(contents)
 
-function lexer:read_char()
-	if self.read_position >= #self.input then
-		self.ch = 0
-	else
-		self.ch = self.input:sub(self.read_position, self.read_position)
-	end
-	self.position = self.read_position
-	self.read_position = self.read_position + 1
-end
+			if #contents <= 0 then
+				error(num, "Missing dialogue text.")
+			end
 
-local function is_letter(char)
-	return char:match("%a") or (char == "_")
-end
+			data.contents = contents
+		else -- Text.
+			data.contents = trim_whitespace(line)
+		end
 
-function lexer:read_identifier()
-	local position = self.position
+		table.insert(self.section, data)
+	end,
+	["assign"] = function(self, line, num) end,
+	["evaluate"] = function(self, line, num) end,
 
-	while is_letter(self.ch) do
-		self:read_char()
-	end
+	["section"] = function(self, line, num)
+		local title = line:sub(2, #line)
+		title = trim_whitespace(title)
 
-	return self.input:sub(position, self.position)
-end
+		if #title <= 0 then
+			error(num, "Title name missing.")
+		end
 
-function lexer:next_token()
-	local tok
+		print("Title: " .. title)
+	end,
 
-	if self.ch == "=" then
-		tok = token_new(TOKEN.COMPARE, self.ch --[[@as string]], 0)
-	elseif self.ch == "+" then
-		tok = token_new(TOKEN.PLUS, self.ch --[[@as string]], 0)
-	elseif self.ch == "+" then
-		tok = token_new(TOKEN.PLUS, self.ch --[[@as string]], 0)
-	elseif self.ch == "$" then
-		tok = token_new(TOKEN.DEFINE, self.ch --[[@as string]], 0)
-	elseif self.ch == "(" then
-		tok = token_new(TOKEN.LPAREN, self.ch --[[@as string]], 0)
-	elseif self.ch == ")" then
-		tok = token_new(TOKEN.RPAREN, self.ch --[[@as string]], 0)
-	elseif self.ch == 0 then
-		tok = token_new(TOKEN.EOF, "", 0)
-	else
-		if is_letter(self.ch) then
-			-- Read Indentifier.
-			return tok
-		else
-			tok = token_new(TOKEN.ILLEGAL, self.ch --[[@as string]], 0)
+	["choice"] = function(self, line, num)
+		local choice = line:sub(2, #line)
+		choice = trim_whitespace(choice)
+
+		if #choice <= 0 then
+			error(num, "Choice text missing.")
+		end
+
+		print("Choice: " .. choice)
+	end,
+	["command"] = function(self, line, num) end,
+	["whitespace"] = function(self, line, num) end,
+}
+
+local function get_type(char)
+	for pattern, type in pairs(prefix) do
+		if char:match(pattern) then
+			return type
 		end
 	end
+end
 
-	self:read_char()
-	return tok
+---@param path string
+function lexer:new(path)
+	local file = io.open(path, "r")
+
+	if not file then
+		return
+	end
+
+	local data = file:read("*a")
+	self.input = data
+	self.tree = {
+		[1] = {},
+	}
+	self.section = self.tree[1]
+end
+
+function lexer:lex()
+	local num = 1
+
+	for line in self.input:gmatch("([^\n]*)\n?") do
+		line = trim_whitespace(line)
+
+		local first = line:sub(1, 1)
+		local type
+
+		if #line <= 0 then
+			type = "whitespace"
+		else
+			type = get_type(first)
+		end
+
+		if not type then
+			error(num, "Invalid line prefix.")
+		end
+
+		local fn = parse_function[type]
+		fn(self, line, num)
+
+		num = num + 1
+	end
+
+	pprint(self.tree)
 end
 
 return lexer

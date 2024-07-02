@@ -4,7 +4,8 @@ local shrift = {
 }
 
 function shrift:lex(input)
-	self.lexer = lexer:new(input)
+	self.lexer = lexer(input)
+	self.lexer:lex()
 end
 
 return shrift

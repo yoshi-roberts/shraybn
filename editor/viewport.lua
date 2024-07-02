@@ -31,7 +31,6 @@ function Viewport:center()
 	local sy = height / gh
 	local scale = math.min(sx, sy)
 	self.scale = scale
-	print(self.scale)
 
 	local x = (width - (gw * scale))
 	local y = (height - (gh * scale))
@@ -183,15 +182,6 @@ function Viewport:display()
 			love.graphics.rectangle("line", posx, posy, gs, gs)
 		end
 	end
-
-	-- Axis lines.
-
-	-- love.graphics.setColor(1, 1, 0, 1)
-	-- local lsx = -self.offset.x / self.scale
-	-- local lsy = -self.offset.y / gs
-	-- local lh = yt * gs
-	-- print(lh)
-	-- love.graphics.line(0, lsy, 0, lh)
 
 	love.graphics.setLineStyle("smooth")
 	love.graphics.pop()

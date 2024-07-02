@@ -14,7 +14,9 @@ function love.load()
 
 	Engine:entity_add(Engine.entities.sprite, nil, Vec2(256, 256))
 
-	-- require("ui_layer")
+	require("ui_layer")
+
+	shrift:lex("engine/shrift/test.shr")
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

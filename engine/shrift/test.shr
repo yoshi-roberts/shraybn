@@ -1,20 +1,24 @@
 $found_key true
 $errors 0
 
-# Start
+# Start Of Test
 
-($found_key == true)
+? $found_key == true
 	Charles: I knew it!
-	Charles: You had it this whole time!
-	? Yes... I did. 
-		@Truth
-	? No! I just found it!
-		@Lie
+	Charles	: You had it this whole time!
+	Charles: 		Wow: A colon in the dialogue.  
+
+	Text with no character name.
+
+	* Yes... I did. 
+		@jump Truth
+	* No! I just found it!
+		@jump Lie
 
 # Truth
 	Charles: I can't believe it.
 	Charles: Why didn't you tell me?
-	$errors ($errors + 1)
+	$errors $errors + 1
 
 # Lie
 	Charles: Hmm...
