@@ -21,6 +21,7 @@ function SceneData.new(name)
 		unsaved = false,
 		name = name,
 		layers = {},
+		world = World(),
 	}
 
 	-- Serialize scene data and write to file.
@@ -38,6 +39,7 @@ end
 function SceneData.load(file)
 	local contents = Nativefs.read(file)
 	local deserialized = Binser.deserialize(contents)
+	deserialized[1].world = World()
 
 	return deserialized[1]
 end

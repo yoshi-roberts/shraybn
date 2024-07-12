@@ -34,6 +34,10 @@ function Assets:loaded()
 	return self.data ~= nil
 end
 
+---@param type string
+---| "image"
+---| "sound"
+---@param name string
 function Assets:get(type, name)
 	if not self:loaded() then
 		Log.error("[ASSETS] No asset pack loaded. Can not load asset '" .. name .. "'")

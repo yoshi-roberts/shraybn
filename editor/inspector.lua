@@ -87,7 +87,9 @@ function Inspector:layer()
 			Imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
 			if Imgui.IsMouseReleased_Nil(0) then
 				if Editor.drag_payload then
-					layer.image = Editor.drag_payload
+					local key = Util.path_to_key(Editor.drag_payload)
+					Editor:add_entity(Engine.entities.sprite, key)
+
 					Editor.drag_payload = nil
 					Editor.current_scene.unsaved = true
 				end

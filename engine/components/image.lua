@@ -1,3 +1,7 @@
-Component("image", function(component, source)
-	component.source = source
+Component("image", function(component, name)
+	if name then
+		component.source = Assets:get("image", name)
+	else
+		component.source = nil
+	end
 end)

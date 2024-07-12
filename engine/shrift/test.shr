@@ -3,7 +3,7 @@ $errors 0
 
 # Start Of Test
 
-? $found_key == true
+?   $found_key !=   true | $found_key > 1
 	Charles: I knew it!
 	Charles	: You had it this whole time!
 	Charles: 		Wow: A colon in the dialogue.  
@@ -11,9 +11,14 @@ $errors 0
 	Text with no character name.
 
 	* Yes... I did. 
+		Charles: Wow...
 		@jump Truth
+	;
+
 	* No! I just found it!
 		@jump Lie
+	;
+;
 
 # Truth
 	Charles: I can't believe it.

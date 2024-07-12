@@ -32,6 +32,12 @@ function Editor:save_all_scenes()
 	end
 end
 
+function Editor:add_entity(type, ...)
+	local entity = Entity()
+	entity:assemble(type, ...)
+	self.current_scene.world:addEntity(entity)
+end
+
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
 	if not Engine:init() then
