@@ -7,7 +7,7 @@ local pprint = require("libs.pprint")
 local binser = require("libs.binser")
 local nativefs = require("libs.nativefs")
 
-local root = ...
+local root, lazy = ...
 
 log.info("[ASSETS] Starting process.")
 
@@ -39,13 +39,12 @@ local types = {
 
 ---@type {[string]: function}
 local processes = {
-	---@param name string
 	---@param data string
 	---@return love.ImageData
-	["image"] = function(name, data)
-		local byte_data = love.data.newByteData(data)
-		---@diagnostic disable-next-line: param-type-mismatch
-		return love.image.newImageData(byte_data)
+	["image"] = function(data)
+		-- local byte_data = love.data.newByteData(data)
+		-- return love.image.newImageData(byte_data)
+		return love.image.newImageData(data)
 	end,
 }
 
@@ -168,10 +167,17 @@ end
 
 local function process_data()
 	log.info("[ASSETS] Processing data.")
+
 	for type, items in pairs(assets) do
 		for name, item in pairs(items) do
-			local fn = processes[type]
-			item.data = fn(name, item.data --[[@as string]])
+			local byte_data = love.data.newByteData(item.data)
+
+			if lazy then
+				item.data = byte_data
+			else
+				local fn = processes[type]
+				item.data = fn(byte_data --[[@as string]])
+			end
 		end
 	end
 end

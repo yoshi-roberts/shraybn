@@ -53,7 +53,7 @@ local function open_project(name)
 	local proj = Project.load(name)
 	Editor.loaded_project = proj
 
-	Assets:init(proj.name)
+	Assets:init(proj.name, true)
 	Assets:load()
 
 	Viewport:center()

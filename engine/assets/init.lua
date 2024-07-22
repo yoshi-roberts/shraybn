@@ -11,14 +11,17 @@ Assets = {
 	pack_exists = false,
 }
 
-function Assets:init(path)
+---@param path string
+---@param lazy boolean
+function Assets:init(path, lazy)
 	self.path = path
+	self.lazy = lazy
 	self.thread = love.thread.newThread("engine/assets/thread.lua")
 end
 
 function Assets:load()
 	self.processing = true
-	self.thread:start(self.path)
+	self.thread:start(self.path, self.lazy)
 end
 
 function Assets:update()

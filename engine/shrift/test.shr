@@ -3,10 +3,10 @@ $errors 0
 
 # Start Of Test
 
-?   $found_key !=   true | $found_key > 1
+? $found_key != true or $found_key > 1
 	Charles: I knew it!
 	Charles	: You had it this whole time!
-	Charles: 		Wow: A colon in the dialogue.  
+	Charles: Wow: A colon in the dialogue.  
 
 	Text with no character name.
 
