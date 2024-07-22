@@ -1,7 +1,9 @@
 ---@class SceneData
 SceneData = {}
 
----@alias scene_data {unsaved: boolean, name: string, layers: table}
+local pprint = require("libs.pprint")
+
+---@alias scene_data {unsaved: boolean, name: string, layers: table, world: table}
 
 ---@param name string
 ---@return boolean
@@ -39,9 +41,31 @@ end
 function SceneData.load(file)
 	local contents = Nativefs.read(file)
 	local deserialized = Binser.deserialize(contents)
-	deserialized[1].world = World()
+
+	-- Deserialize the ECS world.
+	local world = World()
+	world:deserialize(deserialized[1].world)
+	deserialized[1].world = world
 
 	return deserialized[1]
+end
+
+---@param scene scene_data
+function SceneData.save(scene)
+	Nativefs.setWorkingDirectory(Editor.loaded_project.name)
+	scene.unsaved = false
+
+	local data = {
+		unsaved = scene.unsaved,
+		name = scene.name,
+		layers = scene.layers,
+		world = scene.world:serialize(),
+	}
+
+	local serialized = Binser.serialize(data)
+	Nativefs.write("scenes/" .. scene.name .. ".scd", serialized, #serialized)
+
+	Nativefs.setWorkingDirectory("..")
 end
 
 ---@param scene scene_data
@@ -56,23 +80,16 @@ function SceneData.new_layer(scene, type)
 		visible = true,
 	})
 
+	if type == "image" then
+		Editor:add_entity(Engine.entities.sprite, nil)
+	end
+
 	scene.unsaved = true
 end
 
 function SceneData.remove_layer(scene, index)
 	table.remove(scene.layers, index)
 	scene.unsaved = true
-end
-
----@param scene scene_data
-function SceneData.save(scene)
-	Nativefs.setWorkingDirectory(Editor.loaded_project.name)
-
-	scene.unsaved = false
-	local serialized = Binser.serialize(scene)
-	Nativefs.write("scenes/" .. scene.name .. ".scd", serialized, #serialized)
-
-	Nativefs.setWorkingDirectory("..")
 end
 
 return SceneData
