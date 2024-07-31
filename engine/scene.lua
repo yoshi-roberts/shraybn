@@ -37,7 +37,7 @@ end
 
 ---@param path string
 ---@return Scene
-function Scene:load(path)
+function Scene.load(path)
 	-- .scd are scene data files.
 	local contents = Nativefs.read(path)
 	local deserialized = Binser.deserialize(contents)

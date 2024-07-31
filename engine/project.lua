@@ -12,10 +12,10 @@ function Project:new(name, width, height)
 	self.game_height = 720
 end
 
----@param name string
+---@param path string
 ---@return Project
-function Project:load(name)
-	local contents = Nativefs.read(name .. "/" .. "proj.spd")
+function Project.load(path)
+	local contents = Nativefs.read(path .. "/" .. "proj.spd")
 	local deserialized = Binser.deserialize(contents)
 
 	return deserialized[1]

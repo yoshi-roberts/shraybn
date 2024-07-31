@@ -1,19 +1,21 @@
 local function scene_tabs()
 	if Imgui.BeginTabBar("##scene_tabs", Imgui.ImGuiTabBarFlags_AutoSelectNewTabs) then
-		if not Editor.current_scene then
+		if not Editor.scenes.current then
 			if Imgui.BeginTabItem("[empty]") then
 				Imgui.EndTabItem()
 			end
 		end
 
-		for k, scene in pairs(Editor.scenes.open) do
-			local text = string.format("%s %s", FONT_ICONS.ICON_BOOK, scene.name)
-			if scene.unsaved == true then
+		for name, scene in pairs(Editor.scenes.open) do
+			---@cast scene SceneData
+
+			local text = string.format("%s %s", FONT_ICONS.ICON_BOOK, string.match(name, "^.+/(.+)$"))
+			if scene.saved == false then
 				text = text .. "(*)"
 			end
 
 			if Imgui.BeginTabItem(text) then
-				Editor.current_scene = scene
+				Editor.scenes.current = scene
 				Imgui.EndTabItem()
 			end
 		end

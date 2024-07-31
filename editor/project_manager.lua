@@ -50,9 +50,7 @@ function ProjectManager:create(name)
 end
 
 function ProjectManager:load(name)
-	local proj = Project()
-	proj = proj:load(name)
-
+	local proj = Project.load(name)
 	Editor.loaded_project = proj
 
 	Assets:init(proj.name, true)

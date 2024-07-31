@@ -17,15 +17,22 @@ local filetypes = {
 	["jpeg"] = "image",
 }
 
+---@alias SceneData {data: Scene, saved: boolean}
+
 function FilePanel:open_file(file)
 	local ext = file:match("^.+%.([^.]+)$")
 
 	if ext == "scd" then
-		if not Editor.open_scenes[file] then
-			Editor.open_scenes[file] = SceneData.load(file)
+		if not Editor.scenes.open[file] then
+			local scene = Scene.load(file)
+
+			Editor.scenes.open[file] = {
+				data = scene,
+				saved = true,
+			}
 		end
 
-		Editor.current_scene = Editor.open_scenes[file]
+		Editor.scenes.current = Editor.scenes.open[file]
 	elseif ext == "png" then
 		local key = Util.path_to_key(file)
 		print(key)
