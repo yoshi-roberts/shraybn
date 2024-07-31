@@ -1,19 +1,21 @@
 local ffi = require("ffi")
 
 Inspector = {
+
 	item = nil, -- The "item" we are inspecting.
 	type = nil,
+
 	viewer_width = 256,
 	viewer_height = 384,
 	viewer_image = nil,
+
+	viewer_canvas = love.graphics.newCanvas(256, 384),
+	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
+
+	display = require("editor.ui.inspector"),
 }
 
-Inspector.bk_grid = love.graphics.newImage("editor/bk_grid.png")
-Inspector.viewer_canvas = love.graphics.newCanvas(Inspector.viewer_width, Inspector.viewer_height)
-
----@param type string
----| "layer"
----| "image"
+---@param type string | "layer" | "image"
 ---@param item any
 function Inspector:inspect(type, item)
 	self.item = item
@@ -106,18 +108,4 @@ function Inspector:layer()
 
 		self:image(asset)
 	end
-end
-
-function Inspector:display()
-	Imgui.Begin("Inspector", nil)
-
-	if self.item then
-		if self.type == "image" then
-			self:image(self.item)
-		elseif self.type == "layer" then
-			self:layer()
-		end
-	end
-
-	Imgui.End()
 end

@@ -1,23 +1,27 @@
 require("engine")
 require("engine.imgui")
 
-require("editor.project")
-Binser = require("libs.binser")
-
 FONT_ICONS = require("editor.font_icons")
 
 require("editor.util")
+require("editor.menubar")
 require("editor.dockspace")
-SceneData = require("editor.scene_data")
-ProjManager = require("editor.project_manager")
+require("editor.project_manager")
 require("editor.file_panel")
 require("editor.inspector")
 require("editor.viewport")
 
 Editor = {
+	---@type Project
 	loaded_project = nil,
-	open_scenes = {},
-	current_scene = nil,
+
+	scenes = {
+		---@type Scene[]
+		open = {},
+		---@type Scene
+		current = nil,
+	},
+
 	selected_layer = nil,
 	drag_payload = nil,
 }
@@ -32,17 +36,8 @@ function Editor:save_all_scenes()
 	end
 end
 
-function Editor:add_entity(type, ...)
-	local entity = Entity()
-	entity:assemble(type, ...)
-	self.current_scene.world:addEntity(entity)
-end
-
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
-	if not Engine:init() then
-		Log.fatal("Engine failed to initialize")
-	end
 	Window:init(1280, 720)
 
 	Scene("default_scene")
@@ -55,7 +50,7 @@ function love.load()
 	end
 	Nativefs.setWorkingDirectory("projects")
 
-	require("editor.ui_layer")
+	require("editor.ui.ui_layer")
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
@@ -73,6 +68,7 @@ function love.draw()
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
+---@diagnostic disable-next-line: duplicate-set-field
 function love.quit()
 	Engine:shutdown()
 end

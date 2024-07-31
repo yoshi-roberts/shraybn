@@ -1,3 +1,4 @@
+---@class Layer
 Layer = Object:extend()
 
 function Layer:new(name, callbacks)

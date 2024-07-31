@@ -1,11 +1,11 @@
 ---@class Scene
 Scene = Object:extend()
 
+---@param name string
+---@return Scene
 function Scene:new(name)
+	---@type Layer[]
 	self.layers = {}
-	self.world = World() -- New ECS world.
-
-	self.world:addSystem(Engine.systems.sprite_render)
 
 	Engine.scenes[name] = self
 	return Engine.scenes[name]
@@ -25,8 +25,6 @@ function Scene:update(dt)
 			layer.update(dt)
 		end
 	end
-
-	self.world:emit("update", dt)
 end
 
 function Scene:draw()
@@ -35,20 +33,25 @@ function Scene:draw()
 			layer.draw()
 		end
 	end
-
-	self.world:emit("draw")
 end
 
-function Scene:add_entity(entity)
-	self.world:addEntity(entity)
+---@param path string
+---@return Scene
+function Scene:load(path)
+	-- .scd are scene data files.
+	local contents = Nativefs.read(path)
+	local deserialized = Binser.deserialize(contents)
+
+	return deserialized[1]
 end
 
-function Scene:remove_entity(entity)
-	self.world:remove_entity(entity)
-end
+---@param path string
+function Scene:save(path)
+	local serialized = Binser.serialize(self)
 
--- function Scene.world:onEntityAdded(entity)
--- Entity has been added to world.
--- end
+	if not Nativefs.write(path, serialized, #serialized) then
+		Log.error("Scene data could not be written.")
+	end
+end
 
 return true

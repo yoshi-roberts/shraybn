@@ -1,33 +1,18 @@
+--
+-- Global libraries.
+--
 Object = require("libs.classic")
 Vec2 = require("libs.vector")
 Nativefs = require("libs.nativefs")
-
-local concord = require("libs.concord")
-Entity = concord.entity
-Component = concord.component
-System = concord.system
-World = concord.world
-Components = concord.components
-
-Engine = {
-	---@type {[string]: Scene}
-	scenes = {},
-	---@type Scene
-	active_scene = nil,
-
-	canvases = {},
-	entities = {},
-	systems = {},
-}
-
-local timer = require("engine.time")
+Binser = require("libs.binser")
 Log = require("libs.log")
 
-require("engine.canvas")
+local timer = require("engine.time")
+timer.framerate = 60
 
+local failed = false
 local function load_module(module)
 	local str = module:sub(1, 1):upper() .. module:sub(2, #module)
-	local failed = false
 
 	if not require("engine." .. module) then
 		Log.error(str .. " system initialization failed.")
@@ -38,28 +23,39 @@ local function load_module(module)
 	return failed
 end
 
-function Engine:init()
-	local failed = false
+--
+-- Engine class.
+--
+Engine = Object:extend()
 
-	failed = load_module("event")
-	failed = load_module("window")
-	failed = load_module("input")
-	failed = load_module("layer")
-	failed = load_module("assets")
-	failed = load_module("scene")
+Engine.canvases = {}
+Engine.scenes = {}
+Engine.actie_scene = nil
 
-	if failed then
-		return false
-	end
+--
+-- Load modules.
+--
+load_module("event")
+load_module("window")
+load_module("input")
+load_module("layer")
+load_module("assets")
+load_module("scene")
+load_module("project")
 
-	timer.framerate = 60
-	concord.utils.loadNamespace("engine/components")
-	concord.utils.loadNamespace("engine/entities", self.entities)
-	concord.utils.loadNamespace("engine/systems", self.systems)
-
-	Log.info("Engine initialized.")
-	return true
+if failed then
+	Log.fatal("Engine failed to initialize")
+	return false
 end
+
+--
+-- Register classes for serialization.
+--
+Binser.register(Object, "Object")
+Binser.register(Project, "Project")
+Binser.register(Scene, "Scene")
+
+Log.info("Engine initialized.")
 
 function Engine:shutdown()
 	self.active_scene:shutdown()
@@ -77,10 +73,4 @@ end
 
 function Engine:set_scene(name)
 	self.active_scene = self.scenes[name]
-end
-
-function Engine:entity_add(type, ...)
-	local entity = Entity()
-	entity:assemble(type, ...)
-	self.active_scene.world:addEntity(entity)
 end

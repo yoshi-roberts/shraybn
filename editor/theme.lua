@@ -12,7 +12,7 @@ local function apply_icons()
 	config.PixelSnapH = true
 	config.GlyphMinAdvanceX = icon_font_size
 
-	local icon_font_path = "../editor/" .. FONT_ICONS.FILE_NAME_FK
+	local icon_font_path = "../editor/resources/" .. FONT_ICONS.FILE_NAME_FK
 	imio.Fonts:AddFontFromFileTTF(icon_font_path, icon_font_size, config, icon_ranges)
 
 	Imgui.love.BuildFontAtlas()
@@ -25,7 +25,7 @@ local function apply_font()
 
 	config.FontDataOwnedByAtlas = false
 
-	local content, size = love.filesystem.read("editor/Roboto/Roboto-Regular.ttf")
+	local content, size = love.filesystem.read("editor/resources/Roboto/Roboto-Regular.ttf")
 	local newfont = imio.Fonts:AddFontFromMemoryTTF(ffi.cast("void*", content), size, font_size, config)
 	imio.FontDefault = newfont
 

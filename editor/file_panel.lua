@@ -5,6 +5,8 @@ FilePanel = {
 		dirs = {},
 		files = {},
 	},
+
+	display = require("editor.ui.file_panel"),
 }
 
 local filetypes = {
@@ -15,7 +17,7 @@ local filetypes = {
 	["jpeg"] = "image",
 }
 
-local function open_file(file)
+function FilePanel:open_file(file)
 	local ext = file:match("^.+%.([^.]+)$")
 
 	if ext == "scd" then
@@ -69,36 +71,4 @@ function FilePanel:update()
 		Log.info("[EDITOR] Rebuilding file tree.")
 		self:create_tree(Editor.loaded_project.name, self.tree)
 	end
-end
-
-function FilePanel:display_tree(branch)
-	for name, item in pairs(branch.dirs) do
-		if Imgui.TreeNode_Str(string.format("%s %s", FONT_ICONS.ICON_FOLDER, name)) then
-			self:display_tree(item)
-			Imgui.TreePop()
-		end
-	end
-
-	for name, item in pairs(branch.files) do
-		Imgui.Selectable_Bool(FONT_ICONS.ICON_FILE .. " " .. name, self.selected == item)
-
-		-- Double click item to open.
-		if Imgui.IsItemHovered() and Imgui.IsMouseDoubleClicked_Nil(0) then
-			self.selected = item
-			open_file(self.selected)
-		end
-
-		if Imgui.BeginDragDropSource(Imgui.ImGuiDragDropFlags_None) then
-			Imgui.SetDragDropPayload("DRAG_DROP_FILE", item, #item)
-			Editor.drag_payload = item
-			Imgui.Text(name)
-			Imgui.EndDragDropSource()
-		end
-	end
-end
-
-function FilePanel:display()
-	Imgui.Begin("Files", nil)
-	self:display_tree(self.tree)
-	Imgui.End()
 end

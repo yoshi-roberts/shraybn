@@ -40,7 +40,7 @@ local function ui_draw()
 
 	Inspector:display()
 
-	ProjManager.display()
+	ProjectManager:display()
 
 	-- code to render imgui
 	Imgui.Render()

@@ -1,4 +1,3 @@
-local menubar = require("editor.menubar")
 local scene_tabs = require("editor.scene_tabs")
 local ffi = require("ffi")
 
@@ -97,7 +96,7 @@ function Dockspace:display()
 	self.id = Imgui.GetID_Str("Dockspace")
 	Imgui.DockSpace(self.id, Imgui.ImVec2_Float(0.0, 0.0), Imgui.ImGuiDockNodeFlags_PassthruCentralNode)
 
-	menubar()
+	Menubar:display()
 
 	Imgui.End()
 end

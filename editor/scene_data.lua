@@ -8,7 +8,6 @@ local pprint = require("libs.pprint")
 ---@param name string
 ---@return boolean
 ---@return scene_data?
----
 function SceneData.new(name)
 	Nativefs.setWorkingDirectory(Editor.loaded_project.name)
 	local exists = Nativefs.getInfo("scenes/" .. name .. ".scd")
@@ -23,7 +22,6 @@ function SceneData.new(name)
 		unsaved = false,
 		name = name,
 		layers = {},
-		world = World(),
 	}
 
 	-- Serialize scene data and write to file.
@@ -46,6 +44,8 @@ function SceneData.load(file)
 	local world = World()
 	world:deserialize(deserialized[1].world)
 	deserialized[1].world = world
+
+	deserialized[1].world:addSystem(Editor.systems.layer_entities)
 
 	return deserialized[1]
 end
@@ -80,9 +80,9 @@ function SceneData.new_layer(scene, type)
 		visible = true,
 	})
 
-	if type == "image" then
-		Editor:add_entity(Engine.entities.sprite, nil)
-	end
+	-- if type == "image" then
+	Editor:add_entity(Engine.entities.sprite, nil)
+	-- end
 
 	scene.unsaved = true
 end
