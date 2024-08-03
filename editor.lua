@@ -16,9 +16,9 @@ Editor = {
 	loaded_project = nil,
 
 	scenes = {
-		---@type Scene[]
+		---@type SceneData[]
 		open = {},
-		---@type Scene
+		---@type SceneData
 		current = nil,
 	},
 
@@ -27,12 +27,12 @@ Editor = {
 }
 
 function Editor:save_scene()
-	SceneData.save(self.current_scene)
+	self.scenes.current.data:save(self.scenes.current.path)
 end
 
 function Editor:save_all_scenes()
 	for _, scene in pairs(self.open_scenes) do
-		SceneData.save(scene)
+		scene.data:save(scene.path)
 	end
 end
 
@@ -40,8 +40,10 @@ end
 function love.load()
 	Window:init(1280, 720)
 
-	Scene("default_scene")
-	Engine:set_scene("default_scene")
+	local editor_scene = Scene("editor_scene")
+	editor_scene:add_layer("ui_layer", require("editor.ui.ui_layer"))
+
+	Engine:set_scene("editor_scene")
 
 	-- Make sure projects dir exists and is our working dir.
 	local proj_dir_exists = Nativefs.getInfo("projects/")
@@ -49,8 +51,6 @@ function love.load()
 		Nativefs.createDirectory("projects")
 	end
 	Nativefs.setWorkingDirectory("projects")
-
-	require("editor.ui.ui_layer")
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

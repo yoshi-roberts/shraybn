@@ -6,6 +6,8 @@ Scene = Object:extend()
 function Scene:new(name)
 	---@type Layer[]
 	self.layers = {}
+	---@type Entity[]
+	self.entities = {}
 
 	Engine.scenes[name] = self
 	return Engine.scenes[name]
@@ -13,7 +15,7 @@ end
 
 function Scene:shutdown()
 	for _, layer in pairs(self.layers) do
-		if layer.detach ~= nil then
+		if layer.active and layer.detach ~= nil then
 			layer.detach()
 		end
 	end
@@ -21,7 +23,7 @@ end
 
 function Scene:update(dt)
 	for _, layer in pairs(self.layers) do
-		if layer.update ~= nil then
+		if layer.active and layer.update ~= nil then
 			layer.update(dt)
 		end
 	end
@@ -29,10 +31,26 @@ end
 
 function Scene:draw()
 	for _, layer in pairs(self.layers) do
-		if layer.draw ~= nil then
+		if layer.active and layer.draw ~= nil then
 			layer.draw()
 		end
 	end
+end
+
+---@param name string
+---@param callbacks table
+---@return Layer
+function Scene:add_layer(name, callbacks)
+	table.insert(self.layers, Layer(name, #self.layers, callbacks))
+	return self.layers[#self.layers]
+end
+
+---@param entity Entity
+---@param layer Layer
+function Scene:add_entity(entity, layer)
+	entity.layer = layer
+	entity.depth = layer.depth
+	table.insert(self.entities, entity)
 end
 
 ---@param path string
@@ -52,6 +70,23 @@ function Scene:save(path)
 	if not Nativefs.write(path, serialized, #serialized) then
 		Log.error("Scene data could not be written.")
 	end
+end
+
+---@return table
+function Scene:entity_type_count()
+	local counts = {}
+
+	for _, entity in pairs(self.entities) do
+		local key = tostring(entity):lower()
+
+		if not counts[key] then
+			counts[key] = 0
+		end
+
+		counts[key] = counts[key] + 1
+	end
+
+	return counts
 end
 
 return true

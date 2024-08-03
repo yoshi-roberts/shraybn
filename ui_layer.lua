@@ -36,10 +36,10 @@ local function ui_draw()
 	Imgui.love.RenderDrawLists()
 end
 
-Layer("nuklear_layer", {
+return {
 	attach = ui_attach,
 	detach = ui_detach,
 	update = ui_update,
 	draw = ui_draw,
 	event = ui_event,
-})
+}

@@ -26,6 +26,7 @@ local module = {
 }
 
 -- create the module
+---@class vector
 local vector = {}
 vector.__index = vector
 

@@ -5,10 +5,10 @@ require("engine.imgui")
 function love.load()
 	Window:init(1280, 720)
 
-	Scene("default_scene")
-	Engine:set_scene("default_scene")
+	local default_scene = Scene("default_scene")
+	default_scene:add_layer("ui_layer", require("ui_layer"))
 
-	require("ui_layer")
+	Engine:set_scene("default_scene")
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

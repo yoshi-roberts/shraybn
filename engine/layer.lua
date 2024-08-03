@@ -1,12 +1,18 @@
 ---@class Layer
 Layer = Object:extend()
 
-function Layer:new(name, callbacks)
+---@param name string
+---@param depth integer
+---@param callbacks table
+function Layer:new(name, depth, callbacks)
 	self.name = name
+	self.depth = depth
+	self.active = true
 
 	if not callbacks then
 		return
 	end
+
 	self.attach = callbacks.attach or nil
 	self.detach = callbacks.detach or nil
 	self.update = callbacks.update or nil
@@ -15,9 +21,6 @@ function Layer:new(name, callbacks)
 	if self.attach then
 		self:attach()
 	end
-
-	table.insert(Engine.active_scene.layers, self)
-	return Engine.active_scene.layers[#Engine.active_scene.layers]
 end
 
 return true

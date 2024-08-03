@@ -17,7 +17,7 @@ local filetypes = {
 	["jpeg"] = "image",
 }
 
----@alias SceneData {data: Scene, saved: boolean}
+---@alias SceneData {data: Scene, path: string, saved: boolean, entity_count: table}
 
 function FilePanel:open_file(file)
 	local ext = file:match("^.+%.([^.]+)$")
@@ -28,11 +28,14 @@ function FilePanel:open_file(file)
 
 			Editor.scenes.open[file] = {
 				data = scene,
+				path = file,
 				saved = true,
+				entity_count = scene:entity_type_count(),
 			}
 		end
 
 		Editor.scenes.current = Editor.scenes.open[file]
+		print(Editor.scenes.current)
 	elseif ext == "png" then
 		local key = Util.path_to_key(file)
 		print(key)

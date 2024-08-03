@@ -43,6 +43,10 @@ load_module("assets")
 load_module("scene")
 load_module("project")
 
+require("engine.entity")
+require("engine.sprite")
+require("engine.trigger")
+
 if failed then
 	Log.fatal("Engine failed to initialize")
 	return false
@@ -54,6 +58,10 @@ end
 Binser.register(Object, "Object")
 Binser.register(Project, "Project")
 Binser.register(Scene, "Scene")
+Binser.register(Layer, "Layer")
+Binser.register(Entity, "Entity")
+Binser.register(Sprite, "Sprite")
+Binser.register(Trigger, "Trigger")
 
 Log.info("Engine initialized.")
 
