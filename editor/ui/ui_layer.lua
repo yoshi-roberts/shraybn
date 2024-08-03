@@ -1,5 +1,4 @@
 local apply_theme = require("editor.ui.theme")
-local scene_panel = require("editor.scene_panel")
 
 local function ui_event(code, data)
 	return ImguiEvent(code, data)
@@ -32,7 +31,7 @@ end
 local function ui_draw()
 	Dockspace:display()
 
-	scene_panel()
+	ScenePanel.display()
 
 	FilePanel:display()
 

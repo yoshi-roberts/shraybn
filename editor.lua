@@ -7,6 +7,7 @@ require("editor.util")
 require("editor.menubar")
 require("editor.dockspace")
 require("editor.project_manager")
+require("editor.scene_panel")
 require("editor.file_panel")
 require("editor.inspector")
 require("editor.viewport")
@@ -28,11 +29,15 @@ Editor = {
 
 function Editor:save_scene()
 	self.scenes.current.data:save(self.scenes.current.path)
+	self.scenes.current.saved = true
 end
 
 function Editor:save_all_scenes()
 	for _, scene in pairs(self.open_scenes) do
+		---@cast scene SceneData
+
 		scene.data:save(scene.path)
+		scene.saved = true
 	end
 end
 
