@@ -67,6 +67,10 @@ function Scene:add_entity(entity, layer)
 	table.insert(self.entities, entity)
 end
 
+function Scene:remove_entity(index)
+	table.remove(self.entities, index)
+end
+
 ---@param path string
 ---@return Scene
 function Scene.load(path)
