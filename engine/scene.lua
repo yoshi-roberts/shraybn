@@ -45,6 +45,20 @@ function Scene:add_layer(name, callbacks)
 	return self.layers[#self.layers]
 end
 
+function Scene:remove_layer(layer)
+	-- Use layers depth value to get its index.
+	local index = layer.depth + 1
+
+	-- Remove all entities associated with the layer.
+	for i, entity in pairs(self.entities) do
+		if entity.layer == layer then
+			table.remove(self.entities, i)
+		end
+	end
+
+	table.remove(self.layers, index)
+end
+
 ---@param entity Entity
 ---@param layer Layer
 function Scene:add_entity(entity, layer)
@@ -86,6 +100,7 @@ function Scene:entity_type_count()
 		counts[key] = counts[key] + 1
 	end
 
+	require("libs.pprint")(counts)
 	return counts
 end
 

@@ -79,10 +79,11 @@ local function display()
 			end
 
 			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
+				scene.data:remove_layer(layer)
+				scene.entity_count = scene.data:entity_type_count()
+				scene.saved = false
 			end
 
-			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_I_CURSOR .. "Rename") then
-			end
 			Imgui.EndPopup()
 		end
 	end
