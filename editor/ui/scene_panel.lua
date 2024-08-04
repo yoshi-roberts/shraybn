@@ -83,10 +83,7 @@ local function display()
 
 					if Imgui.BeginPopupContextItem() then
 						if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
-							scene.data:remove_entity(i)
-							scene.entity_count = scene.data:entity_type_count()
-							scene.last_deleted = entity.name
-							scene.saved = false
+							ScenePanel.remove_entity(scene, entity, i)
 						end
 
 						Imgui.EndPopup()

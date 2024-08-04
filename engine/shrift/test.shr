@@ -1,29 +1,30 @@
-$found_key true
-$errors 0
+var found_key = true
+var errors = 0
 
 # Start Of Test
 
-? $found_key != true or $found_key > 1
+if found_key != true or found_key > 1
+
 	Charles: I knew it!
 	Charles	: You had it this whole time!
 	Charles: Wow: A colon in the dialogue.  
 
 	Text with no character name.
 
-	* Yes... I did. 
+	* Yes... I did.
 		Charles: Wow...
 		@jump Truth
-	;
+
 
 	* No! I just found it!
 		@jump Lie
-	;
-;
+
 
 # Truth
 	Charles: I can't believe it.
 	Charles: Why didn't you tell me?
-	$errors $errors + 1
+	errors = errors + 1
+
 
 # Lie
 	Charles: Hmm...

@@ -17,8 +17,6 @@ local filetypes = {
 	["jpeg"] = "image",
 }
 
----alias SceneData {data: Scene, path: string, saved: boolean, entity_count: table, last_deleted: string}
-
 function FilePanel:open_file(file)
 	local ext = file:match("^.+%.([^.]+)$")
 
@@ -26,12 +24,6 @@ function FilePanel:open_file(file)
 		if not Editor.scenes.open[file] then
 			local scene = Scene.load(file)
 
-			-- Editor.scenes.open[file] = {
-			-- 	data = scene,
-			-- 	path = file,
-			-- 	saved = true,
-			-- 	entity_count = scene:entity_type_count(),
-			-- }
 			Editor.scenes.open[file] = SceneData(scene, file)
 		end
 

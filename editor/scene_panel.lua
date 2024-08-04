@@ -6,28 +6,55 @@ ScenePanel = {
 ---@param layer Layer
 ---@param type string | "sprite" | "trigger"
 function ScenePanel.add_entity(scene, layer, type)
-	-- Make sure entity count is not nil.
-	if not scene.entity_count[type] then
-		scene.entity_count[type] = 0
+	local name = type:sub(1, 1):upper() .. type:sub(2, #type)
+
+	if not scene.entity_count[layer.name] then
+		scene.entity_count[layer.name] = {}
 	end
 
-	local name
+	local entity_count = scene.entity_count[layer.name]
 
-	-- if scene.last_deleted then
-	-- 	name
-	-- end
+	-- Make sure entity count is not nil.
+	if not entity_count[type] then
+		entity_count[type] = 0
+	end
 
-	local suffix = scene.entity_count[type]
+	if scene.last_deleted.type == type then
+		name = scene.last_deleted.name
+		scene.last_deleted.name = nil
+		scene.last_deleted.type = nil
+	else
+		local suffix = entity_count[type] + 1
 
-	-- Set name to entity that was last deleted?
+		if suffix <= 1 then
+			suffix = ""
+		end
+
+		name = name .. suffix
+	end
 
 	if type == "sprite" then
-		scene.data:add_entity(Sprite("Sprite" .. suffix), layer)
+		scene.data:add_entity(Sprite(name), layer)
 	elseif type == "trigger" then
-		scene.data:add_entity(Trigger("Trigger" .. suffix), layer)
+		scene.data:add_entity(Trigger(name), layer)
 	end
 
-	scene.entity_count[type] = scene.entity_count[type] + 1
+	entity_count[type] = entity_count[type] + 1
+	scene.saved = false
+end
+
+---@param scene SceneData
+---@param entity Entity
+---@param index integer
+function ScenePanel.remove_entity(scene, entity, index)
+	scene.data:remove_entity(index)
+
+	scene.entity_count = {}
+	scene.entity_count = scene.data:entity_type_count()
+
+	scene.last_deleted.name = entity.name
+	scene.last_deleted.type = tostring(entity):lower()
+
 	scene.saved = false
 end
 
