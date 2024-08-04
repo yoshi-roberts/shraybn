@@ -27,6 +27,8 @@ function Project:save()
 	if not Nativefs.write("proj.spd", serialized, #serialized) then
 		Log.error("Project data could not be written.")
 	end
+
+	Editor:save_all_scenes()
 end
 
 return true

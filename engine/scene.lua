@@ -41,18 +41,22 @@ end
 ---@param callbacks table
 ---@return Layer
 function Scene:add_layer(name, callbacks)
-	table.insert(self.layers, Layer(name, #self.layers, callbacks))
+	table.insert(self.layers, Layer(name, #self.layers + 1, callbacks))
 	return self.layers[#self.layers]
 end
 
-function Scene:remove_layer(layer)
-	-- Use layers depth value to get its index.
-	local index = layer.depth + 1
-
+---@param index integer
+function Scene:remove_layer(index)
 	-- Remove all entities associated with the layer.
-	for i, entity in pairs(self.entities) do
-		if entity.layer == layer then
+	local i = 1
+	while i <= #self.entities do
+		local entity = self.entities[i]
+
+		if entity.layer == self.layers[index] then
+			print("Removing " .. tostring(entity) .. ", " .. entity.layer.name)
 			table.remove(self.entities, i)
+		else
+			i = i + 1
 		end
 	end
 

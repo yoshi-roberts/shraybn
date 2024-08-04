@@ -51,9 +51,11 @@ function ScenePanel.remove_entity(scene, index)
 	scene.entity_count = {}
 	scene.entity_count = scene.data:entity_count()
 
-	table.sort(scene.available_names, function(a, b)
-		return tonumber(a:match("%d+")) < tonumber(b:match("%d+"))
-	end)
+	for _, names in pairs(scene.available_names) do
+		table.sort(names, function(a, b)
+			return tonumber(a:match("%d+")) < tonumber(b:match("%d+"))
+		end)
+	end
 
 	scene.saved = false
 end
@@ -64,5 +66,13 @@ function ScenePanel.add_layer(scene, type)
 	local layer = scene.data:add_layer("Layer " .. #scene.data.layers + 1, {})
 	ScenePanel.add_entity(scene, layer, type)
 
+	scene.saved = false
+end
+
+---@param scene SceneData
+---@param index integer
+function ScenePanel.remove_layer(scene, index)
+	scene.data:remove_layer(index)
+	scene.entity_count = scene.data:entity_count()
 	scene.saved = false
 end

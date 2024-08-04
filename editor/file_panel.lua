@@ -28,10 +28,8 @@ function FilePanel:open_file(file)
 		end
 
 		Editor.scenes.current = Editor.scenes.open[file]
-		print(Editor.scenes.current)
 	elseif ext == "png" then
 		local key = Util.path_to_key(file)
-		print(key)
 		Inspector:inspect("image", Assets:get("image", key))
 	end
 end

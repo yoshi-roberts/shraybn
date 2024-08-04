@@ -52,9 +52,8 @@ if failed then
 	return false
 end
 
---
--- Register classes for serialization.
---
+-- Register metatables for serialization.
+Binser.register(Vec2, "Vec2")
 Binser.register(Object, "Object")
 Binser.register(Project, "Project")
 Binser.register(Scene, "Scene")

@@ -25,7 +25,7 @@ local function display()
 		Imgui.EndPopup()
 	end
 
-	for i, layer in pairs(scene.data.layers) do
+	for k, layer in pairs(scene.data.layers) do
 		local node_flags = Imgui.love.TreeNodeFlags("OpenOnArrow", "OpenOnDoubleClick")
 
 		if Editor.selected_layer == layer then
@@ -68,22 +68,20 @@ local function display()
 			end
 
 			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
-				scene.data:remove_layer(layer)
-				scene.entity_count = scene.data:entity_count()
-				scene.saved = false
+				ScenePanel.remove_layer(scene, k)
 			end
 
 			Imgui.EndPopup()
 		end
 
 		if node_open then
-			for i, entity in pairs(scene.data.entities) do
+			for j, entity in pairs(scene.data.entities) do
 				if entity.layer == layer then
 					Imgui.Selectable_Bool(entity.name)
 
 					if Imgui.BeginPopupContextItem() then
 						if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
-							ScenePanel.remove_entity(scene, i)
+							ScenePanel.remove_entity(scene, j)
 						end
 
 						Imgui.EndPopup()
