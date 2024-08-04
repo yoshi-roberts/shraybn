@@ -8,28 +8,20 @@ ScenePanel = {
 function ScenePanel.add_entity(scene, layer, type)
 	local name = type:sub(1, 1):upper() .. type:sub(2, #type)
 
+	-- Make sure entity count is not nil.
 	if not scene.entity_count[layer.name] then
-		scene.entity_count[layer.name] = {}
+		scene.entity_count[layer.name] = 0
 	end
-
 	local entity_count = scene.entity_count[layer.name]
 
-	-- Make sure entity count is not nil.
-	if not entity_count[type] then
-		entity_count[type] = 0
+	if not scene.available_names[layer.name] then
+		scene.available_names[layer.name] = {}
 	end
 
-	if scene.last_deleted.type == type then
-		name = scene.last_deleted.name
-		scene.last_deleted.name = nil
-		scene.last_deleted.type = nil
+	if #scene.available_names[layer.name] > 0 then
+		name = table.remove(scene.available_names[layer.name], 1)
 	else
-		local suffix = entity_count[type] + 1
-
-		if suffix <= 1 then
-			suffix = ""
-		end
-
+		local suffix = entity_count + 1
 		name = name .. suffix
 	end
 
@@ -39,21 +31,29 @@ function ScenePanel.add_entity(scene, layer, type)
 		scene.data:add_entity(Trigger(name), layer)
 	end
 
-	entity_count[type] = entity_count[type] + 1
+	scene.entity_count[layer.name] = scene.entity_count[layer.name] + 1
 	scene.saved = false
 end
 
 ---@param scene SceneData
----@param entity Entity
 ---@param index integer
-function ScenePanel.remove_entity(scene, entity, index)
+function ScenePanel.remove_entity(scene, index)
+	local e = scene.data.entities[index]
+
+	if not scene.available_names[e.layer.name] then
+		scene.available_names[e.layer.name] = {}
+	end
+
+	table.insert(scene.available_names[e.layer.name], e.name)
+
 	scene.data:remove_entity(index)
 
 	scene.entity_count = {}
-	scene.entity_count = scene.data:entity_type_count()
+	scene.entity_count = scene.data:entity_count()
 
-	scene.last_deleted.name = entity.name
-	scene.last_deleted.type = tostring(entity):lower()
+	table.sort(scene.available_names, function(a, b)
+		return tonumber(a:match("%d+")) < tonumber(b:match("%d+"))
+	end)
 
 	scene.saved = false
 end

@@ -91,26 +91,19 @@ function Scene:save(path)
 end
 
 ---@return table
-function Scene:entity_type_count()
+function Scene:entity_count()
 	local counts = {}
 
 	for _, entity in pairs(self.entities) do
 		local layer = entity.layer.name
 
 		if not counts[layer] then
-			counts[layer] = {}
+			counts[layer] = 0
 		end
 
-		local key = tostring(entity):lower()
-
-		if not counts[layer][key] then
-			counts[layer][key] = 0
-		end
-
-		counts[layer][key] = counts[layer][key] + 1
+		counts[layer] = counts[layer] + 1
 	end
 
-	require("libs.pprint")(counts)
 	return counts
 end
 
