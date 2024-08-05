@@ -77,6 +77,7 @@ function Inspector:entity()
 	local entity = self.item
 
 	Imgui.Text("Entity: " .. entity.name)
+	Imgui.Separator()
 
 	self.entity_pos[0] = entity.position.x
 	self.entity_pos[1] = entity.position.y
@@ -87,14 +88,19 @@ function Inspector:entity()
 	Imgui.SameLine()
 	Imgui.DragFloat2("##entity_position", self.entity_pos, 0.1, 0.0, math.huge, "%.2f", 1.0)
 
+	if Imgui.IsItemDeactivatedAfterEdit() then
+		print("Changed!")
+		Editor.history:add(ChangeVec2(entity.position, Vec2(self.entity_pos[0], self.entity_pos[1])))
+	end
+
 	Imgui.Text("Scale   :")
 	Imgui.SameLine()
 	Imgui.DragFloat2("##entity_scale", self.entity_scale, 0.1, 0.0, math.huge, "%.2f", 1.0)
 
-	entity.position.x = self.entity_pos[0]
-	entity.position.y = self.entity_pos[1]
-	entity.scale.x = self.entity_scale[0]
-	entity.scale.y = self.entity_scale[1]
+	-- entity.position.x = self.entity_pos[0]
+	-- entity.position.y = self.entity_pos[1]
+	-- entity.scale.x = self.entity_scale[0]
+	-- entity.scale.y = self.entity_scale[1]
 end
 
 function Inspector:layer()

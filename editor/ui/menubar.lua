@@ -10,6 +10,16 @@ local function scene_menu(self)
 	if Imgui.MenuItem_Bool(string.format("%s Save All", FONT_ICONS.ICON_FLOPPY_O), nil, nil) then
 		Editor:save_all_scenes()
 	end
+
+	Imgui.Separator()
+
+	if Imgui.MenuItem_Bool(string.format("%s Undo", FONT_ICONS.ICON_UNDO), nil, nil) then
+		Editor.history:undo()
+	end
+
+	if Imgui.MenuItem_Bool(string.format("%s Redo", FONT_ICONS.ICON_REPEAT), nil, nil) then
+		Editor.history:redo()
+	end
 end
 
 local function project_menu()

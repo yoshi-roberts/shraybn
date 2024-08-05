@@ -5,13 +5,15 @@ function ChangeVec2:new(target, new)
 
 	self.target = target
 	self.new = new
-	self.old = target:clone()
+	self.old = Vec2(target.x, target.y)
 end
 
 function ChangeVec2:execute()
-	self.target:replace(self.new)
+	self.target.x = self.new.x
+	self.target.y = self.new.y
 end
 
 function ChangeVec2:undo()
-	self.target:replace(self.old)
+	self.target.x = self.old.x
+	self.target.y = self.old.y
 end

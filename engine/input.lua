@@ -33,8 +33,10 @@ function Input:update()
 		self.mouse_previous.buttons[button] = pressed
 	end
 
-	self.mouse_previous.position:replace(self.mouse_current.position)
-	self.mouse_previous.wheel:replace(self.mouse_current.wheel)
+	self.mouse_previous.position.x = self.mouse_current.position.x
+	self.mouse_previous.position.y = self.mouse_current.position.y
+	self.mouse_previous.wheel.x = self.mouse_current.wheel.x
+	self.mouse_previous.wheel.y = self.mouse_current.wheel.y
 end
 
 function Input:process_key(data, pressed)
@@ -68,7 +70,8 @@ function Input:process_mouse_wheel(data)
 end
 
 function Input:process_mouse_move(data)
-	self.mouse_current.position:set(data.x, data.y)
+	self.mouse_current.position.x = data.x
+	self.mouse_current.position.y = data.y
 	Event:fire(EVENT_CODE.MOUSE_MOVE, data)
 end
 
@@ -150,7 +153,8 @@ end
 
 function Input:wheel_up()
 	if self.mouse_current.wheel.y > self.mouse_previous.wheel.y then
-		self.mouse_current.wheel:set(0, 0)
+		self.mouse_current.wheel.x = 0
+		self.mouse_current.wheel.y = 0
 		return true
 	end
 
@@ -159,7 +163,8 @@ end
 
 function Input:wheel_down()
 	if self.mouse_current.wheel.y < self.mouse_previous.wheel.y then
-		self.mouse_current.wheel:set(0, 0)
+		self.mouse_current.wheel.x = 0
+		self.mouse_current.wheel.y = 0
 		return true
 	end
 

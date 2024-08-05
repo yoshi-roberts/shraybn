@@ -32,6 +32,15 @@ function CommandHistory:add(cmd)
 end
 
 function CommandHistory:undo()
-	self.commands[self.current]:undo()
-	self.current = self.current - 1
+	if self.current >= 1 then
+		self.commands[self.current]:undo()
+		self.current = self.current - 1
+	end
+end
+
+function CommandHistory:redo()
+	if self.current < self.limit - 1 then
+		self.current = self.current + 1
+		self.commands[self.current]:execute()
+	end
 end

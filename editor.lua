@@ -26,6 +26,8 @@ Editor = {
 		current = nil,
 	},
 
+	history = CommandHistory(),
+
 	selected_layer = nil,
 	drag_payload = nil,
 }
