@@ -9,13 +9,16 @@ Inspector = {
 	viewer_height = 384,
 	viewer_image = nil,
 
+	entity_pos = ffi.new("float[2]", { 0.0, 0.0 }),
+	entity_scale = ffi.new("float[2]", { 0.0, 0.0 }),
+
 	viewer_canvas = love.graphics.newCanvas(256, 384),
 	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
 
 	display = require("editor.ui.inspector"),
 }
 
----@param type string | "layer" | "image"
+---@param type string | "entity" | "image"
 ---@param item any
 function Inspector:inspect(type, item)
 	self.item = item
@@ -68,6 +71,30 @@ function Inspector:image(image)
 
 	local size = Imgui.ImVec2_Float(self.viewer_canvas:getDimensions())
 	Imgui.Image(self.viewer_canvas, size)
+end
+
+function Inspector:entity()
+	local entity = self.item
+
+	Imgui.Text("Entity: " .. entity.name)
+
+	self.entity_pos[0] = entity.position.x
+	self.entity_pos[1] = entity.position.y
+	self.entity_scale[0] = entity.scale.x
+	self.entity_scale[1] = entity.scale.y
+
+	Imgui.Text("Position:")
+	Imgui.SameLine()
+	Imgui.DragFloat2("##entity_position", self.entity_pos, 0.1, 0.0, math.huge, "%.2f", 1.0)
+
+	Imgui.Text("Scale   :")
+	Imgui.SameLine()
+	Imgui.DragFloat2("##entity_scale", self.entity_scale, 0.1, 0.0, math.huge, "%.2f", 1.0)
+
+	entity.position.x = self.entity_pos[0]
+	entity.position.y = self.entity_pos[1]
+	entity.scale.x = self.entity_scale[0]
+	entity.scale.y = self.entity_scale[1]
 end
 
 function Inspector:layer()

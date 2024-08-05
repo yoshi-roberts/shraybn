@@ -77,7 +77,9 @@ local function display()
 		if node_open then
 			for j, entity in pairs(scene.data.entities) do
 				if entity.layer == layer then
-					Imgui.Selectable_Bool(entity.name)
+					if Imgui.Selectable_Bool(entity.name) then
+						Inspector:inspect("entity", entity)
+					end
 
 					if Imgui.BeginPopupContextItem() then
 						if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then

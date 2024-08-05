@@ -3,6 +3,8 @@ require("engine.imgui")
 
 FONT_ICONS = require("editor.font_icons")
 
+require("editor.command")
+
 require("editor.util")
 require("editor.menubar")
 require("editor.dockspace")
