@@ -25,6 +25,7 @@ function FilePanel:open_file(file)
 			local scene = Scene.load(file)
 
 			Editor.scenes.open[file] = SceneData(scene, file)
+			Editor.scenes.open[file]:get_available_names()
 		end
 
 		Editor.scenes.current = Editor.scenes.open[file]

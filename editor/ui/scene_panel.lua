@@ -59,10 +59,11 @@ local function display()
 		if Imgui.BeginPopupContextItem() then
 			if Imgui.BeginMenu(FONT_ICONS.ICON_PLUS .. "Add") then
 				if Imgui.MenuItem_Bool(FONT_ICONS.ICON_PICTURE_O .. " Sprite") then
-					ScenePanel.add_entity(scene, layer, "sprite")
+					Editor.history:add(AddEntity(scene, layer, Sprite()))
+					-- ScenePanel.add_entity(scene, layer, "sprite")
 				end
 				if Imgui.MenuItem_Bool(FONT_ICONS.ICON_MOUSE_POINTER .. " Trigger") then
-					ScenePanel.add_entity(scene, layer, "trigger")
+					-- ScenePanel.add_entity(scene, layer, trigger")
 				end
 				Imgui.EndMenu()
 			end
@@ -83,7 +84,8 @@ local function display()
 
 					if Imgui.BeginPopupContextItem() then
 						if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
-							ScenePanel.remove_entity(scene, j)
+							Editor.history:add(RemoveEntity(scene, j))
+							-- ScenePanel.remove_entity(scene, j)
 						end
 
 						Imgui.EndPopup()

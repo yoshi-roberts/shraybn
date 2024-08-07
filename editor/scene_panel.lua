@@ -4,75 +4,97 @@ ScenePanel = {
 
 ---@param scene SceneData
 ---@param layer Layer
----@param type string | "sprite" | "trigger"
-function ScenePanel.add_entity(scene, layer, type)
-	local name = type:sub(1, 1):upper() .. type:sub(2, #type)
+---@param entity Entity
+---@param index ?integer
+function ScenePanel.add_entity(scene, layer, entity, index)
+	print("BEFORE")
+	require("libs.pprint")(scene.available_names)
+	local type = tostring(entity)
+	local name = tostring(entity)
+
+	local entity_count = scene.entity_count
+	local available_names = scene.available_names
+	-- local layer_count = scene.entity_count[layer.name]
+	-- local layer_names = scene.available_names[layer.name]
 
 	-- Make sure entity count is not nil.
-	if not scene.entity_count[layer.name] then
-		scene.entity_count[layer.name] = 0
-	end
-	local entity_count = scene.entity_count[layer.name]
+	entity_count[layer.name] = entity_count[layer.name] or {}
+	entity_count[layer.name][type] = entity_count[layer.name][type] or 0
 
-	if not scene.available_names[layer.name] then
-		scene.available_names[layer.name] = {}
-	end
+	available_names[layer.name] = available_names[layer.name] or {}
+	available_names[layer.name][type] = available_names[layer.name][type] or {}
 
-	if #scene.available_names[layer.name] > 0 then
-		name = table.remove(scene.available_names[layer.name], 1)
+	local count = scene.entity_count[layer.name][type]
+
+	if entity.name then
+		scene:remove_name(available_names[layer.name][type], entity.name)
 	else
-		local suffix = entity_count + 1
-		name = name .. suffix
+		if #scene.available_names[layer.name][type] > 0 then
+			name = table.remove(scene.available_names[layer.name][type], 1)
+		else
+			local suffix = count + 1
+			name = name .. suffix
+		end
+
+		entity.name = name
 	end
 
-	if type == "sprite" then
-		scene.data:add_entity(Sprite(name), layer)
-	elseif type == "trigger" then
-		scene.data:add_entity(Trigger(name), layer)
-	end
+	scene.data:add_entity(entity, layer, index)
 
-	scene.entity_count[layer.name] = scene.entity_count[layer.name] + 1
+	scene.entity_count[layer.name][type] = scene.entity_count[layer.name][type] + 1
 	scene.saved = false
+
+	print("AFTER")
+	require("libs.pprint")(scene.available_names)
+	-- Return the index of the added entity.
+	return #scene.data.entities
 end
 
 ---@param scene SceneData
 ---@param index integer
 function ScenePanel.remove_entity(scene, index)
-	local e = scene.data.entities[index]
+	local ent = scene.data.entities[index]
+	local type = tostring(ent)
 
-	if not scene.available_names[e.layer.name] then
-		scene.available_names[e.layer.name] = {}
-	end
+	local available_names = scene.available_names
+	available_names[ent.layer.name] = available_names[ent.layer.name] or {}
 
-	table.insert(scene.available_names[e.layer.name], e.name)
+	local layer = available_names[ent.layer.name]
 
-	scene.data:remove_entity(index)
+	layer[type] = layer[type] or {}
+	table.insert(layer[type], ent.name)
+	-- layer[type].names[ent.name] = ent.name
+	-- layer[type].length = layer[type].length + 1
+
+	local removed = scene.data:remove_entity(index)
 
 	scene.entity_count = {}
 	scene.entity_count = scene.data:entity_count()
 
-	for _, names in pairs(scene.available_names) do
-		table.sort(names, function(a, b)
-			return tonumber(a:match("%d+")) < tonumber(b:match("%d+"))
-		end)
-	end
+	scene:sort_available_names()
+
+	-- require("libs.pprint")(available_names)
 
 	scene.saved = false
+	return removed
 end
 
 ---@param scene SceneData
----@param type string | "sprite" | "trigger"
-function ScenePanel.add_layer(scene, type)
+---@return Layer
+function ScenePanel.add_layer(scene)
 	local layer = scene.data:add_layer("Layer " .. #scene.data.layers + 1, {})
-	ScenePanel.add_entity(scene, layer, type)
+	-- ScenePanel.add_entity(scene, layer, type)
 
 	scene.saved = false
+	return layer
 end
 
 ---@param scene SceneData
 ---@param index integer
 function ScenePanel.remove_layer(scene, index)
-	scene.data:remove_layer(index)
+	local l = scene.data:remove_layer(index)
 	scene.entity_count = scene.data:entity_count()
+
 	scene.saved = false
+	return l
 end

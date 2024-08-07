@@ -38,6 +38,7 @@ function CommandHistory:undo()
 	end
 end
 
+-- FIX: Not properly being limited.
 function CommandHistory:redo()
 	if self.current < self.limit - 1 then
 		self.current = self.current + 1

@@ -60,19 +60,20 @@ function Scene:remove_layer(index)
 		end
 	end
 
-	table.remove(self.layers, index)
+	return table.remove(self.layers, index)
 end
 
 ---@param entity Entity
 ---@param layer Layer
-function Scene:add_entity(entity, layer)
+---@param index ?integer
+function Scene:add_entity(entity, layer, index)
 	entity.layer = layer
 	entity.depth = layer.depth
-	table.insert(self.entities, entity)
+	table.insert(self.entities, index or (#self.entities + 1), entity)
 end
 
 function Scene:remove_entity(index)
-	table.remove(self.entities, index)
+	return table.remove(self.entities, index)
 end
 
 ---@param path string
@@ -100,12 +101,13 @@ function Scene:entity_count()
 
 	for _, entity in pairs(self.entities) do
 		local layer = entity.layer.name
+		local type = tostring(entity)
 
-		if not counts[layer] then
-			counts[layer] = 0
-		end
+		-- Make sure values are not nil.
+		counts[layer] = counts[layer] or {}
+		counts[layer][type] = counts[layer][type] or 0
 
-		counts[layer] = counts[layer] + 1
+		counts[layer][type] = counts[layer][type] + 1
 	end
 
 	return counts
