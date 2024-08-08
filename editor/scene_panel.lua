@@ -7,15 +7,11 @@ ScenePanel = {
 ---@param entity Entity
 ---@param index ?integer
 function ScenePanel.add_entity(scene, layer, entity, index)
-	print("BEFORE")
-	require("libs.pprint")(scene.available_names)
 	local type = tostring(entity)
 	local name = tostring(entity)
 
 	local entity_count = scene.entity_count
 	local available_names = scene.available_names
-	-- local layer_count = scene.entity_count[layer.name]
-	-- local layer_names = scene.available_names[layer.name]
 
 	-- Make sure entity count is not nil.
 	entity_count[layer.name] = entity_count[layer.name] or {}
@@ -44,8 +40,6 @@ function ScenePanel.add_entity(scene, layer, entity, index)
 	scene.entity_count[layer.name][type] = scene.entity_count[layer.name][type] + 1
 	scene.saved = false
 
-	print("AFTER")
-	require("libs.pprint")(scene.available_names)
 	-- Return the index of the added entity.
 	return #scene.data.entities
 end
@@ -63,8 +57,6 @@ function ScenePanel.remove_entity(scene, index)
 
 	layer[type] = layer[type] or {}
 	table.insert(layer[type], ent.name)
-	-- layer[type].names[ent.name] = ent.name
-	-- layer[type].length = layer[type].length + 1
 
 	local removed = scene.data:remove_entity(index)
 
@@ -73,28 +65,28 @@ function ScenePanel.remove_entity(scene, index)
 
 	scene:sort_available_names()
 
-	-- require("libs.pprint")(available_names)
-
 	scene.saved = false
 	return removed
 end
 
 ---@param scene SceneData
----@return Layer
-function ScenePanel.add_layer(scene)
-	local layer = scene.data:add_layer("Layer " .. #scene.data.layers + 1, {})
-	-- ScenePanel.add_entity(scene, layer, type)
+---@param layer Layer
+---@param index ?integer
+function ScenePanel.add_layer(scene, layer, index)
+	layer.name = "Layer " .. #scene.data.layers + 1
+	scene.data:add_layer(layer, index)
 
 	scene.saved = false
-	return layer
+	return #scene.data.layers
 end
 
 ---@param scene SceneData
 ---@param index integer
+---@return Layer
 function ScenePanel.remove_layer(scene, index)
-	local l = scene.data:remove_layer(index)
+	local layer = scene.data:remove_layer(index)
 	scene.entity_count = scene.data:entity_count()
 
 	scene.saved = false
-	return l
+	return layer
 end

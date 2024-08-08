@@ -67,21 +67,16 @@ function SceneData:get_available_names()
 		for type, names in pairs(types) do
 			table.sort(names, sort)
 
-			local i = 1
 			local max = names[#names]
 
-			while i < max do
+			for i = 1, max, 1 do
 				if not contains(names, i) then
 					self.available_names[layer] = self.available_names[layer] or {}
 					self.available_names[layer][type] = self.available_names[layer][type] or {}
 
 					table.insert(self.available_names[layer][type], type .. i)
 				end
-
-				i = i + 1
 			end
 		end
 	end
-
-	require("libs.pprint")(self.available_names)
 end

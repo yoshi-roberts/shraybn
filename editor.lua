@@ -51,7 +51,7 @@ function love.load()
 	Window:init(1280, 720)
 
 	local editor_scene = Scene("editor_scene")
-	editor_scene:add_layer("ui_layer", require("editor.ui.ui_layer"))
+	editor_scene:add_layer(Layer(require("editor.ui.ui_layer")))
 
 	Engine:set_scene("editor_scene")
 

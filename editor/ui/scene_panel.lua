@@ -11,18 +11,7 @@ local function display()
 
 	local btn_width = Imgui.GetContentRegionAvail().x
 	if Imgui.Button(FONT_ICONS.ICON_PLUS .. " New Layer", Imgui.ImVec2_Float(btn_width, 0)) then
-		Imgui.OpenPopup_Str("layer_type_popup")
-	end
-
-	if Imgui.BeginPopup("layer_type_popup") then
-		if Imgui.MenuItem_Bool(FONT_ICONS.ICON_FILE_IMAGE_O .. " Sprite Layer") then
-			ScenePanel.add_layer(scene, "sprite")
-		end
-		if Imgui.MenuItem_Bool(FONT_ICONS.ICON_MOUSE_POINTER .. " Trigger Layer") then
-			ScenePanel.add_layer(scene, "trigger")
-		end
-
-		Imgui.EndPopup()
+		Editor.history:add(AddLayer(scene, Layer({})))
 	end
 
 	for k, layer in pairs(scene.data.layers) do
@@ -31,13 +20,6 @@ local function display()
 		if Editor.selected_layer == layer then
 			node_flags = Imgui.love.TreeNodeFlags("OpenOnArrow", "OpenOnDoubleClick", "Selected")
 		end
-
-		local icon
-		-- if layer.type == "image" then
-		-- 	icon = FONT_ICONS.ICON_FILE_IMAGE_O
-		-- elseif layer.type == "trigger" then
-		-- 	icon = FONT_ICONS.ICON_MOUSE_POINTER
-		-- end
 
 		local eye
 		if layer.active then
@@ -52,18 +34,15 @@ local function display()
 		end
 
 		Imgui.SameLine()
-		-- local node_open = Imgui.TreeNodeEx_Str(icon .. " " .. layer.name, node_flags)
-		-- local node_open = Imgui.TreeNodeEx_Str(layer.name, node_flags)
 		local node_open = Imgui.TreeNodeEx_Str(layer.name, node_flags)
 
 		if Imgui.BeginPopupContextItem() then
 			if Imgui.BeginMenu(FONT_ICONS.ICON_PLUS .. "Add") then
 				if Imgui.MenuItem_Bool(FONT_ICONS.ICON_PICTURE_O .. " Sprite") then
 					Editor.history:add(AddEntity(scene, layer, Sprite()))
-					-- ScenePanel.add_entity(scene, layer, "sprite")
 				end
 				if Imgui.MenuItem_Bool(FONT_ICONS.ICON_MOUSE_POINTER .. " Trigger") then
-					-- ScenePanel.add_entity(scene, layer, trigger")
+					Editor.history:add(AddEntity(scene, layer, Trigger()))
 				end
 				Imgui.EndMenu()
 			end
@@ -85,7 +64,6 @@ local function display()
 					if Imgui.BeginPopupContextItem() then
 						if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
 							Editor.history:add(RemoveEntity(scene, j))
-							-- ScenePanel.remove_entity(scene, j)
 						end
 
 						Imgui.EndPopup()

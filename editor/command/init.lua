@@ -6,7 +6,6 @@ require("editor.command.command_history")
 for _, file in pairs(files) do
 	local name = file:match("(.+)%..+")
 	if name ~= "init" then
-		print("editor.command.commands." .. name)
 		require("editor.command.commands." .. name)
 	end
 end

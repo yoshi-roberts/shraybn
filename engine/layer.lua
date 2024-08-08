@@ -1,12 +1,11 @@
 ---@class Layer
+---@field name string
 Layer = Object:extend()
 
----@param name string
----@param depth integer
 ---@param callbacks table
-function Layer:new(name, depth, callbacks)
-	self.name = name
-	self.depth = depth
+---@param depth integer
+function Layer:new(callbacks, depth)
+	self.depth = depth or 0
 	self.active = true
 
 	if not callbacks then

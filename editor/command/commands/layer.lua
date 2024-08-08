@@ -1,14 +1,37 @@
 ---@class AddLayer
----@field layer Layer
+---@field index integer
 AddLayer = Command:extend()
 
 ---@param scene SceneData
-function AddLayer:new(scene)
+---@param layer Layer
+function AddLayer:new(scene, layer)
 	self.scene = scene
+	self.layer = layer
 end
 
 function AddLayer:execute()
-	self.layer = ScenePanel.add_layer(self.scene)
+	self.index = ScenePanel.add_layer(self.scene, self.layer)
 end
 
-function AddLayer:undo() end
+function AddLayer:undo()
+	ScenePanel.remove_layer(self.scene, self.index)
+end
+
+---@class RemoveLayer
+---@field layer Layer
+RemoveLayer = Command:extend()
+
+---@param scene SceneData
+---@param index integer
+function RemoveLayer:new(scene, index)
+	self.scene = scene
+	self.index = index
+end
+
+function RemoveLayer:execute()
+	self.layer = ScenePanel.remove_layer(self.scene, self.index)
+end
+
+function RemoveLayer:undo()
+	ScenePanel.add_layer(self.scene, self.layer, self.index)
+end
