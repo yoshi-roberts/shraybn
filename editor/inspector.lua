@@ -9,6 +9,8 @@ Inspector = {
 	viewer_height = 384,
 	viewer_image = nil,
 
+	vec_x = ffi.new("int[1]", 0),
+	vec_y = ffi.new("int[1]", 0),
 	entity_pos_x = ffi.new("int[1]", 0),
 	entity_pos = ffi.new("int[2]", { 0.0, 0.0 }),
 	entity_scale = ffi.new("int[2]", { 0.0, 0.0 }),
@@ -26,7 +28,22 @@ function Inspector:inspect(type, item)
 	self.type = type
 end
 
-function Inspector:vec2(vec) end
+---@param label string
+---@param vec Vec2
+function Inspector:vec2(label, vec)
+	self.vec_x[1] = vec.x
+	self.vec_y[1] = vec.y
+
+	Imgui.Text(label .. ":")
+
+	Imgui.PushItemWidth(80)
+	Imgui.DragInt("X", self.vec_x)
+	Imgui.DragInt("Y", self.vec_y)
+	Imgui.PopItemWidth()
+
+	vec.x = self.vec_x[1]
+	vec.y = self.vec_y[1]
+end
 
 function Inspector:image(image)
 	local win_width = Imgui.GetContentRegionAvail().x
@@ -82,16 +99,17 @@ function Inspector:entity()
 	Imgui.Text("Entity: " .. entity.name)
 	Imgui.Separator()
 
-	self.entity_pos[0] = entity.position.x
-	self.entity_pos[1] = entity.position.y
-	self.entity_scale[0] = entity.scale.x
-	self.entity_scale[1] = entity.scale.y
-
-	Imgui.PushItemWidth(80)
-	Imgui.DragInt("X", self.entity_pos_x)
-	Imgui.SameLine()
-	Imgui.DragInt("Y", self.entity_pos_x)
-	Imgui.PopItemWidth()
+	-- self.entity_pos[0] = entity.position.x
+	-- self.entity_pos[1] = entity.position.y
+	-- self.entity_scale[0] = entity.scale.x
+	-- self.entity_scale[1] = entity.scale.y
+	--
+	-- Imgui.PushItemWidth(80)
+	-- Imgui.DragInt("X", self.entity_pos_x)
+	-- Imgui.SameLine()
+	-- Imgui.DragInt("Y", self.entity_pos_x)
+	-- Imgui.PopItemWidth()
+	self:vec2("Position", entity.position)
 
 	-- Imgui.Text("Position:")
 	-- Imgui.SameLine()
