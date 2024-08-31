@@ -9,7 +9,9 @@ function CommandHistory:new()
 end
 
 ---@param cmd Command
-function CommandHistory:add(cmd)
+---@param merge boolean
+function CommandHistory:add(cmd, merge)
+	cmd.mergable = merge or false
 	cmd:execute()
 
 	-- We don't want to deal with too many commands.
@@ -29,6 +31,14 @@ function CommandHistory:add(cmd)
 
 	table.insert(self.commands, cmd)
 	self.current = #self.commands
+
+	-- Merge.
+	if #self.commands > 1 and self.commands[#self.commands].mergable and merge then
+		if self.commands[#self.commands]:merge(self.commands[#self.commands - 1]) then
+			table.remove(self.commands, #self.commands)
+			self.current = #self.commands
+		end
+	end
 end
 
 function CommandHistory:undo()

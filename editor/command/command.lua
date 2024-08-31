@@ -2,7 +2,9 @@
 ---@field extend function
 Command = Object:extend()
 
-function Command:new() end
+function Command:new()
+	self.mergable = false
+end
 
 function Command:execute() end
 

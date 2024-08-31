@@ -13,8 +13,8 @@ function Sprite:new(name, asset)
 	end
 end
 
----@param position vector
----@param scale vector
+---@param position Vec2
+---@param scale Vec2
 function Sprite:draw(position, scale)
 	love.graphics.setColor(1, 1, 1, 1)
 

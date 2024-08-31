@@ -11,9 +11,6 @@ Inspector = {
 
 	vec_x = ffi.new("int[1]", 0),
 	vec_y = ffi.new("int[1]", 0),
-	entity_pos_x = ffi.new("int[1]", 0),
-	entity_pos = ffi.new("int[2]", { 0.0, 0.0 }),
-	entity_scale = ffi.new("int[2]", { 0.0, 0.0 }),
 
 	viewer_canvas = love.graphics.newCanvas(256, 384),
 	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
@@ -29,20 +26,44 @@ function Inspector:inspect(type, item)
 end
 
 ---@param label string
----@param vec Vec2
-function Inspector:vec2(label, vec)
-	self.vec_x[1] = vec.x
-	self.vec_y[1] = vec.y
+---@param target Vec2
+function Inspector:vec2(label, target)
+	self.vec_x[0] = target.x
+	self.vec_y[0] = target.y
 
 	Imgui.Text(label .. ":")
 
 	Imgui.PushItemWidth(80)
-	Imgui.DragInt("X", self.vec_x)
-	Imgui.DragInt("Y", self.vec_y)
-	Imgui.PopItemWidth()
 
-	vec.x = self.vec_x[1]
-	vec.y = self.vec_y[1]
+	Imgui.DragInt("X##" .. label .. "_VEC_X", self.vec_x)
+	if Imgui.IsItemActive() then
+		Editor.history:add(ChangeField(target, "x", self.vec_x[0]), true)
+	end
+
+	Imgui.DragInt("Y##" .. label .. "_VEC_Y", self.vec_y)
+	if Imgui.IsItemActive() then
+		Editor.history:add(ChangeField(target, "y", self.vec_y[0]), true)
+	end
+
+	Imgui.PopItemWidth()
+end
+
+---@param label string
+---@param path string
+function Inspector:resource(label, path)
+	Imgui.Text(label)
+
+	Imgui.Text(path)
+	if Imgui.BeginDragDropTarget() then
+		Imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
+
+		if Imgui.IsMouseReleased_Nil(0) and Editor.drag_payload then
+			Editor.drag_payload = nil
+			Editor.current_scene.unsaved = true
+		end
+
+		Imgui.EndDragDropTarget()
+	end
 end
 
 function Inspector:image(image)
@@ -99,35 +120,8 @@ function Inspector:entity()
 	Imgui.Text("Entity: " .. entity.name)
 	Imgui.Separator()
 
-	-- self.entity_pos[0] = entity.position.x
-	-- self.entity_pos[1] = entity.position.y
-	-- self.entity_scale[0] = entity.scale.x
-	-- self.entity_scale[1] = entity.scale.y
-	--
-	-- Imgui.PushItemWidth(80)
-	-- Imgui.DragInt("X", self.entity_pos_x)
-	-- Imgui.SameLine()
-	-- Imgui.DragInt("Y", self.entity_pos_x)
-	-- Imgui.PopItemWidth()
 	self:vec2("Position", entity.position)
-
-	-- Imgui.Text("Position:")
-	-- Imgui.SameLine()
-	-- Imgui.DragFloat2("##entity_position", self.entity_pos, 0.1, 0.0, math.huge, "%.2f", 1.0)
-	--
-	-- if Imgui.IsItemDeactivatedAfterEdit() then
-	-- 	print("Changed!")
-	-- 	Editor.history:add(ChangeVec2(entity.position, Vec2(self.entity_pos[0], self.entity_pos[1])))
-	-- end
-	--
-	-- Imgui.Text("Scale   :")
-	-- Imgui.SameLine()
-	-- Imgui.DragFloat2("##entity_scale", self.entity_scale, 0.1, 0.0, math.huge, "%.2f", 1.0)
-
-	-- entity.position.x = self.entity_pos[0]
-	-- entity.position.y = self.entity_pos[1]
-	-- entity.scale.x = self.entity_scale[0]
-	-- entity.scale.y = self.entity_scale[1]
+	self:vec2("Scale", entity.scale)
 end
 
 function Inspector:layer()
