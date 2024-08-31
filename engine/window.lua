@@ -13,6 +13,7 @@ function Window:init(width, height, title)
 		vsync = false,
 		resizable = true,
 	})
+
 	love.window.setTitle(self.title)
 end
 

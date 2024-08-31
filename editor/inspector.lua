@@ -9,8 +9,9 @@ Inspector = {
 	viewer_height = 384,
 	viewer_image = nil,
 
-	entity_pos = ffi.new("float[2]", { 0.0, 0.0 }),
-	entity_scale = ffi.new("float[2]", { 0.0, 0.0 }),
+	entity_pos_x = ffi.new("int[1]", 0),
+	entity_pos = ffi.new("int[2]", { 0.0, 0.0 }),
+	entity_scale = ffi.new("int[2]", { 0.0, 0.0 }),
 
 	viewer_canvas = love.graphics.newCanvas(256, 384),
 	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
@@ -84,18 +85,24 @@ function Inspector:entity()
 	self.entity_scale[0] = entity.scale.x
 	self.entity_scale[1] = entity.scale.y
 
-	Imgui.Text("Position:")
+	Imgui.PushItemWidth(80)
+	Imgui.DragInt("X", self.entity_pos_x)
 	Imgui.SameLine()
-	Imgui.DragFloat2("##entity_position", self.entity_pos, 0.1, 0.0, math.huge, "%.2f", 1.0)
+	Imgui.DragInt("Y", self.entity_pos_x)
+	Imgui.PopItemWidth()
 
-	if Imgui.IsItemDeactivatedAfterEdit() then
-		print("Changed!")
-		Editor.history:add(ChangeVec2(entity.position, Vec2(self.entity_pos[0], self.entity_pos[1])))
-	end
-
-	Imgui.Text("Scale   :")
-	Imgui.SameLine()
-	Imgui.DragFloat2("##entity_scale", self.entity_scale, 0.1, 0.0, math.huge, "%.2f", 1.0)
+	-- Imgui.Text("Position:")
+	-- Imgui.SameLine()
+	-- Imgui.DragFloat2("##entity_position", self.entity_pos, 0.1, 0.0, math.huge, "%.2f", 1.0)
+	--
+	-- if Imgui.IsItemDeactivatedAfterEdit() then
+	-- 	print("Changed!")
+	-- 	Editor.history:add(ChangeVec2(entity.position, Vec2(self.entity_pos[0], self.entity_pos[1])))
+	-- end
+	--
+	-- Imgui.Text("Scale   :")
+	-- Imgui.SameLine()
+	-- Imgui.DragFloat2("##entity_scale", self.entity_scale, 0.1, 0.0, math.huge, "%.2f", 1.0)
 
 	-- entity.position.x = self.entity_pos[0]
 	-- entity.position.y = self.entity_pos[1]
