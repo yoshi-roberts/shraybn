@@ -1,7 +1,7 @@
 ---@class Entity
 Entity = Object:extend()
 
----@param position vector
+---@param position Vec2
 ---@param rotation float
 function Entity:new(name, position, rotation)
 	self.name = name

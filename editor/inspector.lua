@@ -26,6 +26,8 @@ function Inspector:inspect(type, item)
 	self.type = type
 end
 
+function Inspector:vec2(vec) end
+
 function Inspector:image(image)
 	local win_width = Imgui.GetContentRegionAvail().x
 
