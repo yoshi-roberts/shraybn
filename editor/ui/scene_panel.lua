@@ -76,7 +76,7 @@ local function display()
 
 		if Imgui.IsItemClicked() then
 			Editor.selected_layer = layer
-			-- Inspector:inspect("layer", Editor.selected_layer)
+			Inspector:inspect("layer", Editor.selected_layer)
 		end
 	end
 

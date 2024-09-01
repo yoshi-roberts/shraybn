@@ -32,9 +32,12 @@ function CommandHistory:add(cmd, merge)
 	table.insert(self.commands, cmd)
 	self.current = #self.commands
 
-	-- Merge.
-	if #self.commands > 1 and self.commands[#self.commands].mergable and merge then
-		if self.commands[#self.commands]:merge(self.commands[#self.commands - 1]) then
+	-- Merge
+	local latest = self.commands[#self.commands]
+	local last = self.commands[#self.commands - 1]
+
+	if #self.commands > 1 and last.mergable and merge then
+		if last:merge(latest) then
 			table.remove(self.commands, #self.commands)
 			self.current = #self.commands
 		end

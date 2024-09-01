@@ -11,6 +11,7 @@ Inspector = {
 
 	vec_x = ffi.new("int[1]", 0),
 	vec_y = ffi.new("int[1]", 0),
+	check_bool = ffi.new("bool[1]", 0),
 
 	viewer_canvas = love.graphics.newCanvas(256, 384),
 	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
@@ -18,7 +19,7 @@ Inspector = {
 	display = require("editor.ui.inspector"),
 }
 
----@param type string | "entity" | "image"
+---@param type string | "entity" | "image" | "layer"
 ---@param item any
 function Inspector:inspect(type, item)
 	self.item = item
@@ -46,6 +47,18 @@ function Inspector:vec2(label, target)
 	end
 
 	Imgui.PopItemWidth()
+end
+
+function Inspector:bool(label, target)
+	self.check_bool[0] = target
+
+	local tag = label .. "##" .. label .. "_CHECKBOX_BOOL"
+
+	if Imgui.Checkbox(tag, self.check_bool) then
+		return self.check_bool[0]
+	end
+
+	return target
 end
 
 ---@param label string
@@ -127,39 +140,8 @@ end
 function Inspector:layer()
 	local layer = self.item
 
-	local first = layer.type:sub(1, 1):upper()
-	local last = layer.type:sub(2, #layer.type)
-	local str = first .. last
-	Imgui.Text(str .. " layer.")
+	Imgui.Text("Layer: " .. layer.name)
+	Imgui.Separator()
 
-	if layer.type == "image" then
-		local image_path = "No Image."
-		if layer.image then
-			image_path = layer.image
-		end
-		Imgui.Text(image_path)
-
-		if Imgui.BeginDragDropTarget() then
-			Imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
-			if Imgui.IsMouseReleased_Nil(0) then
-				if Editor.drag_payload then
-					local key = Util.path_to_key(Editor.drag_payload)
-					Editor:add_entity(Engine.entities.sprite, key)
-
-					Editor.drag_payload = nil
-					Editor.current_scene.unsaved = true
-				end
-			end
-
-			Imgui.EndDragDropTarget()
-		end
-
-		local key, asset
-		if layer.image then
-			key = Util.path_to_key(layer.image)
-			asset = Assets:get("image", key)
-		end
-
-		self:image(asset)
-	end
+	layer.active = self:bool("Active", layer.active)
 end

@@ -6,6 +6,8 @@ local function display(self)
 			self:image(self.item)
 		elseif self.type == "entity" then
 			self:entity()
+		elseif self.type == "layer" then
+			self:layer()
 		end
 	end
 
