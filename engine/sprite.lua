@@ -1,10 +1,10 @@
----@class Sprite
----@field super Object
+---@class Sprite: Entity
+---@field super Entity
 Sprite = Entity:extend()
 
 ---@param asset string
 function Sprite:new(name, asset)
-	Sprite.super.new(self, name)
+	Sprite.super.new(self --[[@as Entity]], name)
 
 	if asset then
 		self.asset = Assets:get("image", asset)

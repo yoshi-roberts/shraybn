@@ -1,8 +1,8 @@
----@class Entity
+---@class Entity: Object
 Entity = Object:extend()
 
----@param position Vec2
----@param rotation float
+---@param position Vec2?
+---@param rotation float?
 function Entity:new(name, position, rotation)
 	self.name = name
 	self.depth = 0

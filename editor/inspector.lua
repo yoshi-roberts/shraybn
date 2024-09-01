@@ -47,6 +47,8 @@ function Inspector:vec2(label, target)
 	end
 
 	Imgui.PopItemWidth()
+
+	Editor.scenes.current.saved = false
 end
 
 function Inspector:bool(label, target)
@@ -55,6 +57,7 @@ function Inspector:bool(label, target)
 	local tag = label .. "##" .. label .. "_CHECKBOX_BOOL"
 
 	if Imgui.Checkbox(tag, self.check_bool) then
+		Editor.scenes.current.saved = false
 		return self.check_bool[0]
 	end
 
@@ -62,21 +65,29 @@ function Inspector:bool(label, target)
 end
 
 ---@param label string
----@param path string
-function Inspector:resource(label, path)
+function Inspector:resource(label, target)
 	Imgui.Text(label)
 
-	Imgui.Text(path)
+	local asset = target
+
+	local text = target and target.path or "Empty"
+	Imgui.Text(text)
+
 	if Imgui.BeginDragDropTarget() then
 		Imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
 
 		if Imgui.IsMouseReleased_Nil(0) and Editor.drag_payload then
+			local key = Util.path_to_key(Editor.drag_payload)
+			asset = Assets:get("image", key)
+
 			Editor.drag_payload = nil
-			Editor.current_scene.unsaved = true
+			Editor.scenes.current.saved = false
 		end
 
 		Imgui.EndDragDropTarget()
 	end
+
+	return asset
 end
 
 function Inspector:image(image)
@@ -127,11 +138,21 @@ function Inspector:image(image)
 	Imgui.Image(self.viewer_canvas, size)
 end
 
+function Inspector:sprite()
+	local sprite = self.item
+
+	sprite.asset = self:resource("Asset", sprite.asset)
+end
+
 function Inspector:entity()
 	local entity = self.item
 
 	Imgui.Text("Entity: " .. entity.name)
 	Imgui.Separator()
+
+	if entity:is(Sprite) then
+		self:sprite()
+	end
 
 	self:vec2("Position", entity.position)
 	self:vec2("Scale", entity.scale)

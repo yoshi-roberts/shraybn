@@ -12,7 +12,6 @@ local root, lazy = ...
 log.info("[ASSETS] Starting process.")
 
 ---@type {[string]: table}
----
 local assets = {
 	["image"] = {},
 	["audio"] = {},
@@ -50,7 +49,6 @@ local processes = {
 
 ---@param path string
 ---@return string?
----
 local function file_read(path)
 	local file = io.open(path, "rb")
 
