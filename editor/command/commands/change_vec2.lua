@@ -1,4 +1,5 @@
----@class ChangeVec2
+---@class ChangeVec2: Command
+---@field super Command
 ChangeVec2 = Command:extend()
 
 function ChangeVec2:new(target, new)

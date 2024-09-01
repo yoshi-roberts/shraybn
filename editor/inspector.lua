@@ -64,13 +64,8 @@ function Inspector:bool(label, target)
 	return target
 end
 
----@param label string
-function Inspector:resource(label, target)
-	Imgui.Text(label)
-
-	local asset = target
-
-	local text = target and target.path or "Empty"
+function Inspector:resource(target, field)
+	local text = target[field] and target[field].path or "No Resource"
 	Imgui.Text(text)
 
 	if Imgui.BeginDragDropTarget() then
@@ -78,7 +73,9 @@ function Inspector:resource(label, target)
 
 		if Imgui.IsMouseReleased_Nil(0) and Editor.drag_payload then
 			local key = Util.path_to_key(Editor.drag_payload)
-			asset = Assets:get("image", key)
+			local asset = Assets:get("image", key)
+
+			Editor.history:add(ChangeField(target, field, asset))
 
 			Editor.drag_payload = nil
 			Editor.scenes.current.saved = false
@@ -86,8 +83,6 @@ function Inspector:resource(label, target)
 
 		Imgui.EndDragDropTarget()
 	end
-
-	return asset
 end
 
 function Inspector:image(image)
@@ -141,7 +136,11 @@ end
 function Inspector:sprite()
 	local sprite = self.item
 
-	sprite.asset = self:resource("Asset", sprite.asset)
+	if sprite.asset then
+		self:image(sprite.asset)
+	end
+
+	self:resource(sprite, "asset")
 end
 
 function Inspector:entity()

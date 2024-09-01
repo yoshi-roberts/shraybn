@@ -1,4 +1,4 @@
----@class Command
+---@class Command: Object
 ---@field extend function
 Command = Object:extend()
 

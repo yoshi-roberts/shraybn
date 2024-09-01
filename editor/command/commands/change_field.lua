@@ -1,4 +1,5 @@
----@class ChangeField
+---@class ChangeField: Command
+---@field super Command
 ChangeField = Command:extend()
 
 function ChangeField:new(target, field, new)
