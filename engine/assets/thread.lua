@@ -65,7 +65,6 @@ end
 ---@param path string
 ---@param contents string
 ---@return boolean
----
 local function file_write(path, contents)
 	local file = io.open(path, "wb")
 
@@ -83,7 +82,6 @@ end
 ---@param ext string
 ---@return boolean
 ---@return string?
----
 local function valid_type(ext)
 	for type, extensions in pairs(types) do
 		if extensions[ext] then
