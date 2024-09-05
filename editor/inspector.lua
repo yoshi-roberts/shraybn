@@ -135,11 +135,11 @@ end
 function Inspector:sprite()
 	local sprite = self.item
 
-	if sprite.path then
-		self:image(Assets:get("image", sprite.path))
+	if sprite.asset_path then
+		self:image(Assets:get("image", sprite.asset_path))
 	end
 
-	self:resource(sprite, "path")
+	self:resource(sprite, "asset_path")
 end
 
 function Inspector:entity()

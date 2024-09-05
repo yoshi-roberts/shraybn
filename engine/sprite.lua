@@ -6,7 +6,7 @@ Sprite = Entity:extend()
 function Sprite:new(name, path)
 	Sprite.super.new(self --[[@as Entity]], name)
 
-	self.path = path
+	self.asset_path = path
 	-- if asset then
 	-- 	self.asset = Assets:get("image", asset)
 	-- else
@@ -14,17 +14,13 @@ function Sprite:new(name, path)
 	-- end
 end
 
----@param position Vec2
----@param scale Vec2
+---@param position Vec2?
+---@param scale Vec2?
 function Sprite:draw(position, scale)
 	love.graphics.setColor(1, 1, 1, 1)
 
-	if not scale then
-		scale = Vec2(1, 1)
-	end
-
-	local asset = Assets:get("image", self.path)
-	love.graphics.draw(asset.resource, position:unpack(), scale:unpack())
+	local asset = Assets:get("image", self.asset_path)
+	love.graphics.draw(asset.resource, self.position.x, self.position.y, self.rotation, self.scale.x, self.scale.y)
 end
 
 function Sprite:__tostring()

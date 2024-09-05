@@ -126,21 +126,8 @@ function Viewport:display()
 	if Editor.loaded_project then
 		love.graphics.setColor(1, 1, 1, 1)
 
-		if Editor.current_scene then
-			-- Render scene layers.
-			for k, layer in pairs(Editor.current_scene.layers) do
-				if not layer.visible then
-					goto continue
-				end
-
-				if layer.type == "image" and layer.image then
-					local key = Util.path_to_key(layer.image)
-					self.image = Assets:get("image", key)
-					love.graphics.draw(self.image.resource)
-				end
-
-				::continue::
-			end
+		if Editor.scenes.current then
+			Editor.scenes.current.data:draw()
 		end
 	end
 
