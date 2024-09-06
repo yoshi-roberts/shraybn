@@ -1,32 +1,24 @@
-var found_key = true
-var errors = 0
+var found_key true
+var errors 0
 
-# Start Of Test
+# Start Of Test:
+	if found_key != true or found_key > 1:
+		Charles: I knew it!
+		Text with no character name.
+		choice: Yes I did.
+			Charles: Wow...
+			jump Truth
+		choice: No! I just found it!
+			jump Lie
 
-if found_key != true or found_key > 1
+# Truth:
+	Charles:
+		I can't believe it.
+		Why didn't you tell me?
+	set errors ++
 
-	Charles: I knew it!
-	Charles	: You had it this whole time!
-	Charles: Wow: A colon in the dialogue.  
-
-	Text with no character name.
-
-	* Yes... I did.
-		Charles: Wow...
-		@jump Truth
-
-
-	* No! I just found it!
-		@jump Lie
-
-
-# Truth
-	Charles: I can't believe it.
-	Charles: Why didn't you tell me?
-	errors = errors + 1
-
-
-# Lie
-	Charles: Hmm...
-	Charles: Where?
+# Lie:
+	Charles:
+		Hmm...
+		Where?
 	You need to think of something.

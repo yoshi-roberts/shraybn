@@ -161,7 +161,7 @@ function Viewport:display()
 	local start_x = math.floor(-self.offset.x / gs)
 	local start_y = math.floor(-self.offset.y / gs)
 
-	love.graphics.setColor(1, 1, 1, 0.15)
+	love.graphics.setColor(1, 1, 1, 0.05)
 	for x = start_x, xt, 1 do
 		for y = start_y, yt, 1 do
 			local posx = (x * gs)
