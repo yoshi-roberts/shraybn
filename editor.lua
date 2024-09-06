@@ -48,7 +48,7 @@ end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
-	Window:init(1280, 720)
+	Window:init()
 
 	local editor_scene = Scene("editor_scene")
 	editor_scene:add_layer(Layer(require("editor.ui.ui_layer")))

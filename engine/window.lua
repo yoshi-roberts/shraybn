@@ -5,16 +5,16 @@ Window = {
 }
 
 function Window:init(width, height, title)
-	self.title = title or "Shraybn"
-	self.width = width
-	self.height = height
-
-	love.window.setMode(width, height, {
+	love.window.setMode(width or 0, height or 0, {
 		vsync = false,
 		resizable = true,
 	})
 
-	love.window.setTitle(self.title)
+	love.window.setTitle(self.title or "Shraybn")
+
+	self.title = title or love.window.getTitle()
+	self.width = width or love.graphics.getWidth()
+	self.height = height or love.graphics.getHeight()
 end
 
 function Window:process_resize(width, height)
