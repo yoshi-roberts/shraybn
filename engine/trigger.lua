@@ -1,16 +1,16 @@
----@class Trigger
----@field super Object
+---@class Trigger: Entity
+---@field super Entity
 Trigger = Entity:extend()
 
----@param polygon table
-function Trigger:new(name, polygon)
+---@param points table
+function Trigger:new(points, name)
 	Trigger.super.new(self, name)
 
 	self.foccussed = false
-	self.polygon = polygon
+	self.points = points
 
-	if self.polygon then
-		self.tris = love.math.triangulate(self.polygon)
+	if self.points then
+		self.tris = love.math.triangulate(self.points)
 	end
 end
 
@@ -36,6 +36,14 @@ function Trigger:update()
 			self.foccused = true
 			break
 		end
+	end
+end
+
+function Trigger:draw()
+	love.graphics.setColor(1, 0, 0, 0.4)
+
+	for _, tri in pairs(self.tris) do
+		love.graphics.polygon("fill", tri)
 	end
 end
 

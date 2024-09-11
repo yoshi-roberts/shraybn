@@ -42,7 +42,7 @@ local function display()
 					Editor.history:add(AddEntity(scene, layer, Sprite()))
 				end
 				if Imgui.MenuItem_Bool(FONT_ICONS.ICON_MOUSE_POINTER .. " Trigger") then
-					Editor.history:add(AddEntity(scene, layer, Trigger()))
+					Editor.history:add(AddEntity(scene, layer, Trigger({ 0, 0, 64, 0, 64, 64, 0, 64 })))
 				end
 				Imgui.EndMenu()
 			end

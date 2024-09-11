@@ -31,8 +31,7 @@ end
 
 function Scene:draw()
 	for k, entity in pairs(self.entities) do
-		---@cast entity Sprite
-		if entity:is(Sprite) and entity.asset_path and entity.layer.active then
+		if entity.layer.active then
 			entity:draw()
 		end
 	end

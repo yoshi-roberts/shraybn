@@ -3,7 +3,7 @@ Entity = Object:extend()
 
 ---@param position Vec2?
 ---@param rotation float?
-function Entity:new(name, position, rotation)
+function Entity:new(position, rotation, name)
 	self.name = name
 	self.depth = 0
 	self.layer = nil
