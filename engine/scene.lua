@@ -30,7 +30,7 @@ function Scene:update(dt)
 end
 
 function Scene:draw()
-	for k, entity in pairs(self.entities) do
+	for _, entity in pairs(self.entities) do
 		if entity.layer.active then
 			entity:draw()
 		end

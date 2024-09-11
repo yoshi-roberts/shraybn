@@ -1,4 +1,7 @@
 ---@class Entity: Object
+---@field new function
+---@field update function
+---@field draw function
 Entity = Object:extend()
 
 ---@param position Vec2?

@@ -2,15 +2,15 @@
 ---@field super Entity
 Trigger = Entity:extend()
 
----@param points table
-function Trigger:new(points, name)
+---@param verticies table
+function Trigger:new(verticies, name)
 	Trigger.super.new(self, name)
 
 	self.foccussed = false
-	self.points = points
+	self.verticies = verticies
 
-	if self.points then
-		self.tris = love.math.triangulate(self.points)
+	if self.verticies then
+		self.tris = love.math.triangulate(self.verticies)
 	end
 end
 
@@ -42,9 +42,12 @@ end
 function Trigger:draw()
 	love.graphics.setColor(1, 0, 0, 0.4)
 
+	love.graphics.push()
+	love.graphics.translate(self.position.x, self.position.y)
 	for _, tri in pairs(self.tris) do
 		love.graphics.polygon("fill", tri)
 	end
+	love.graphics.pop()
 end
 
 function Trigger:__tostring()
