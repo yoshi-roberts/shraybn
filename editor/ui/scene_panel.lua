@@ -1,3 +1,48 @@
+---@param scene SceneData
+---@param layer Layer
+---@param index integer
+local function layer_context_menu(scene, layer, index)
+	if Imgui.BeginPopupContextItem() then
+		if Imgui.BeginMenu(FONT_ICONS.ICON_PLUS .. "Add") then
+			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_PICTURE_O .. " Sprite") then
+				Editor.history:add(AddEntity(scene, layer, Sprite()))
+			end
+
+			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_MOUSE_POINTER .. " Trigger") then
+				Editor.history:add(AddEntity(scene, layer, Trigger({ 0, 0, 64, 0, 64, 64, 0, 64 })))
+			end
+
+			Imgui.EndMenu()
+		end
+
+		if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
+			Editor.history:add(RemoveLayer(scene, index))
+		end
+
+		Imgui.EndPopup()
+	end
+end
+
+---@param scene SceneData
+---@param layer Layer
+local function layer_list_entities(scene, layer)
+	for j, entity in pairs(scene.data.entities) do
+		if entity.layer == layer then
+			if Imgui.Selectable_Bool(entity.name) then
+				Inspector:inspect("entity", entity)
+			end
+
+			if Imgui.BeginPopupContextItem() then
+				if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
+					Editor.history:add(RemoveEntity(scene, j))
+				end
+
+				Imgui.EndPopup()
+			end
+		end
+	end
+end
+
 local function display()
 	Imgui.Begin("Scene", nil)
 
@@ -6,6 +51,7 @@ local function display()
 		return
 	end
 
+	-- The scene data the editor is interactibg with.
 	---@type SceneData
 	local scene = Editor.scenes.current
 
@@ -21,12 +67,7 @@ local function display()
 			node_flags = Imgui.love.TreeNodeFlags("OpenOnArrow", "OpenOnDoubleClick", "Selected")
 		end
 
-		local eye
-		if layer.active then
-			eye = FONT_ICONS.ICON_EYE
-		else
-			eye = FONT_ICONS.ICON_EYE_SLASH
-		end
+		local eye = layer.active and FONT_ICONS.ICON_EYE or FONT_ICONS.ICON_EYE_SLASH
 
 		if Imgui.Button(eye .. "##" .. layer.name) then
 			layer.active = not layer.active
@@ -36,41 +77,10 @@ local function display()
 		Imgui.SameLine()
 		local node_open = Imgui.TreeNodeEx_Str(layer.name, node_flags)
 
-		if Imgui.BeginPopupContextItem() then
-			if Imgui.BeginMenu(FONT_ICONS.ICON_PLUS .. "Add") then
-				if Imgui.MenuItem_Bool(FONT_ICONS.ICON_PICTURE_O .. " Sprite") then
-					Editor.history:add(AddEntity(scene, layer, Sprite()))
-				end
-				if Imgui.MenuItem_Bool(FONT_ICONS.ICON_MOUSE_POINTER .. " Trigger") then
-					Editor.history:add(AddEntity(scene, layer, Trigger({ 0, 0, 64, 0, 64, 64, 0, 64 })))
-				end
-				Imgui.EndMenu()
-			end
-
-			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
-				Editor.history:add(RemoveLayer(scene, k))
-			end
-
-			Imgui.EndPopup()
-		end
+		layer_context_menu(scene, layer, k)
 
 		if node_open then
-			for j, entity in pairs(scene.data.entities) do
-				if entity.layer == layer then
-					if Imgui.Selectable_Bool(entity.name) then
-						Inspector:inspect("entity", entity)
-					end
-
-					if Imgui.BeginPopupContextItem() then
-						if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
-							Editor.history:add(RemoveEntity(scene, j))
-						end
-
-						Imgui.EndPopup()
-					end
-				end
-			end
-
+			layer_list_entities(scene, layer)
 			Imgui.TreePop()
 		end
 
