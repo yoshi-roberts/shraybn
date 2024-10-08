@@ -48,7 +48,7 @@ local function display()
 			end
 
 			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
-				ScenePanel.remove_layer(scene, k)
+				Editor.history:add(RemoveLayer(scene, k))
 			end
 
 			Imgui.EndPopup()

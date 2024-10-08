@@ -33,5 +33,6 @@ function RemoveLayer:execute()
 end
 
 function RemoveLayer:undo()
+	print("Layer Delete Undo!")
 	ScenePanel.add_layer(self.scene, self.layer, self.index)
 end
