@@ -45,21 +45,14 @@ function CommandHistory:add(cmd, merge)
 end
 
 function CommandHistory:undo()
-	for k, v in pairs(self.commands) do
-		print(k, v)
-	end
 	if self.current >= 1 then
 		self.commands[self.current]:undo()
 		self.current = self.current - 1
 	end
 end
 
--- FIX: Not properly being limited.
 function CommandHistory:redo()
-	for k, v in pairs(self.commands) do
-		print(k, v)
-	end
-	if self.current < self.limit - 1 then
+	if self.commands[self.current + 1] then
 		self.current = self.current + 1
 		self.commands[self.current]:execute()
 	end

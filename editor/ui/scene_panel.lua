@@ -27,18 +27,20 @@ end
 ---@param layer Layer
 local function layer_list_entities(scene, layer)
 	for j, entity in pairs(scene.data.entities) do
-		if entity.layer == layer then
-			if Imgui.Selectable_Bool(entity.name) then
-				Inspector:inspect("entity", entity)
+		if entity.layer ~= layer then
+			break
+		end
+
+		if Imgui.Selectable_Bool(entity.name) then
+			Inspector:inspect("entity", entity)
+		end
+
+		if Imgui.BeginPopupContextItem() then
+			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
+				Editor.history:add(RemoveEntity(scene, j))
 			end
 
-			if Imgui.BeginPopupContextItem() then
-				if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
-					Editor.history:add(RemoveEntity(scene, j))
-				end
-
-				Imgui.EndPopup()
-			end
+			Imgui.EndPopup()
 		end
 	end
 end
@@ -61,10 +63,10 @@ local function display()
 	end
 
 	for k, layer in pairs(scene.data.layers) do
-		local node_flags = Imgui.love.TreeNodeFlags("OpenOnArrow", "OpenOnDoubleClick")
+		local node_flags = { "OpenOnArrow", "OpenOnDoubleClick" }
 
 		if Editor.selected_layer == layer then
-			node_flags = Imgui.love.TreeNodeFlags("OpenOnArrow", "OpenOnDoubleClick", "Selected")
+			table.insert(node_flags, "Selected")
 		end
 
 		local eye = layer.active and FONT_ICONS.ICON_EYE or FONT_ICONS.ICON_EYE_SLASH
@@ -75,7 +77,8 @@ local function display()
 		end
 
 		Imgui.SameLine()
-		local node_open = Imgui.TreeNodeEx_Str(layer.name, node_flags)
+		local tree_node_flags = Imgui.love.TreeNodeFlags(unpack(node_flags))
+		local node_open = Imgui.TreeNodeEx_Str(layer.name, tree_node_flags)
 
 		layer_context_menu(scene, layer, k)
 
