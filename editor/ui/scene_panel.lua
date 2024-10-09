@@ -9,7 +9,8 @@ local function layer_context_menu(scene, layer, index)
 			end
 
 			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_MOUSE_POINTER .. " Trigger") then
-				Editor.history:add(AddEntity(scene, layer, Trigger({ 0, 0, 64, 0, 64, 64, 0, 64 })))
+				local points = { 0, 0, 64, 0, 64, 64, 0, 64 }
+				Editor.history:add(AddEntity(scene, layer, Trigger(points)))
 			end
 
 			Imgui.EndMenu()
