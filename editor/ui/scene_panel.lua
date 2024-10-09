@@ -8,7 +8,9 @@ local function layer_context_menu(scene, layer, index)
 				Editor.history:add(AddEntity(scene, layer, Sprite()))
 			end
 
-			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_MOUSE_POINTER .. " Trigger") then
+			if
+				Imgui.MenuItem_Bool(FONT_ICONS.ICON_MOUSE_POINTER .. " Trigger")
+			then
 				local points = { 0, 0, 64, 0, 64, 64, 0, 64 }
 				Editor.history:add(AddEntity(scene, layer, Trigger(points)))
 			end
@@ -59,7 +61,12 @@ local function display()
 	local scene = Editor.scenes.current
 
 	local btn_width = Imgui.GetContentRegionAvail().x
-	if Imgui.Button(FONT_ICONS.ICON_PLUS .. " New Layer", Imgui.ImVec2_Float(btn_width, 0)) then
+	if
+		Imgui.Button(
+			FONT_ICONS.ICON_PLUS .. " New Layer",
+			Imgui.ImVec2_Float(btn_width, 0)
+		)
+	then
 		Editor.history:add(AddLayer(scene, Layer({})))
 	end
 
@@ -70,7 +77,8 @@ local function display()
 			table.insert(node_flags, "Selected")
 		end
 
-		local eye = layer.active and FONT_ICONS.ICON_EYE or FONT_ICONS.ICON_EYE_SLASH
+		local eye = layer.active and FONT_ICONS.ICON_EYE
+			or FONT_ICONS.ICON_EYE_SLASH
 
 		if Imgui.Button(eye .. "##" .. layer.name) then
 			layer.active = not layer.active

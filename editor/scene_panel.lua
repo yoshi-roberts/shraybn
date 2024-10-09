@@ -37,7 +37,8 @@ function ScenePanel.add_entity(scene, layer, entity, index)
 
 	scene.data:add_entity(entity, layer, index)
 
-	scene.entity_count[layer.name][type] = scene.entity_count[layer.name][type] + 1
+	scene.entity_count[layer.name][type] = scene.entity_count[layer.name][type]
+		+ 1
 	scene.saved = false
 
 	-- Return the index of the added entity.

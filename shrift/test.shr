@@ -1,5 +1,5 @@
-var found_key true
-var errors 0
+let found_key true
+let errors 0
 
 # Start Of Test:
 	if found_key != true or found_key > 1:
