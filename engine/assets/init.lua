@@ -1,6 +1,3 @@
-local pprint = require("libs.pprint")
-local binser = require("libs.binser")
-
 Assets = {
 
 	data = nil,
@@ -43,7 +40,9 @@ end
 ---@param name string
 function Assets:get(type, name)
 	if not self:loaded() then
-		Log.error("[ASSETS] No asset pack loaded. Can not load asset '" .. name .. "'")
+		Log.error(
+			"[ASSETS] No asset pack loaded. Can not load asset '" .. name .. "'"
+		)
 		return false
 	end
 

@@ -5,8 +5,11 @@ require("engine.imgui")
 function love.load()
 	Window:init(1280, 720)
 
+	Assets:init("projects/NewProject", true)
+	Assets:load()
+
 	local default_scene = Scene("default_scene")
-	default_scene:add_layer("ui_layer", require("ui_layer"))
+	default_scene:add_layer(Layer(require("ui_layer")))
 
 	Engine:set_scene("default_scene")
 end

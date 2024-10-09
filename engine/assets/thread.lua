@@ -3,7 +3,6 @@ require("love.image")
 require("love.filesystem")
 
 local log = require("libs.log")
-local pprint = require("libs.pprint")
 local binser = require("libs.binser")
 local nativefs = require("libs.nativefs")
 
@@ -29,11 +28,18 @@ local temp_index = {
 -- Lookup table for file types.
 ---@type {[string]: table<string, boolean>}
 ---
-local types = {
+local ext_types = {
 	["image"] = { ["png"] = true, ["jpg"] = true, ["jpeg"] = true },
 	["audio"] = { ["mp3"] = true, ["wav"] = true, ["ogg"] = true },
 	["script"] = { ["lua"] = true },
 	["shader"] = { ["glsl"] = true },
+}
+
+local asset_types = {
+	["image"] = 1,
+	["audio"] = 2,
+	["script"] = 3,
+	["shader"] = 4,
 }
 
 ---@type {[string]: function}
@@ -83,30 +89,13 @@ end
 ---@return boolean
 ---@return string?
 local function valid_type(ext)
-	for type, extensions in pairs(types) do
+	for type, extensions in pairs(ext_types) do
 		if extensions[ext] then
 			return true, type
 		end
 	end
 
 	return false, nil
-end
-
----@param path string
----@return string
-local function path_to_key(path)
-	local parts = {}
-	-- Seperate the path by the backslashes.
-	for str in string.gmatch(path, "([^/]+)") do
-		table.insert(parts, str)
-	end
-
-	-- Remove the first two parts.
-	table.remove(parts, 1)
-	table.remove(parts, 1)
-
-	-- Concat the parts park into a string seperated by "." instead of "/"
-	return table.concat(parts, ".")
 end
 
 ---@param path string
@@ -126,12 +115,9 @@ local function index_items(path, dest)
 			local ext = item_path:match("^.+%.(.+)$")
 			local valid, type = valid_type(ext)
 
-			local key = path_to_key(item_path)
-
 			if valid then
-				dest[type][key] = {
+				dest[type][item_path] = {
 					type = type,
-					path = item_path,
 				}
 			end
 		elseif item_info.type == "directory" then
@@ -143,10 +129,10 @@ local function index_items(path, dest)
 end
 
 local function load_file_data()
-	for type, items in pairs(assets) do
-		for k, item in pairs(items) do
+	for _, items in pairs(assets) do
+		for path, item in pairs(items) do
 			if not item.data then
-				item.data = file_read(item.path)
+				item.data = file_read(path)
 			end
 		end
 	end
@@ -155,9 +141,8 @@ end
 local function load_pack()
 	log.info("[ASSETS] Loading pack.")
 
-	local compressed = file_read(root .. "/assets.sad")
-	local decompressed = love.data.decompress("string", "lz4", compressed --[[@as string]])
-	local deserialized = binser.deserialize(decompressed)
+	local serialized = file_read(root .. "/assets.sad")
+	local deserialized = binser.deserialize(serialized)
 	assets = deserialized[1]
 end
 
@@ -165,7 +150,7 @@ local function process_data()
 	log.info("[ASSETS] Processing data.")
 
 	for type, items in pairs(assets) do
-		for name, item in pairs(items) do
+		for _, item in pairs(items) do
 			local byte_data = love.data.newByteData(item.data)
 
 			if lazy then
@@ -210,7 +195,6 @@ local function asset_update()
 				log.info("[ASSETS] Adding new asset '" .. name .. "'")
 				assets[type][name] = {
 					type = item.type,
-					path = item.path,
 				}
 				update = true
 			end
@@ -243,8 +227,8 @@ local function create_pack()
 	if write then
 		log.info("[ASSETS] Writing pack.")
 		local serialized = binser.serialize(assets)
-		local compressed = love.data.compress("string", "lz4", serialized, 9)
-		file_write(root .. "/assets.sad", compressed --[[@as string]])
+		-- local compressed = love.data.compress("string", "lz4", serialized, 9)
+		file_write(root .. "/assets.sad", serialized --[[@as string]])
 	end
 
 	process_data()
