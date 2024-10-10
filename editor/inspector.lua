@@ -72,9 +72,7 @@ function Inspector:resource(target, field)
 		Imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
 
 		if Imgui.IsMouseReleased_Nil(0) and Editor.drag_payload then
-			local key = Util.path_to_key(Editor.drag_payload)
-
-			Editor.history:add(ChangeField(target, field, key))
+			Editor.history:add(ChangeField(target, field, Editor.drag_payload))
 
 			Editor.drag_payload = nil
 			Editor.scenes.current.saved = false
@@ -91,7 +89,8 @@ function Inspector:image(image)
 	if self.viewer_width ~= win_width then
 		self.viewer_width = win_width
 		if self.viewer_width > 0 and self.viewer_height > 0 then
-			self.viewer_canvas = love.graphics.newCanvas(self.viewer_width, self.viewer_height)
+			self.viewer_canvas =
+				love.graphics.newCanvas(self.viewer_width, self.viewer_height)
 		end
 	end
 
