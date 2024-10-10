@@ -1,11 +1,12 @@
----@type token
 Object = require("libs.classic")
-local token = require("shrift.token")
+---@type Token
+local Token = require("shrift.token")
 
 ---@class Lexer
-local lexer = Object:extend()
+local Lexer = Object:extend()
 
-function lexer:new(input)
+---@param input string
+function Lexer:new(input)
 	self.input = input
 	self.position = 0
 	self.read_position = 1
@@ -14,7 +15,7 @@ function lexer:new(input)
 	self:read_char()
 end
 
-function lexer:read_char()
+function Lexer:read_char()
 	if self.read_position >= #self.input + 1 then
 		self.ch = ""
 	else
@@ -25,27 +26,28 @@ function lexer:read_char()
 	self.read_position = self.read_position + 1
 end
 
-function lexer:next_token()
+---@return TokenData
+function Lexer:next_token()
 	local tok
 
 	if self.ch == "=" then
-		tok = token.new(token.type.ASSIGN, self.ch)
+		tok = Token.new(Token.types.ASSIGN, self.ch)
 	elseif self.ch == "(" then
-		tok = token.new(token.type.LPAREN, self.ch)
+		tok = Token.new(Token.types.LPAREN, self.ch)
 	elseif self.ch == ")" then
-		tok = token.new(token.type.RPAREN, self.ch)
+		tok = Token.new(Token.types.RPAREN, self.ch)
 	elseif self.ch == "+" then
-		tok = token.new(token.type.PLUS, self.ch)
+		tok = Token.new(Token.types.PLUS, self.ch)
 	elseif self.ch == "{" then
-		tok = token.new(token.type.LBRACE, self.ch)
+		tok = Token.new(Token.types.LBRACE, self.ch)
 	elseif self.ch == "}" then
-		tok = token.new(token.type.RBRACE, self.ch)
+		tok = Token.new(Token.types.RBRACE, self.ch)
 	elseif self.ch == "" then
-		tok = token.new(token.type.EOF, "")
+		tok = Token.new(Token.types.EOF, "")
 	end
 
 	self:read_char()
 	return tok
 end
 
-return lexer
+return Lexer

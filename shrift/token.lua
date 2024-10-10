@@ -1,8 +1,8 @@
----@class token
-local token = {}
+---@class Token
+local Token = {}
 
----@enum
-token.type = {
+---@enum TokenTypes
+Token.types = {
 	ILLEGAL = "ILLEGAL",
 	EOF = "EOF",
 
@@ -23,14 +23,15 @@ token.type = {
 	LET = "LET",
 }
 
----@param type string
----| `token.type`
+---@alias TokenData {type: TokenTypes, literal: string}
+---@param type TokenTypes
 ---@param literal string
-function token.new(type, literal)
+---@return TokenData
+function Token.new(type, literal)
 	return {
 		type = type,
 		literal = literal,
 	}
 end
 
-return token
+return Token

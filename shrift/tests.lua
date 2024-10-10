@@ -1,5 +1,7 @@
-local lexer = require("shrift.lexer")
-local token = require("shrift.token")
+---@type Lexer
+local Lexer = require("shrift.lexer")
+---@type Token
+local Token = require("shrift.token")
 local lust = require("libs.lust")
 local describe, it, expect = lust.describe, lust.it, lust.expect
 
@@ -10,16 +12,17 @@ describe("Shrift", function()
 
 	it("Next Token", function()
 		local tokens = {
-			{ token.type.ASSIGN, "=" },
-			{ token.type.PLUS, "+" },
-			{ token.type.LPAREN, "(" },
-			{ token.type.RPAREN, ")" },
-			{ token.type.LBRACE, "{" },
-			{ token.type.RBRACE, "}" },
-			{ token.type.EOF, "" },
+			{ Token.types.ASSIGN, "=" },
+			{ Token.types.PLUS, "+" },
+			{ Token.types.LPAREN, "(" },
+			{ Token.types.RPAREN, ")" },
+			{ Token.types.LBRACE, "{" },
+			{ Token.types.RBRACE, "}" },
+			{ Token.types.EOF, "" },
 		}
 
-		local l = lexer("=+(){}")
+		---@type Lexer
+		local l = Lexer("=+(){}")
 
 		for _, v in pairs(tokens) do
 			local tok = l:next_token()
