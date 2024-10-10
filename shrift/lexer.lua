@@ -1,20 +1,21 @@
 ---@type token
+Object = require("libs.classic")
 local token = require("shrift.token")
 
 ---@class Lexer
-local Lexer = Object:extend()
+local lexer = Object:extend()
 
-function Lexer:new(input)
+function lexer:new(input)
 	self.input = input
 	self.position = 0
-	self.read_position = 0
+	self.read_position = 1
 	self.ch = ""
 
 	self:read_char()
 end
 
-function Lexer:read_char()
-	if self.read_position >= #self.input then
+function lexer:read_char()
+	if self.read_position >= #self.input + 1 then
 		self.ch = ""
 	else
 		self.ch = self.input:sub(self.read_position, self.read_position)
@@ -24,7 +25,7 @@ function Lexer:read_char()
 	self.read_position = self.read_position + 1
 end
 
-function Lexer:next_token()
+function lexer:next_token()
 	local tok
 
 	if self.ch == "=" then
@@ -46,3 +47,5 @@ function Lexer:next_token()
 	self:read_char()
 	return tok
 end
+
+return lexer
