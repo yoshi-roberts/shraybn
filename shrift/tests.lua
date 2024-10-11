@@ -53,6 +53,21 @@ describe("Shrift", function()
 			{ token.TYPE.INT, "10" },
 			{ token.TYPE.GT, ">" },
 			{ token.TYPE.INT, "5" },
+			{ token.TYPE.IF, "if" },
+			{ token.TYPE.LPAREN, "(" },
+			{ token.TYPE.INT, "5" },
+			{ token.TYPE.LT, "<" },
+			{ token.TYPE.INT, "10" },
+			{ token.TYPE.RPAREN, ")" },
+			{ token.TYPE.LBRACE, "{" },
+			{ token.TYPE.RETURN, "return" },
+			{ token.TYPE.TRUE, "true" },
+			{ token.TYPE.RBRACE, "}" },
+			{ token.TYPE.ELSE, "else" },
+			{ token.TYPE.LBRACE, "{" },
+			{ token.TYPE.RETURN, "return" },
+			{ token.TYPE.FALSE, "false" },
+			{ token.TYPE.RBRACE, "}" },
 			{ token.TYPE.EOF, "" },
 		}
 
@@ -67,6 +82,12 @@ let add = fn(x, y) {
 let result = add(five, ten)
 !-/*5
 5 < 10 > 5
+
+if (5 < 10) {
+	return true
+} else {
+	return false
+}
 		]]
 
 		---@type Lexer

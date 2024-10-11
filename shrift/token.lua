@@ -31,11 +31,21 @@ token.TYPE = {
 	-- Keywords.
 	FUNCTION = "FUNCTION",
 	LET = "LET",
+	TRUE = "TRUE",
+	FALSE = "FALSE",
+	IF = "IF",
+	ELSE = "ELSE",
+	RETURN = "RETURN",
 }
 
 local keywords = {
 	["fn"] = token.TYPE.FUNCTION,
 	["let"] = token.TYPE.LET,
+	["true"] = token.TYPE.TRUE,
+	["false"] = token.TYPE.FALSE,
+	["if"] = token.TYPE.IF,
+	["else"] = token.TYPE.ELSE,
+	["return"] = token.TYPE.RETURN,
 }
 
 ---@alias TokenData {type: TokenType, literal: string}
