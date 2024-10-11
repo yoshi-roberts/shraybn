@@ -34,13 +34,25 @@ function lexer:next_token()
 	self:skip_whitespace()
 
 	if self.ch == "=" then
-		tok = token.new(token.TYPE.ASSIGN, self.ch)
+		if self:peek_char() == "=" then
+			local ch = self.ch
+			self:read_char()
+			tok = token.new(token.TYPE.EQ, ch .. self.ch)
+		else
+			tok = token.new(token.TYPE.ASSIGN, self.ch)
+		end
 	elseif self.ch == "+" then
 		tok = token.new(token.TYPE.PLUS, self.ch)
 	elseif self.ch == "-" then
 		tok = token.new(token.TYPE.MINUS, self.ch)
 	elseif self.ch == "!" then
-		tok = token.new(token.TYPE.BANG, self.ch)
+		if self:peek_char() == "=" then
+			local ch = self.ch
+			self:read_char()
+			tok = token.new(token.TYPE.NOT_EQ, ch .. self.ch)
+		else
+			tok = token.new(token.TYPE.BANG, self.ch)
+		end
 	elseif self.ch == "/" then
 		tok = token.new(token.TYPE.SLASH, self.ch)
 	elseif self.ch == "*" then
@@ -103,6 +115,20 @@ function lexer:read_number()
 	return self.input:sub(position, self.position - 1)
 end
 
+function lexer:skip_whitespace()
+	while self.ch:match("%s") or self.ch:match("%c") do
+		self:read_char()
+	end
+end
+
+function lexer:peek_char()
+	if self.read_position >= #self.input then
+		return ""
+	else
+		return self.input:sub(self.read_position, self.read_position)
+	end
+end
+
 ---@return boolean
 function lexer:is_letter()
 	return self.ch:match("%a") or self.ch == "_"
@@ -111,12 +137,6 @@ end
 ---@return boolean
 function lexer:is_digit()
 	return self.ch:match("%d")
-end
-
-function lexer:skip_whitespace()
-	while self.ch:match("%s") or self.ch:match("%c") do
-		self:read_char()
-	end
 end
 
 return lexer

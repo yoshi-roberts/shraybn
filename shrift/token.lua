@@ -23,6 +23,9 @@ token.TYPE = {
 	-- Delimiters.
 	COMMA = ",",
 
+	EQ = "==",
+	NOT_EQ = "!=",
+
 	LPAREN = "(",
 	RPAREN = ")",
 	LBRACE = "{",

@@ -68,6 +68,12 @@ describe("Shrift", function()
 			{ token.TYPE.RETURN, "return" },
 			{ token.TYPE.FALSE, "false" },
 			{ token.TYPE.RBRACE, "}" },
+			{ token.TYPE.INT, "10" },
+			{ token.TYPE.EQ, "==" },
+			{ token.TYPE.INT, "10" },
+			{ token.TYPE.INT, "10" },
+			{ token.TYPE.NOT_EQ, "!=" },
+			{ token.TYPE.INT, "9" },
 			{ token.TYPE.EOF, "" },
 		}
 
@@ -88,6 +94,9 @@ if (5 < 10) {
 } else {
 	return false
 }
+
+10 == 10
+10 != 9
 		]]
 
 		---@type Lexer
