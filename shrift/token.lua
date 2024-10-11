@@ -1,8 +1,8 @@
 ---@class Token
-local Token = {}
+local token = {}
 
 ---@enum TokenTypes
-Token.types = {
+token.TYPE = {
 	ILLEGAL = "ILLEGAL",
 	EOF = "EOF",
 
@@ -14,12 +14,16 @@ Token.types = {
 	ASSIGN = "=",
 	PLUS = "+",
 
+	-- Delimiters.
+	COMMA = ",",
+
 	LPAREN = "(",
 	RPAREN = ")",
 	LBRACE = "{",
 	RBRACE = "}",
 
 	-- Keywords.
+	FUNCTION = "FUNCTION",
 	LET = "LET",
 }
 
@@ -27,11 +31,11 @@ Token.types = {
 ---@param type TokenTypes
 ---@param literal string
 ---@return TokenData
-function Token.new(type, literal)
+function token.new(type, literal)
 	return {
 		type = type,
 		literal = literal,
 	}
 end
 
-return Token
+return token

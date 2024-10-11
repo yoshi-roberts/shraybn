@@ -1,7 +1,7 @@
 ---@type Lexer
-local Lexer = require("shrift.lexer")
+local lexer = require("shrift.lexer")
 ---@type Token
-local Token = require("shrift.token")
+local token = require("shrift.token")
 local lust = require("libs.lust")
 local describe, it, expect = lust.describe, lust.it, lust.expect
 
@@ -11,20 +11,56 @@ describe("Shrift", function()
 	end)
 
 	it("Next Token", function()
-		local tokens = {
-			{ Token.types.ASSIGN, "=" },
-			{ Token.types.PLUS, "+" },
-			{ Token.types.LPAREN, "(" },
-			{ Token.types.RPAREN, ")" },
-			{ Token.types.LBRACE, "{" },
-			{ Token.types.RBRACE, "}" },
-			{ Token.types.EOF, "" },
+		local tests = {
+			{ token.TYPE.LET, "let" },
+			{ token.TYPE.IDENT, "five" },
+			{ token.TYPE.ASSIGN, "=" },
+			{ token.TYPE.INT, "5" },
+			{ token.TYPE.LET, "let" },
+			{ token.TYPE.IDENT, "ten" },
+			{ token.TYPE.ASSIGN, "=" },
+			{ token.TYPE.INT, "10" },
+			{ token.TYPE.LET, "let" },
+			{ token.TYPE.IDENT, "add" },
+			{ token.TYPE.ASSIGN, "=" },
+			{ token.TYPE.FUNCTION, "fn" },
+			{ token.TYPE.LPAREN, "(" },
+			{ token.TYPE.IDENT, "x" },
+			{ token.TYPE.COMMA, "," },
+			{ token.TYPE.IDENT, "y" },
+			{ token.TYPE.RPAREN, ")" },
+			{ token.TYPE.LBRACE, "{" },
+			{ token.TYPE.IDENT, "x" },
+			{ token.TYPE.PLUS, "+" },
+			{ token.TYPE.IDENT, "y" },
+			{ token.TYPE.RBRACE, "}" },
+			{ token.TYPE.LET, "let" },
+			{ token.TYPE.IDENT, "result" },
+			{ token.TYPE.ASSIGN, "=" },
+			{ token.TYPE.IDENT, "add" },
+			{ token.TYPE.LPAREN, "(" },
+			{ token.TYPE.IDENT, "five" },
+			{ token.TYPE.COMMA, "," },
+			{ token.TYPE.IDENT, "ten" },
+			{ token.TYPE.RPAREN, ")" },
+			{ token.TYPE.EOF, "" },
 		}
 
-		---@type Lexer
-		local l = Lexer("=+(){}")
+		local input = [[
+let five = 5
+let ten = 10
 
-		for _, v in pairs(tokens) do
+let add = fn(x, y) {
+	x + y
+}
+
+let result = add(five, ten)
+		]]
+
+		---@type Lexer
+		local l = lexer(input)
+
+		for _, v in pairs(tests) do
 			local tok = l:next_token()
 
 			expect(tok.type).to.equal(v[1])
