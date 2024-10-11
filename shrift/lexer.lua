@@ -35,6 +35,20 @@ function lexer:next_token()
 
 	if self.ch == "=" then
 		tok = token.new(token.TYPE.ASSIGN, self.ch)
+	elseif self.ch == "+" then
+		tok = token.new(token.TYPE.PLUS, self.ch)
+	elseif self.ch == "-" then
+		tok = token.new(token.TYPE.MINUS, self.ch)
+	elseif self.ch == "!" then
+		tok = token.new(token.TYPE.BANG, self.ch)
+	elseif self.ch == "/" then
+		tok = token.new(token.TYPE.SLASH, self.ch)
+	elseif self.ch == "*" then
+		tok = token.new(token.TYPE.ASTERISK, self.ch)
+	elseif self.ch == "<" then
+		tok = token.new(token.TYPE.LT, self.ch)
+	elseif self.ch == ">" then
+		tok = token.new(token.TYPE.GT, self.ch)
 	elseif self.ch == "(" then
 		tok = token.new(token.TYPE.LPAREN, self.ch)
 	elseif self.ch == ")" then

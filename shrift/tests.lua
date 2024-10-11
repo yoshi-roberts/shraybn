@@ -43,6 +43,16 @@ describe("Shrift", function()
 			{ token.TYPE.COMMA, "," },
 			{ token.TYPE.IDENT, "ten" },
 			{ token.TYPE.RPAREN, ")" },
+			{ token.TYPE.BANG, "!" },
+			{ token.TYPE.MINUS, "-" },
+			{ token.TYPE.SLASH, "/" },
+			{ token.TYPE.ASTERISK, "*" },
+			{ token.TYPE.INT, "5" },
+			{ token.TYPE.INT, "5" },
+			{ token.TYPE.LT, "<" },
+			{ token.TYPE.INT, "10" },
+			{ token.TYPE.GT, ">" },
+			{ token.TYPE.INT, "5" },
 			{ token.TYPE.EOF, "" },
 		}
 
@@ -55,6 +65,8 @@ let add = fn(x, y) {
 }
 
 let result = add(five, ten)
+!-/*5
+5 < 10 > 5
 		]]
 
 		---@type Lexer
