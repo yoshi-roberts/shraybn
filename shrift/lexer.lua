@@ -28,26 +28,49 @@ end
 
 ---@return TokenData
 function lexer:next_token()
+	---@type TokenData
 	local tok
 
 	if self.ch == "=" then
-		tok = token.new(token.TYPES.ASSIGN, self.ch)
+		tok = token.new(token.TYPE.ASSIGN, self.ch)
 	elseif self.ch == "(" then
-		tok = token.new(token.TYPES.LPAREN, self.ch)
+		tok = token.new(token.TYPE.LPAREN, self.ch)
 	elseif self.ch == ")" then
-		tok = token.new(token.TYPES.RPAREN, self.ch)
+		tok = token.new(token.TYPE.RPAREN, self.ch)
 	elseif self.ch == "+" then
-		tok = token.new(token.TYPES.PLUS, self.ch)
+		tok = token.new(token.TYPE.PLUS, self.ch)
 	elseif self.ch == "{" then
-		tok = token.new(token.TYPES.LBRACE, self.ch)
+		tok = token.new(token.TYPE.LBRACE, self.ch)
 	elseif self.ch == "}" then
-		tok = token.new(token.TYPES.RBRACE, self.ch)
+		tok = token.new(token.TYPE.RBRACE, self.ch)
 	elseif self.ch == "" then
-		tok = token.new(token.TYPES.EOF, "")
+		tok = token.new(token.TYPE.EOF, "")
+	else -- Default.
+		if self:is_letter() then
+			tok.literal = self:read_identifier()
+		else
+			tok = token.new(token.TYPE.ILLEGAL, self.ch)
+		end
 	end
 
 	self:read_char()
 	return tok
+end
+
+---@return string
+function lexer:read_identifier()
+	local position = self.position
+
+	while self:is_letter() do
+		self:read_char()
+	end
+
+	return self.input:sub(position, self.position)
+end
+
+---@return boolean
+function lexer:is_letter()
+	return self.ch:match("%a") or self.ch == "_"
 end
 
 return lexer
