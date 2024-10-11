@@ -29,7 +29,9 @@ end
 ---@return TokenData
 function lexer:next_token()
 	---@type TokenData
-	local tok
+	local tok = {}
+
+	self:skip_whitespace()
 
 	if self.ch == "=" then
 		tok = token.new(token.TYPE.ASSIGN, self.ch)
@@ -37,6 +39,8 @@ function lexer:next_token()
 		tok = token.new(token.TYPE.LPAREN, self.ch)
 	elseif self.ch == ")" then
 		tok = token.new(token.TYPE.RPAREN, self.ch)
+	elseif self.ch == "," then
+		tok = token.new(token.TYPE.COMMA, self.ch)
 	elseif self.ch == "+" then
 		tok = token.new(token.TYPE.PLUS, self.ch)
 	elseif self.ch == "{" then
@@ -48,6 +52,12 @@ function lexer:next_token()
 	else -- Default.
 		if self:is_letter() then
 			tok.literal = self:read_identifier()
+			tok.type = token.lookup_ident(tok.literal)
+			return tok
+		elseif self:is_digit() then
+			tok.type = token.TYPE.INT
+			tok.literal = self:read_number()
+			return tok
 		else
 			tok = token.new(token.TYPE.ILLEGAL, self.ch)
 		end
@@ -65,12 +75,34 @@ function lexer:read_identifier()
 		self:read_char()
 	end
 
-	return self.input:sub(position, self.position)
+	return self.input:sub(position, self.position - 1)
+end
+
+---@return string
+function lexer:read_number()
+	local position = self.position
+
+	while self:is_digit() do
+		self:read_char()
+	end
+
+	return self.input:sub(position, self.position - 1)
 end
 
 ---@return boolean
 function lexer:is_letter()
 	return self.ch:match("%a") or self.ch == "_"
+end
+
+---@return boolean
+function lexer:is_digit()
+	return self.ch:match("%d")
+end
+
+function lexer:skip_whitespace()
+	while self.ch:match("%s") or self.ch:match("%c") do
+		self:read_char()
+	end
 end
 
 return lexer

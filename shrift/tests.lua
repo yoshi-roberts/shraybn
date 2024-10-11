@@ -63,6 +63,7 @@ let result = add(five, ten)
 		for _, v in pairs(tests) do
 			local tok = l:next_token()
 
+			print(tok.literal, tok.type)
 			expect(tok.type).to.equal(v[1])
 			expect(tok.literal).to.equal(v[2])
 		end
