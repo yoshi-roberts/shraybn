@@ -1,7 +1,5 @@
----@type Lexer
-local lexer = require("shrift.lexer")
----@type Token
-local token = require("shrift.token")
+local Lexer = require("shrift.lexer") --[[@as Lexer]]
+local token = require("shrift.token") --[[@as token]]
 
 local repl = {}
 
@@ -11,13 +9,18 @@ function repl:start()
 	while true do
 		io.write(prompt)
 
-		local line = io.read("*l")
+		local line = io.read("*L")
+
 		---@type Lexer
-		local l = lexer(line)
+		local l = Lexer(line)
 
 		local tok = l:next_token()
 		while tok.type ~= token.TYPE.EOF do
-			print(tok.type, tok.literal)
+			if tok.type ~= token.TYPE.NEWLINE then
+				print(tok.type, tok.literal)
+			else
+				print("NEWLINE", "\\n")
+			end
 			tok = l:next_token()
 		end
 	end

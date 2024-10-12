@@ -68,6 +68,8 @@ function lexer:next_token()
 		tok = token.new(token.TYPE.RPAREN, self.ch)
 	elseif self.ch == "," then
 		tok = token.new(token.TYPE.COMMA, self.ch)
+	elseif self.ch == "\n" then
+		tok = token.new(token.TYPE.NEWLINE, self.ch)
 	elseif self.ch == "+" then
 		tok = token.new(token.TYPE.PLUS, self.ch)
 	elseif self.ch == "{" then
@@ -117,7 +119,7 @@ function lexer:read_number()
 end
 
 function lexer:skip_whitespace()
-	while self.ch:match("%s") or self.ch:match("%c") do
+	while self.ch:match(" ") or self.ch == "\t" or self.ch == "\r" do
 		self:read_char()
 	end
 end
