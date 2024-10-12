@@ -77,8 +77,7 @@ function Parser:parse_let_statement()
 		return nil
 	end
 
-	-- TODO: We are skipping the expressions until we
-	-- reach a newline.
+	-- TODO: We are skipping the expressions until we reach a newline.
 	while not self:cur_token_is(token.TYPE.NEWLINE) do
 		self:next_token()
 	end
@@ -93,8 +92,7 @@ function Parser:parse_return_statement()
 
 	self:next_token()
 
-	-- TODO: We are skipping the expressions until we
-	-- reach a newline.
+	-- TODO: We are skipping the expressions until we reach a newline.
 	while not self:cur_token_is(token.TYPE.NEWLINE) do
 		self:next_token()
 	end
