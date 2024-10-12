@@ -47,6 +47,7 @@ function Parser:parse_statement()
 	end
 end
 
+---@return ASTLetStatement?
 function Parser:parse_let_statement()
 	---@type ASTLetStatement
 	local stmt = ast.LetStatement(self.cur_token)
@@ -63,6 +64,11 @@ function Parser:parse_let_statement()
 
 	-- TODO: We are skipping the expressions until we
 	-- reach a newline.
+	while not self:cur_token_is(token.TYPE.NEWLINE) do
+		self:next_token()
+	end
+
+	return stmt
 end
 
 ---@param tok_type TokenType

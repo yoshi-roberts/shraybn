@@ -62,7 +62,7 @@ function ast.Identifier:new(tok, value)
 end
 
 function ast.Identifier:literal()
-	return self.token.literal
+	return self.tok.literal
 end
 
 return ast

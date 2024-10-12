@@ -9,10 +9,12 @@ it("Next Token", function()
 		{ token.TYPE.IDENT, "five" },
 		{ token.TYPE.ASSIGN, "=" },
 		{ token.TYPE.INT, "5" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.LET, "let" },
 		{ token.TYPE.IDENT, "ten" },
 		{ token.TYPE.ASSIGN, "=" },
 		{ token.TYPE.INT, "10" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.LET, "let" },
 		{ token.TYPE.IDENT, "add" },
 		{ token.TYPE.ASSIGN, "=" },
@@ -23,10 +25,13 @@ it("Next Token", function()
 		{ token.TYPE.IDENT, "y" },
 		{ token.TYPE.RPAREN, ")" },
 		{ token.TYPE.LBRACE, "{" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.IDENT, "x" },
 		{ token.TYPE.PLUS, "+" },
 		{ token.TYPE.IDENT, "y" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.RBRACE, "}" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.LET, "let" },
 		{ token.TYPE.IDENT, "result" },
 		{ token.TYPE.ASSIGN, "=" },
@@ -36,16 +41,19 @@ it("Next Token", function()
 		{ token.TYPE.COMMA, "," },
 		{ token.TYPE.IDENT, "ten" },
 		{ token.TYPE.RPAREN, ")" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.BANG, "!" },
 		{ token.TYPE.MINUS, "-" },
 		{ token.TYPE.SLASH, "/" },
 		{ token.TYPE.ASTERISK, "*" },
 		{ token.TYPE.INT, "5" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.INT, "5" },
 		{ token.TYPE.LT, "<" },
 		{ token.TYPE.INT, "10" },
 		{ token.TYPE.GT, ">" },
 		{ token.TYPE.INT, "5" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.IF, "if" },
 		{ token.TYPE.LPAREN, "(" },
 		{ token.TYPE.INT, "5" },
@@ -53,44 +61,47 @@ it("Next Token", function()
 		{ token.TYPE.INT, "10" },
 		{ token.TYPE.RPAREN, ")" },
 		{ token.TYPE.LBRACE, "{" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.RETURN, "return" },
 		{ token.TYPE.TRUE, "true" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.RBRACE, "}" },
 		{ token.TYPE.ELSE, "else" },
 		{ token.TYPE.LBRACE, "{" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.RETURN, "return" },
 		{ token.TYPE.FALSE, "false" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.RBRACE, "}" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.INT, "10" },
 		{ token.TYPE.EQ, "==" },
 		{ token.TYPE.INT, "10" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.INT, "10" },
 		{ token.TYPE.NOT_EQ, "!=" },
 		{ token.TYPE.INT, "9" },
+		{ token.TYPE.NEWLINE, "\n" },
 		{ token.TYPE.EOF, "" },
 	}
 
 	local input = [[
 let five = 5
 let ten = 10
-
 let add = fn(x, y) {
 	x + y
 }
-
 let result = add(five, ten)
 !-/*5
 5 < 10 > 5
-
 if (5 < 10) {
 	return true
 } else {
 	return false
 }
-
 10 == 10
 10 != 9
-		]]
+]]
 
 	---@type Lexer
 	local l = Lexer(input)

@@ -17,7 +17,7 @@ it("Parse Let Statements", function()
 let x = 5
 let y = 10
 let foobar = 3675209
-		]]
+]]
 
 	---@type Lexer
 	local l = Lexer(input)
