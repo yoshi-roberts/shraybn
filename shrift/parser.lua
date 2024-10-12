@@ -7,15 +7,28 @@ local Lexer = require("shrift.lexer") --[[@as Lexer]]
 ---@field lexer Lexer
 ---@field cur_token TokenData
 ---@field peek_token TokenData
+---@field errors string[]
 local Parser = Object:extend()
 
 ---@private
 ---@param lexer Lexer
 function Parser:new(lexer)
 	self.lexer = lexer
+	self.errors = {}
 
 	self:next_token()
 	self:next_token()
+end
+
+---@param tok_type TokenType
+function Parser:peek_error(tok_type)
+	local msg = string.format(
+		"Expected next token to be %s, got %s instead.",
+		tok_type,
+		self.peek_token.type
+	)
+
+	table.insert(self.errors, msg)
 end
 
 function Parser:next_token()
@@ -90,6 +103,7 @@ function Parser:expect_peek(tok_type)
 		self:next_token()
 		return true
 	else
+		self:peek_error(tok_type)
 		return false
 	end
 end

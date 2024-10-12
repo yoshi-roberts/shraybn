@@ -12,11 +12,26 @@ local function test_let_statement(statement, name)
 	expect(statement.name:literal()).to.equal(name)
 end
 
+---@param parser Parser
+local function check_parse_errors(parser)
+	if #parser.errors == 0 then
+		return
+	end
+
+	print(string.format("Parser has %d errors.", #parser.errors))
+	for _, msg in pairs(parser.errors) do
+		print("Parser error: " .. msg)
+	end
+
+	-- Fail if we have any errors.
+	expect(#parser.errors).to.equal(0)
+end
+
 it("Parse Let Statements", function()
 	local input = [[
-let x = 5
-let y = 10
-let foobar = 3675209
+let x 5
+let = 10
+let 3675209
 ]]
 
 	---@type Lexer
@@ -26,6 +41,8 @@ let foobar = 3675209
 
 	---@type ASTProgram
 	local program = p:parse_program()
+	check_parse_errors(p)
+
 	expect(program).to_not.equal(nil)
 	expect(#program.statements).to.equal(3)
 
