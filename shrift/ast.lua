@@ -48,6 +48,21 @@ function ast.LetStatement:literal()
 	return self.token.literal
 end
 
+---@class ASTReturnStatement: ASTStatementNode
+---@field token TokenData
+---@field return_value ASTExpressionNode
+ast.ReturnStatement = Object:extend()
+
+---@param tok TokenData
+function ast.ReturnStatement:new(tok)
+	self.token = tok
+end
+
+---@type TokenLiteral
+function ast.ReturnStatement:literal()
+	return self.token.literal
+end
+
 ---@class ASTIdentifier: ASTExpressionNode
 ---@field token TokenData
 ---@field value string

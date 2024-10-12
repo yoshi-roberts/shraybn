@@ -55,6 +55,8 @@ end
 function Parser:parse_statement()
 	if self.cur_token.type == token.TYPE.LET then
 		return self:parse_let_statement()
+	elseif self.cur_token.type == token.TYPE.RETURN then
+		return self:parse_return_statement()
 	else
 		return nil
 	end
@@ -74,6 +76,22 @@ function Parser:parse_let_statement()
 	if not self:expect_peek(token.TYPE.ASSIGN) then
 		return nil
 	end
+
+	-- TODO: We are skipping the expressions until we
+	-- reach a newline.
+	while not self:cur_token_is(token.TYPE.NEWLINE) do
+		self:next_token()
+	end
+
+	return stmt
+end
+
+---@return ASTReturnStatement
+function Parser:parse_return_statement()
+	---@type ASTReturnStatement
+	local stmt = ast.ReturnStatement(self.cur_token)
+
+	self:next_token()
 
 	-- TODO: We are skipping the expressions until we
 	-- reach a newline.
