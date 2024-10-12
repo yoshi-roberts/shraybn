@@ -1,10 +1,11 @@
 Object = require("libs.classic")
----@type Token
+---@type token
 local token = require("shrift.token")
 
 ---@class Lexer
 local lexer = Object:extend()
 
+---@private
 ---@param input string
 function lexer:new(input)
 	self.input = input

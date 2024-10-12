@@ -9,8 +9,10 @@
 
 ---@class Object
 local Object = {}
+---@private
 Object.__index = Object
 
+---@private
 function Object:new() end
 
 function Object:extend()
@@ -47,10 +49,12 @@ function Object:is(T)
 	return false
 end
 
+---@private
 function Object:__tostring()
 	return "Object"
 end
 
+---@private
 function Object:__call(...)
 	local obj = setmetatable({}, self)
 	obj:new(...)

@@ -1,4 +1,4 @@
----@class Token
+---@class token
 local token = {}
 
 ---@enum TokenType
@@ -41,6 +41,7 @@ token.TYPE = {
 	RETURN = "RETURN",
 }
 
+---@type {[string]: TokenType}
 local keywords = {
 	["fn"] = token.TYPE.FUNCTION,
 	["let"] = token.TYPE.LET,
