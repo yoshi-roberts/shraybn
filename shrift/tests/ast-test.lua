@@ -15,6 +15,5 @@ it("AST Test String", function()
 
 	table.insert(program.statements, stmt)
 
-	print(tostring(program))
 	expect(tostring(program)).to.equal("let myVar = anotherVar")
 end)

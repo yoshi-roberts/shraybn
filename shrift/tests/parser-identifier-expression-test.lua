@@ -1,4 +1,3 @@
-local token = require("shrift.token") --[[@as token]]
 local ast = require("shrift.ast") --[[@as ast]]
 local Lexer = require("shrift.lexer") --[[@as Lexer]]
 local Parser = require("shrift.parser") --[[@as Parser]]
@@ -20,27 +19,27 @@ local function check_parse_errors(parser)
 	expect(#parser.errors).to.equal(0)
 end
 
-it("Parse Return Statements", function()
-	local input = [[
-return 5
-return 10
-return 3675209
-]]
+it("Identifier Expression", function()
+	local input = "foobar"
 
 	---@type Lexer
 	local l = Lexer(input)
 	---@type Parser
 	local p = Parser(l)
-
 	---@type ASTProgram
 	local program = p:parse_program()
 	check_parse_errors(p)
 
-	expect(#program.statements).to.equal(3)
+	expect(#program.statements).to.equal(1)
 
-	---@type ASTStatementNode
-	for _, stmt in pairs(program.statements) do
-		expect(stmt:is(ast.ReturnStatement)).to.equal(true)
-		expect(stmt:literal()).to.equal("return")
-	end
+	local stmt = program.statements[1]
+	---@cast stmt ASTExpressionStatement
+	expect(stmt:is(ast.ExpressionStatement)).to.equal(true)
+
+	local ident = stmt.expression
+	---@cast ident ASTIdentifier
+	expect(ident:is(ast.Identifier)).to.equal(true)
+
+	expect(ident.value).to.equal("foobar")
+	expect(ident:literal()).to.equal("foobar")
 end)

@@ -1,24 +1,8 @@
-let found_key true
-let errors 0
+let found_key = true
+let errors = 0
 
-# Start Of Test:
-	if found_key != true or found_key > 1:
-		Charles: I knew it!
-		Text with no character name.
-		choice: Yes I did.
-			Charles: Wow...
-			jump Truth
-		choice: No! I just found it!
-			jump Lie
-
-# Truth:
-	Charles:
-		I can't believe it.
-		Why didn't you tell me?
-	set errors ++
-
-# Lie:
-	Charles:
-		Hmm...
-		Where?
-	You need to think of something.
+update_errors():
+	if (errors < 100):
+		errors = errors + 1
+	end
+end
