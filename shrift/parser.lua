@@ -5,7 +5,7 @@ local Lexer = require("shrift.lexer") --[[@as Lexer]]
 
 ---@alias PrefixParseFn fun(self: Parser): ASTExpressionNode?
 ---@alias InfixParseFn
----| fun(self: Parser, expression: ASTExpressionNode): ASTExpressionNode?
+---| fun(self: Parser, left: ASTExpressionNode): ASTExpressionNode?
 
 ---@class Parser
 ---@field cur_token TokenData
@@ -26,6 +26,18 @@ local PRECEDENCE = {
 	CALL = 7, -- 		my_func(x)
 }
 
+---@type {[TokenType]: ExpressionPrecedence}
+local precedences = {
+	[token.TYPE.EQ] = PRECEDENCE.EQUALS,
+	[token.TYPE.NOT_EQ] = PRECEDENCE.EQUALS,
+	[token.TYPE.LT] = PRECEDENCE.LESSGREATER,
+	[token.TYPE.GT] = PRECEDENCE.LESSGREATER,
+	[token.TYPE.PLUS] = PRECEDENCE.SUM,
+	[token.TYPE.MINUS] = PRECEDENCE.SUM,
+	[token.TYPE.SLASH] = PRECEDENCE.PRODUCT,
+	[token.TYPE.ASTERISK] = PRECEDENCE.PRODUCT,
+}
+
 ---@private
 ---@param lexer Lexer
 function Parser:new(lexer)
@@ -39,6 +51,15 @@ function Parser:new(lexer)
 	self:register_prefix(token.TYPE.INT, self.parse_integer_literal)
 	self:register_prefix(token.TYPE.BANG, self.parse_prefix_expression)
 	self:register_prefix(token.TYPE.MINUS, self.parse_prefix_expression)
+
+	self:register_infix(token.TYPE.PLUS, self.parse_infix_expression)
+	self:register_infix(token.TYPE.MINUS, self.parse_infix_expression)
+	self:register_infix(token.TYPE.SLASH, self.parse_infix_expression)
+	self:register_infix(token.TYPE.ASTERISK, self.parse_infix_expression)
+	self:register_infix(token.TYPE.EQ, self.parse_infix_expression)
+	self:register_infix(token.TYPE.NOT_EQ, self.parse_infix_expression)
+	self:register_infix(token.TYPE.LT, self.parse_infix_expression)
+	self:register_infix(token.TYPE.GT, self.parse_infix_expression)
 
 	self:next_token()
 	self:next_token()
@@ -127,6 +148,20 @@ function Parser:parse_expression(precedence)
 	end
 
 	local left_exp = prefix(self)
+
+	while
+		not self:peek_token_is(token.TYPE.NEWLINE)
+		and precedence < self:peek_precedence()
+	do
+		local infix = self.infix_parse_fns[self.peek_token.type]
+		if not infix then
+			return left_exp
+		end
+
+		self:next_token()
+		left_exp = infix(self, left_exp)
+	end
+
 	return left_exp
 end
 
@@ -197,6 +232,19 @@ function Parser:parse_prefix_expression()
 	return expression
 end
 
+---@type InfixParseFn
+function Parser:parse_infix_expression(left)
+	---@type ASTInfixExpression
+	local expression =
+		ast.InfixExpression(self.cur_token, self.cur_token.literal, left)
+	local precedence = self:cur_precedence()
+
+	self:next_token()
+	expression.right = self:parse_expression(precedence)
+
+	return expression
+end
+
 ---@param tok_type TokenType
 ---@return boolean
 function Parser:cur_token_is(tok_type)
@@ -219,6 +267,24 @@ function Parser:expect_peek(tok_type)
 		self:peek_error(tok_type)
 		return false
 	end
+end
+
+---@return integer
+function Parser:peek_precedence()
+	if precedences[self.peek_token.type] then
+		return precedences[self.peek_token.type]
+	end
+
+	return PRECEDENCE.LOWEST
+end
+
+---@return integer
+function Parser:cur_precedence()
+	if precedences[self.cur_token.type] then
+		return precedences[self.cur_token.type]
+	end
+
+	return PRECEDENCE.LOWEST
 end
 
 ---@param tok_type TokenType

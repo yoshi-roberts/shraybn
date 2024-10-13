@@ -158,6 +158,10 @@ function ast.IntegerLiteral:literal()
 	return self.token.literal
 end
 
+function ast.IntegerLiteral:__tostring()
+	return tostring(self.value)
+end
+
 ---@class ASTPrefixExpression: ASTExpressionNode
 ---@field token TokenData
 ---@field operator string
@@ -180,6 +184,39 @@ end
 ---@private
 function ast.PrefixExpression:__tostring()
 	local out = string.format("(%s%s)", self.operator, tostring(self.right))
+	return out
+end
+
+---@class ASTInfixExpression: ASTExpressionNode
+---@field token TokenData
+---@field left ASTExpressionNode
+---@field operator string
+---@field right ASTExpressionNode
+ast.InfixExpression = Object:extend()
+
+---@private
+---@param tok TokenData
+---@param operator string
+---@param left ASTExpressionNode
+function ast.InfixExpression:new(tok, operator, left)
+	self.token = tok
+	self.operator = operator
+	self.left = left
+end
+
+---@type TokenLiteral
+function ast.InfixExpression:literal()
+	return self.token.literal
+end
+
+---@private
+function ast.InfixExpression:__tostring()
+	local out = string.format(
+		"(%s %s %s)",
+		tostring(self.left),
+		self.operator,
+		tostring(self.right)
+	)
 	return out
 end
 
