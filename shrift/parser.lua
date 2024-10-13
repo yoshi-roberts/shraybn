@@ -3,9 +3,9 @@ local token = require("shrift.token") --[[@as token]]
 local Object = require("libs.classic") --[[@as Object]]
 local Lexer = require("shrift.lexer") --[[@as Lexer]]
 
----@alias PrefixParseFn fun(self: Parser): ASTExpressionNode
+---@alias PrefixParseFn fun(self: Parser): ASTExpressionNode?
 ---@alias InfixParseFn
----| fun(self: Parser, expression: ASTExpressionNode): ASTExpressionNode
+---| fun(self: Parser, expression: ASTExpressionNode): ASTExpressionNode?
 
 ---@class Parser
 ---@field cur_token TokenData
@@ -36,6 +36,9 @@ function Parser:new(lexer)
 	self.infix_parse_fns = {}
 
 	self:register_prefix(token.TYPE.IDENT, self.parse_identifier)
+	self:register_prefix(token.TYPE.INT, self.parse_integer_literal)
+	self:register_prefix(token.TYPE.BANG, self.parse_prefix_expression)
+	self:register_prefix(token.TYPE.MINUS, self.parse_prefix_expression)
 
 	self:next_token()
 	self:next_token()
@@ -106,12 +109,20 @@ function Parser:parse_let_statement()
 	return stmt
 end
 
+---@param tok_type TokenType
+function Parser:no_prefix_parse_fn_error(tok_type)
+	local msg =
+		string.format("No prefix parse function for %s found.", tok_type)
+	table.insert(self.errors, msg)
+end
+
 ---@param precedence ExpressionPrecedence
 ---@return ASTExpressionNode?
 function Parser:parse_expression(precedence)
 	local prefix = self.prefix_parse_fns[self.cur_token.type]
 
 	if not prefix then
+		self:no_prefix_parse_fn_error(self.cur_token.type)
 		return nil
 	end
 
@@ -152,6 +163,38 @@ end
 ---@type PrefixParseFn
 function Parser:parse_identifier()
 	return ast.Identifier(self.cur_token, self.cur_token.literal)
+end
+
+---@type PrefixParseFn
+function Parser:parse_integer_literal()
+	---@type ASTIntegerLiteral
+	local lit = ast.IntegerLiteral(self.cur_token)
+
+	local val = tonumber(self.cur_token.literal)
+	if not val then
+		local msg = string.format(
+			"Could not parse %s as integer.",
+			self.cur_token.literal
+		)
+
+		table.insert(self.errors, msg)
+		return nil
+	end
+
+	lit.value = val
+	return lit
+end
+
+---@type PrefixParseFn
+function Parser:parse_prefix_expression()
+	---@type ASTPrefixExpression
+	local expression =
+		ast.PrefixExpression(self.cur_token, self.cur_token.literal)
+
+	self:next_token()
+	expression.right = self:parse_expression(PRECEDENCE.PREFIX)
+
+	return expression
 end
 
 ---@param tok_type TokenType

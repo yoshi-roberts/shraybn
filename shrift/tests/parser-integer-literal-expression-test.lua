@@ -19,8 +19,8 @@ local function check_parse_errors(parser)
 	expect(#parser.errors).to.equal(0)
 end
 
-it("Parse Identifier Expression", function()
-	local input = "foobar"
+it("Parse Integer Literal Expression", function()
+	local input = "5"
 
 	---@type Lexer
 	local l = Lexer(input)
@@ -36,10 +36,10 @@ it("Parse Identifier Expression", function()
 	---@cast stmt ASTExpressionStatement
 	expect(stmt:is(ast.ExpressionStatement)).to.equal(true)
 
-	local ident = stmt.expression
-	---@cast ident ASTIdentifier
-	expect(ident:is(ast.Identifier)).to.equal(true)
+	local literal = stmt.expression
+	---@cast literal ASTIntegerLiteral
+	expect(literal:is(ast.IntegerLiteral)).to.equal(true)
 
-	expect(ident.value).to.equal("foobar")
-	expect(ident:literal()).to.equal("foobar")
+	expect(literal.value).to.equal(5)
+	expect(literal:literal()).to.equal("5")
 end)

@@ -142,4 +142,45 @@ function ast.Identifier:__tostring()
 	return self.value
 end
 
+---@class ASTIntegerLiteral: ASTExpressionNode
+---@field token TokenData
+---@field value integer
+ast.IntegerLiteral = Object:extend()
+
+---@private
+---@param tok TokenData
+function ast.IntegerLiteral:new(tok)
+	self.token = tok
+end
+
+---@type TokenLiteral
+function ast.IntegerLiteral:literal()
+	return self.token.literal
+end
+
+---@class ASTPrefixExpression: ASTExpressionNode
+---@field token TokenData
+---@field operator string
+---@field right ASTExpressionNode
+ast.PrefixExpression = Object:extend()
+
+---@private
+---@param tok TokenData
+---@param operator string
+function ast.PrefixExpression:new(tok, operator)
+	self.token = tok
+	self.operator = operator
+end
+
+---@type TokenLiteral
+function ast.PrefixExpression:literal()
+	return self.token.literal
+end
+
+---@private
+function ast.PrefixExpression:__tostring()
+	local out = string.format("(%s%s)", self.operator, tostring(self.right))
+	return out
+end
+
 return ast
