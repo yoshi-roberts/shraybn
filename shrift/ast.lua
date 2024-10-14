@@ -292,9 +292,38 @@ function ast.IfExpression:__tostring()
 	)
 
 	if self.alternative then
-		out = out .. "else " .. tostring(self.alternative)
+		out = out .. " else " .. tostring(self.alternative)
 	end
 
+	return out
+end
+
+---@class ASTFunctionLiteral: ASTExpressionNode
+---@field token TokenData
+---@field parameters ASTIdentifier[]
+---@field body ASTBlockStatement
+ast.FunctionLiteral = Object:extend()
+
+---@private
+---@param tok TokenData
+function ast.FunctionLiteral:new(tok)
+	self.token = tok
+end
+
+---@type TokenLiteral
+function ast.FunctionLiteral:literal()
+	return self.token.literal
+end
+
+---@private
+function ast.FunctionLiteral:__tostring()
+	local out = self:literal() .. "("
+
+	for _, v in pairs(self.parameters) do
+		out = out .. tostring(v)
+	end
+
+	out = out .. ") " .. tostring(self.body)
 	return out
 end
 

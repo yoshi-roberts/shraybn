@@ -1,4 +1,3 @@
-local utils = require("shrift.tests.utils") --[[@as test_utils]]
 local lust = require("libs.lust")
 local describe = lust.describe
 
@@ -14,4 +13,6 @@ describe("Shrift", function()
 	require("shrift.tests.parser-infix-expression-test")
 	require("shrift.tests.parser-operator-precedence-test")
 	require("shrift.tests.parser-if-expression-test")
+	require("shrift.tests.parser-function-parameters-test")
+	require("shrift.tests.parser-function-literal-expression-test")
 end)

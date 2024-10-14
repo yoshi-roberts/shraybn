@@ -55,6 +55,7 @@ function Parser:new(lexer)
 	self:register_prefix(token.TYPE.FALSE, self.parse_boolean)
 	self:register_prefix(token.TYPE.LPAREN, self.parse_grouped_expression)
 	self:register_prefix(token.TYPE.IF, self.parse_if_expression)
+	self:register_prefix(token.TYPE.FUNCTION, self.parse_function_literal)
 
 	self:register_infix(token.TYPE.PLUS, self.parse_infix_expression)
 	self:register_infix(token.TYPE.MINUS, self.parse_infix_expression)
@@ -309,6 +310,55 @@ function Parser:parse_if_expression()
 	end
 
 	return expression
+end
+
+---@type PrefixParseFn
+function Parser:parse_function_literal()
+	---@type ASTFunctionLiteral
+	local lit = ast.FunctionLiteral(self.cur_token)
+
+	if not self:expect_peek(token.TYPE.LPAREN) then
+		return nil
+	end
+
+	lit.parameters = self:parse_function_parameters()
+
+	if not self:expect_peek(token.TYPE.LBRACE) then
+		return nil
+	end
+
+	lit.body = self:parse_block_statement()
+
+	return lit
+end
+
+function Parser:parse_function_parameters()
+	---@type ASTIdentifier[]
+	local identifiers = {}
+
+	if self:peek_token_is(token.TYPE.RPAREN) then
+		self:next_token()
+		return identifiers
+	end
+
+	self:next_token()
+
+	---@type ASTIdentifier
+	local ident = ast.Identifier(self.cur_token, self.cur_token.literal)
+	table.insert(identifiers, ident)
+
+	while self:peek_token_is(token.TYPE.COMMA) do
+		self:next_token()
+		self:next_token()
+		ident = ast.Identifier(self.cur_token, self.cur_token.literal)
+		table.insert(identifiers, ident)
+	end
+
+	if not self:expect_peek(token.TYPE.RPAREN) then
+		return nil
+	end
+
+	return identifiers
 end
 
 ---@type InfixParseFn
