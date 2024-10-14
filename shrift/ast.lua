@@ -31,7 +31,35 @@ function ast.Program:literal()
 	end
 end
 
+---@private
 function ast.Program:__tostring()
+	local out = ""
+	for _, v in pairs(self.statements) do
+		out = out .. tostring(v)
+	end
+
+	return out
+end
+
+---@class ASTBlockStatement: ASTStatementNode
+---@field token TokenData
+---@field statements ASTStatementNode[]
+ast.BlockStatement = Object:extend()
+
+---@private
+---@param tok TokenData
+function ast.BlockStatement:new(tok)
+	self.token = tok
+	self.statements = {}
+end
+
+---@type TokenLiteral
+function ast.BlockStatement:literal()
+	return self.token.literal
+end
+
+---@private
+function ast.BlockStatement:__tostring()
 	local out = ""
 	for _, v in pairs(self.statements) do
 		out = out .. tostring(v)
@@ -240,6 +268,33 @@ function ast.InfixExpression:__tostring()
 		self.operator,
 		tostring(self.right)
 	)
+	return out
+end
+
+---@class ASTIfExpression: ASTExpressionNode
+---@field token TokenData
+---@field condition ASTExpressionNode
+---@field consequence ASTBlockStatement
+---@field alternative ASTBlockStatement
+ast.IfExpression = Object:extend()
+
+---@type TokenLiteral
+function ast.IfExpression:literal()
+	return self.token.literal
+end
+
+---@private
+function ast.IfExpression:__tostring()
+	local out = string.format(
+		"if%s %s",
+		tostring(self.condition),
+		tostring(self.consequence)
+	)
+
+	if self.alternative then
+		out = out .. "else " .. tostring(self.alternative)
+	end
+
 	return out
 end
 

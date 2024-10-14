@@ -54,6 +54,7 @@ function Parser:new(lexer)
 	self:register_prefix(token.TYPE.TRUE, self.parse_boolean)
 	self:register_prefix(token.TYPE.FALSE, self.parse_boolean)
 	self:register_prefix(token.TYPE.LPAREN, self.parse_grouped_expression)
+	self:register_prefix(token.TYPE.IF, self.parse_if_expression)
 
 	self:register_infix(token.TYPE.PLUS, self.parse_infix_expression)
 	self:register_infix(token.TYPE.MINUS, self.parse_infix_expression)
@@ -198,6 +199,28 @@ function Parser:parse_expression_statement()
 	return stmt
 end
 
+function Parser:parse_block_statement()
+	---@type ASTBlockStatement
+	local block = ast.BlockStatement(self.cur_token)
+
+	self:next_token()
+
+	while
+		not self:cur_token_is(token.TYPE.RBRACE)
+		and not self:cur_token_is(token.TYPE.EOF)
+	do
+		local stmt = self:parse_statement()
+
+		if stmt then
+			table.insert(block.statements, stmt)
+		end
+
+		self:next_token()
+	end
+
+	return block
+end
+
 ---@type PrefixParseFn
 function Parser:parse_identifier()
 	return ast.Identifier(self.cur_token, self.cur_token.literal)
@@ -250,6 +273,42 @@ function Parser:parse_grouped_expression()
 	end
 
 	return exp
+end
+
+---@type PrefixParseFn
+function Parser:parse_if_expression()
+	---@type ASTIfExpression
+	local expression = ast.IfExpression(self.cur_token)
+
+	if not self:expect_peek(token.TYPE.LPAREN) then
+		return nil
+	end
+
+	self:next_token()
+	expression.condition = self:parse_expression(PRECEDENCE.LOWEST)
+
+	if not self:expect_peek(token.TYPE.RPAREN) then
+		return nil
+	end
+
+	if not self:expect_peek(token.TYPE.LBRACE) then
+		return nil
+	end
+
+	expression.consequence = self:parse_block_statement()
+
+	-- Else Statement --
+	if self:peek_token_is(token.TYPE.ELSE) then
+		self:next_token()
+
+		if not self:expect_peek(token.TYPE.LBRACE) then
+			return nil
+		end
+
+		expression.alternative = self:parse_block_statement()
+	end
+
+	return expression
 end
 
 ---@type InfixParseFn

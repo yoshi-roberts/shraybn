@@ -2,6 +2,7 @@ local ast = require("shrift.ast") --[[@as ast]]
 local lust = require("libs.lust")
 local expect = lust.expect
 
+---@class test_utils
 local utils = {}
 
 ---@param parser Parser
@@ -10,9 +11,9 @@ function utils.check_parse_errors(parser)
 		return
 	end
 
-	print(string.format("Parser has %d errors.", #parser.errors))
+	print(string.format("		Parser has %d errors.", #parser.errors))
 	for _, msg in pairs(parser.errors) do
-		print("Parser error: " .. msg)
+		print("		Parser error: " .. msg)
 	end
 
 	-- Fail if we have any errors.

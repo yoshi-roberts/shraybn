@@ -1,34 +1,50 @@
 let errors = 0
 let arr = [1, 3, 5]
 
-let update_errors = fn():
-	if (errors < 100):
+fn update_errors() {
+	if (errors < 100) {
 		errors = errors + 1
-	end
-end
+	}
+}
+
+let update_errors = fn() {
+	if (errors < 100) {
+		errors = errors + 1
+	}
+}
+
+if (errors < 100) {
+	println("Less!")
+} elseif (errors > 100) {
+	println("More!")
+} else {
+	println("Equal!")
+}
 
 // Dialogue.
-label start:
-	say "Charles":
+label start {
+	say Charles {
 		"Hey there!"
 		"This is the first part."
 		"Want to get to the next part?"
-	end
+	}
 
 	text "What do I do?"
 
-	choice "Sure!": goto next
-	choice "Not realy.":
-		say "Charles": "Huh."
-		say "Charles": "That's too bad."
+	choice "Sure!" {
+		goto next
+	}
+	choice "Not realy." {
+		say Charles "Huh."
+		say Charles "That's too bad."
 		update_errors()
-	end
-end
+	}
+}	
 
-label next:
-	say "Charles":
+label next {
+	say Charles {
 		"Well, here we are."
 		"In the next part."
 		"Exciting!"
-	end
-end
+	}
+}
