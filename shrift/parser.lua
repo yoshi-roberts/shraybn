@@ -53,6 +53,7 @@ function Parser:new(lexer)
 	self:register_prefix(token.TYPE.MINUS, self.parse_prefix_expression)
 	self:register_prefix(token.TYPE.TRUE, self.parse_boolean)
 	self:register_prefix(token.TYPE.FALSE, self.parse_boolean)
+	self:register_prefix(token.TYPE.LPAREN, self.parse_grouped_expression)
 
 	self:register_infix(token.TYPE.PLUS, self.parse_infix_expression)
 	self:register_infix(token.TYPE.MINUS, self.parse_infix_expression)
@@ -237,6 +238,18 @@ end
 ---@type PrefixParseFn
 function Parser:parse_boolean()
 	return ast.Boolean(self.cur_token, self:cur_token_is(token.TYPE.TRUE))
+end
+
+---@type PrefixParseFn
+function Parser:parse_grouped_expression()
+	self:next_token()
+
+	local exp = self:parse_expression(PRECEDENCE.LOWEST)
+	if not self:expect_peek(token.TYPE.RPAREN) then
+		return nil
+	end
+
+	return exp
 end
 
 ---@type InfixParseFn
