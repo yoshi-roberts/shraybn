@@ -51,6 +51,8 @@ function Parser:new(lexer)
 	self:register_prefix(token.TYPE.INT, self.parse_integer_literal)
 	self:register_prefix(token.TYPE.BANG, self.parse_prefix_expression)
 	self:register_prefix(token.TYPE.MINUS, self.parse_prefix_expression)
+	self:register_prefix(token.TYPE.TRUE, self.parse_boolean)
+	self:register_prefix(token.TYPE.FALSE, self.parse_boolean)
 
 	self:register_infix(token.TYPE.PLUS, self.parse_infix_expression)
 	self:register_infix(token.TYPE.MINUS, self.parse_infix_expression)
@@ -230,6 +232,11 @@ function Parser:parse_prefix_expression()
 	expression.right = self:parse_expression(PRECEDENCE.PREFIX)
 
 	return expression
+end
+
+---@type PrefixParseFn
+function Parser:parse_boolean()
+	return ast.Boolean(self.cur_token, self:cur_token_is(token.TYPE.TRUE))
 end
 
 ---@type InfixParseFn

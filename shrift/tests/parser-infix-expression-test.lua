@@ -5,17 +5,6 @@ local utils = require("shrift.tests.utils")
 local lust = require("libs.lust")
 local it, expect = lust.it, lust.expect
 
----@param int_literal ASTExpressionNode
----@param value integer
-local function test_integer_literal(int_literal, value)
-	local int = int_literal
-	---@cast int ASTIntegerLiteral
-
-	expect(int:is(ast.IntegerLiteral)).to.equal(true)
-	expect(int.value).to.equal(value)
-	expect(int:literal()).to.equal(tostring(value))
-end
-
 it("Parse Infix Expression", function()
 	local infix_tests = {
 		{ "5 + 5", 5, "+", 5 },
@@ -26,6 +15,9 @@ it("Parse Infix Expression", function()
 		{ "5 < 5", 5, "<", 5 },
 		{ "5 == 5", 5, "==", 5 },
 		{ "5 != 5", 5, "!=", 5 },
+		{ "true == true", true, "==", true },
+		{ "true != false", true, "!=", false },
+		{ "false == false", false, "==", false },
 	}
 
 	for _, v in pairs(infix_tests) do
@@ -46,14 +38,20 @@ it("Parse Infix Expression", function()
 
 		local stmt = program.statements[1]
 		---@cast stmt ASTExpressionStatement
-		expect(stmt:is(ast.ExpressionStatement)).to.equal(true)
-
-		local exp = stmt.expression
-		---@cast exp ASTInfixExpression
-		expect(exp:is(ast.InfixExpression)).to.equal(true)
-
-		test_integer_literal(exp.left, left_val)
-		expect(exp.operator).to.equal(operator)
-		test_integer_literal(exp.right, right_val)
+		utils.test_infix_expression(
+			stmt.expression,
+			left_val,
+			operator,
+			right_val
+		)
+		-- expect(stmt:is(ast.ExpressionStatement)).to.equal(true)
+		--
+		-- local exp = stmt.expression
+		-- ---@cast exp ASTInfixExpression
+		-- expect(exp:is(ast.InfixExpression)).to.equal(true)
+		--
+		-- utils.test_integer_literal(exp.left, left_val)
+		-- expect(exp.operator).to.equal(operator)
+		-- utils.test_integer_literal(exp.right, right_val)
 	end
 end)

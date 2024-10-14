@@ -162,6 +162,29 @@ function ast.IntegerLiteral:__tostring()
 	return tostring(self.value)
 end
 
+---@class ASTBoolean: ASTExpressionNode
+---@field token TokenData
+---@field value boolean
+ast.Boolean = Object:extend()
+
+---@private
+---@param tok TokenData
+---@param value boolean
+function ast.Boolean:new(tok, value)
+	self.token = tok
+	self.value = value
+end
+
+---@type TokenLiteral
+function ast.Boolean:literal()
+	return self.token.literal
+end
+
+---@private
+function ast.Boolean:__tostring()
+	return self.token.literal
+end
+
 ---@class ASTPrefixExpression: ASTExpressionNode
 ---@field token TokenData
 ---@field operator string

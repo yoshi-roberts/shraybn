@@ -5,18 +5,15 @@ local utils = require("shrift.tests.utils")
 local lust = require("libs.lust")
 local it, expect = lust.it, lust.expect
 
-it("Parse Prefix Expression", function()
-	local prefix_tests = {
-		{ "!5", "!", 5 },
-		{ "-15", "-", 15 },
-		{ "!true\n", "!", true },
-		{ "!false\n", "!", false },
+it("Parse Boolean Expression", function()
+	local tests = {
+		{ "true", true },
+		{ "false", false },
 	}
 
-	for _, v in pairs(prefix_tests) do
+	for _, v in pairs(tests) do
 		local input = v[1]
-		local operator = v[2]
-		local value = v[3]
+		local expected = v[2]
 
 		---@type Lexer
 		local l = Lexer(input)
@@ -32,11 +29,11 @@ it("Parse Prefix Expression", function()
 		---@cast stmt ASTExpressionStatement
 		expect(stmt:is(ast.ExpressionStatement)).to.equal(true)
 
-		local exp = stmt.expression
-		---@cast exp ASTPrefixExpression
-		expect(exp:is(ast.PrefixExpression)).to.equal(true)
+		local literal = stmt.expression
+		---@cast literal ASTBoolean
+		expect(literal:is(ast.Boolean)).to.equal(true)
 
-		expect(exp.operator).to.equal(operator)
-		utils.test_literal_expression(exp.right, value)
+		expect(literal.value).to.equal(expected)
+		expect(literal:literal()).to.equal(input)
 	end
 end)
