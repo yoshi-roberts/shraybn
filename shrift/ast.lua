@@ -327,4 +327,38 @@ function ast.FunctionLiteral:__tostring()
 	return out
 end
 
+---@class ASTCallExpression: ASTExpressionNode
+---@field token TokenData
+---@field func ASTExpressionNode
+---@field arguments ASTExpressionNode[]
+ast.CallExpression = Object:extend()
+
+---@private
+---@param tok TokenData
+---@param func ASTExpressionNode
+function ast.CallExpression:new(tok, func)
+	self.token = tok
+	self.func = func
+end
+
+---@type TokenLiteral
+function ast.CallExpression:literal()
+	return self.token.literal
+end
+
+---@private
+function ast.CallExpression:__tostring()
+	local out = tostring(self.func) .. "("
+
+	for k, v in pairs(self.arguments) do
+		out = out .. tostring(v)
+		if k ~= #self.arguments then
+			out = out .. ", "
+		end
+	end
+
+	out = out .. ")"
+	return out
+end
+
 return ast

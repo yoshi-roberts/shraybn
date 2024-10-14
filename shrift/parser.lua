@@ -36,6 +36,7 @@ local precedences = {
 	[token.TYPE.MINUS] = PRECEDENCE.SUM,
 	[token.TYPE.SLASH] = PRECEDENCE.PRODUCT,
 	[token.TYPE.ASTERISK] = PRECEDENCE.PRODUCT,
+	[token.TYPE.LPAREN] = PRECEDENCE.CALL,
 }
 
 ---@private
@@ -65,6 +66,7 @@ function Parser:new(lexer)
 	self:register_infix(token.TYPE.NOT_EQ, self.parse_infix_expression)
 	self:register_infix(token.TYPE.LT, self.parse_infix_expression)
 	self:register_infix(token.TYPE.GT, self.parse_infix_expression)
+	self:register_infix(token.TYPE.LPAREN, self.parse_call_expression)
 
 	self:next_token()
 	self:next_token()
@@ -372,6 +374,41 @@ function Parser:parse_infix_expression(left)
 	expression.right = self:parse_expression(precedence)
 
 	return expression
+end
+
+---@type InfixParseFn
+function Parser:parse_call_expression(left)
+	---@type ASTCallExpression
+	local exp = ast.CallExpression(self.cur_token, left)
+	exp.arguments = self:parse_call_arguments()
+
+	return exp
+end
+
+---@return ASTExpressionNode[]?
+function Parser:parse_call_arguments()
+	---@type ASTExpressionNode[]
+	local args = {}
+
+	if self:peek_token_is(token.TYPE.RPAREN) then
+		self:next_token()
+		return args
+	end
+
+	self:next_token()
+	table.insert(args, self:parse_expression(PRECEDENCE.LOWEST))
+
+	while self:peek_token_is(token.TYPE.COMMA) do
+		self:next_token()
+		self:next_token()
+		table.insert(args, self:parse_expression(PRECEDENCE.LOWEST))
+	end
+
+	if not self:expect_peek(token.TYPE.RPAREN) then
+		return nil
+	end
+
+	return args
 end
 
 ---@param tok_type TokenType
