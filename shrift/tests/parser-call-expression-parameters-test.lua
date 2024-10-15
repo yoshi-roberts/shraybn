@@ -7,10 +7,10 @@ local it, expect = lust.it, lust.expect
 
 it("Parse Call Expression Parameters", function()
 	local tests = {
-		{ "add()", {} },
-		{ "add(x)", { "x" } },
-		{ "add(x, y)", { "x", "y" } },
-		{ "add(x, y, z)", { "x", "y", "z" } },
+		{ "add()\n", {} },
+		{ "add(x)\n", { "x" } },
+		{ "add(x, y)\n", { "x", "y" } },
+		{ "add(x, y, z)\n", { "x", "y", "z" } },
 	}
 
 	for _, v in pairs(tests) do

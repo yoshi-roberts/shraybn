@@ -2,45 +2,38 @@ local token = require("shrift.token") --[[@as token]]
 local ast = require("shrift.ast") --[[@as ast]]
 local Lexer = require("shrift.lexer") --[[@as Lexer]]
 local Parser = require("shrift.parser") --[[@as Parser]]
+local utils = require("shrift.tests.utils") --[[@as test_utils]]
 local lust = require("libs.lust")
 local it, expect = lust.it, lust.expect
 
----@param parser Parser
-local function check_parse_errors(parser)
-	if #parser.errors == 0 then
-		return
-	end
-
-	print(string.format("Parser has %d errors.", #parser.errors))
-	for _, msg in pairs(parser.errors) do
-		print("Parser error: " .. msg)
-	end
-
-	-- Fail if we have any errors.
-	expect(#parser.errors).to.equal(0)
-end
-
 it("Parse Return Statements", function()
-	local input = [[
-return 5
-return 10
-return 3675209
-]]
+	local tests = {
+		{ "return 5\n", 5 },
+		{ "return true", true },
+		{ "return false\n", false },
+		{ "return y\n", "y" },
+	}
 
-	---@type Lexer
-	local l = Lexer(input)
-	---@type Parser
-	local p = Parser(l)
+	for _, v in pairs(tests) do
+		local input = v[1]
+		local expected_val = v[2]
 
-	---@type ASTProgram
-	local program = p:parse_program()
-	check_parse_errors(p)
+		---@type Lexer
+		local l = Lexer(input)
+		---@type Parser
+		local p = Parser(l)
 
-	expect(#program.statements).to.equal(3)
+		---@type ASTProgram
+		local program = p:parse_program()
+		utils.check_parse_errors(p)
 
-	---@type ASTStatementNode
-	for _, stmt in pairs(program.statements) do
-		expect(stmt:is(ast.ReturnStatement)).to.equal(true)
+		expect(#program.statements).to.equal(1)
+
+		local stmt = program.statements[1]
+		---@cast stmt ASTReturnStatement
 		expect(stmt:literal()).to.equal("return")
+
+		local val = stmt.return_value
+		utils.test_literal_expression(val, expected_val)
 	end
 end)
