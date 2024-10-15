@@ -24,6 +24,11 @@ function evaluator:eval(node)
 		---@cast node ASTPrefixExpression
 		local right = self:eval(node.right)
 		return self:eval_prefix_expression(node.operator, right)
+	elseif node:is(ast.InfixExpression) then
+		---@cast node ASTInfixExpression
+		local left = self:eval(node.left)
+		local right = self:eval(node.right)
+		return self:eval_infix_expression(node.operator, left, right)
 	elseif node:is(ast.IntegerLiteral) then
 		---@cast node ASTIntegerLiteral
 		return object.Integer(node.value)
@@ -93,6 +98,47 @@ function evaluator:native_bool_to_boolean_obj(input)
 	end
 
 	return FALSE
+end
+
+---@param operator string
+---@param left ObjectInterface
+---@param right ObjectInterface
+function evaluator:eval_infix_expression(operator, left, right)
+	if
+		left:type() == object.TYPE.INTEGER
+		and right:type() == object.TYPE.INTEGER
+	then
+		return self:eval_integer_infix_expression(operator, left, right)
+	else
+		return NULL
+	end
+end
+
+---@param operator string
+---@param left ObjectInterface
+---@param right ObjectInterface
+function evaluator:eval_integer_infix_expression(operator, left, right)
+	---@cast left IntegerObject
+	---@cast right IntegerObject
+	if operator == "+" then
+		return object.Integer(left.value + right.value)
+	elseif operator == "-" then
+		return object.Integer(left.value - right.value)
+	elseif operator == "*" then
+		return object.Integer(left.value * right.value)
+	elseif operator == "/" then
+		return object.Integer(left.value / right.value)
+	elseif operator == "<" then
+		return self:native_bool_to_boolean_obj(left.value < right.value)
+	elseif operator == ">" then
+		return self:native_bool_to_boolean_obj(left.value > right.value)
+	elseif operator == "==" then
+		return self:native_bool_to_boolean_obj(left.value == right.value)
+	elseif operator == "!=" then
+		return self:native_bool_to_boolean_obj(left.value ~= right.value)
+	else
+		return NULL
+	end
 end
 
 return evaluator
