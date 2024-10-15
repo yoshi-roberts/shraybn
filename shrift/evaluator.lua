@@ -53,12 +53,15 @@ end
 function evaluator:eval_prefix_expression(operator, right)
 	if operator == "!" then
 		return self:eval_bang_operator_expression(right)
+	elseif operator == "-" then
+		return self:eval_minus_prefix_operator_expression(right)
 	else
 		return NULL
 	end
 end
 
 ---@param right ObjectInterface
+---@return ObjectInterface
 function evaluator:eval_bang_operator_expression(right)
 	if right == TRUE then
 		return FALSE
@@ -69,6 +72,17 @@ function evaluator:eval_bang_operator_expression(right)
 	else
 		return FALSE
 	end
+end
+
+---@param right ObjectInterface
+---@return ObjectInterface
+function evaluator:eval_minus_prefix_operator_expression(right)
+	if right:type() ~= object.TYPE.INTEGER then
+		return NULL
+	end
+
+	---@cast right IntegerObject
+	return object.Integer(-right.value)
 end
 
 ---@param input boolean

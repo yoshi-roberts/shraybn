@@ -6,6 +6,8 @@ it("Eval Integer Expression", function()
 	local tests = {
 		{ "5", 5 },
 		{ "10", 10 },
+		{ "-5", -5 },
+		{ "-10", -10 },
 	}
 
 	for _, v in pairs(tests) do

@@ -4,10 +4,10 @@ local Object = require("libs.classic")
 local object = {}
 
 ---@enum ObjectTypes
-local TYPE = {
-	INTEGER_OBJ = "INTEGER",
-	BOOLEAN_OBJ = "BOOLEAN",
-	NULL_OBJ = "NULL",
+object.TYPE = {
+	INTEGER = "INTEGER",
+	BOOLEAN = "BOOLEAN",
+	NULL = "NULL",
 }
 
 ---@alias ObjectType string
@@ -26,7 +26,7 @@ function object.Integer:new(value)
 end
 
 function object.Integer:type()
-	return TYPE.INTEGER_OBJ
+	return object.TYPE.INTEGER
 end
 
 function object.Integer:inspect()
@@ -44,19 +44,19 @@ function object.Boolean:new(value)
 end
 
 function object.Boolean:type()
-	return TYPE.BOOLEAN_OBJ
+	return object.TYPE.BOOLEAN
 end
 
 function object.Boolean:inspect()
 	return tostring(self.value)
 end
 
----@class NullObject
+---@class NullObject: ObjectInterface
 object.Null = Object:extend()
 
 ---@return ObjectType
 function object.Null:type()
-	return TYPE.NULL_OBJ
+	return object.TYPE.NULL
 end
 
 function object.Null:inspect()
