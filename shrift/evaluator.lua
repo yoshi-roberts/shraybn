@@ -4,6 +4,8 @@ local object = require("shrift.object") --[[@as object]]
 ---@class evaluator
 local evaluator = {}
 
+---@type NullObject
+local NULL = object.Null()
 ---@type BooleanObject
 local TRUE = object.Boolean(true)
 ---@type BooleanObject
@@ -18,6 +20,10 @@ function evaluator:eval(node)
 	elseif node:is(ast.ExpressionStatement) then
 		---@cast node ASTExpressionStatement
 		return self:eval(node.expression)
+	elseif node:is(ast.PrefixExpression) then
+		---@cast node ASTPrefixExpression
+		local right = self:eval(node.right)
+		return self:eval_prefix_expression(node.operator, right)
 	elseif node:is(ast.IntegerLiteral) then
 		---@cast node ASTIntegerLiteral
 		return object.Integer(node.value)
@@ -40,6 +46,29 @@ function evaluator:eval_statements(statements)
 	end
 
 	return result
+end
+
+---@param operator string
+---@param right ObjectInterface
+function evaluator:eval_prefix_expression(operator, right)
+	if operator == "!" then
+		return self:eval_bang_operator_expression(right)
+	else
+		return NULL
+	end
+end
+
+---@param right ObjectInterface
+function evaluator:eval_bang_operator_expression(right)
+	if right == TRUE then
+		return FALSE
+	elseif right == FALSE then
+		return TRUE
+	elseif right == NULL then
+		return TRUE
+	else
+		return FALSE
+	end
 end
 
 ---@param input boolean

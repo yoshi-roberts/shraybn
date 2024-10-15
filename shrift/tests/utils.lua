@@ -1,4 +1,8 @@
 local ast = require("shrift.ast") --[[@as ast]]
+local evaluator = require("shrift.evaluator") --[[@as evaluator]]
+local object = require("shrift.object") --[[@as object]]
+local Lexer = require("shrift.lexer") --[[@as Lexer]]
+local Parser = require("shrift.parser") --[[@as Parser]]
 local lust = require("libs.lust")
 local expect = lust.expect
 
@@ -82,6 +86,38 @@ function utils.test_infix_expression(exp, left, operator, right)
 	utils.test_literal_expression(exp.left, left)
 	expect(exp.operator).to.equal(operator)
 	utils.test_literal_expression(exp.right, right)
+end
+
+---@param input string
+function utils.test_eval(input)
+	---@type Lexer
+	local l = Lexer(input)
+	---@type Parser
+	local p = Parser(l)
+
+	---@type ASTProgram
+	local program = p:parse_program()
+	utils.check_parse_errors(p)
+
+	return evaluator:eval(program)
+end
+
+---@param obj ObjectInterface
+---@param expected integer
+function utils.test_integer_object(obj, expected)
+	expect(obj).to_not.equal(nil)
+	---@cast obj IntegerObject
+	expect(obj:is(object.Integer)).to.equal(true)
+	expect(obj.value).to.equal(expected)
+end
+
+---@param obj ObjectInterface
+---@param expected boolean
+function utils.test_boolean_object(obj, expected)
+	expect(obj).to_not.equal(nil)
+	---@cast obj BooleanObject
+	expect(obj:is(object.Boolean)).to.equal(true)
+	expect(obj.value).to.equal(expected)
 end
 
 return utils
