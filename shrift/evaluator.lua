@@ -109,6 +109,10 @@ function evaluator:eval_infix_expression(operator, left, right)
 		and right:type() == object.TYPE.INTEGER
 	then
 		return self:eval_integer_infix_expression(operator, left, right)
+	elseif operator == "==" then
+		return self:native_bool_to_boolean_obj(left == right)
+	elseif operator == "!=" then
+		return self:native_bool_to_boolean_obj(left ~= right)
 	else
 		return NULL
 	end
