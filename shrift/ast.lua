@@ -319,8 +319,11 @@ end
 function ast.FunctionLiteral:__tostring()
 	local out = self:literal() .. "("
 
-	for _, v in pairs(self.parameters) do
+	for k, v in pairs(self.parameters) do
 		out = out .. tostring(v)
+		if k ~= #self.parameters then
+			out = out .. ", "
+		end
 	end
 
 	out = out .. ") " .. tostring(self.body)
