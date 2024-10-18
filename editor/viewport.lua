@@ -1,3 +1,5 @@
+local trigger = require("editor.trigger-edit") --[[@as trigger]]
+
 Viewport = {
 	canvas = nil,
 	image = nil,
@@ -10,9 +12,8 @@ Viewport = {
 	offset = { x = 0, y = 0 },
 	dragging = { acitve = false, diffx = 0, diffy = 0 },
 	bg_color = { 0.15, 0.15, 0.15, 1 },
+	display = require("editor.ui.viewport"),
 }
-
-local win_flags = Imgui.love.WindowFlags("NoTitleBar", "NoMove", "NoCollapse")
 
 function Viewport:init()
 	self.canvas = love.graphics.newCanvas(Window.width, Window.height)
@@ -75,110 +76,16 @@ function Viewport:update()
 	self:update_mouse()
 end
 
-function Viewport:display()
-	Imgui.Begin("Viewport", nil, nil)
-
-	if Imgui.Button(FONT_ICONS.ICON_ARROWS_ALT) then
-		self:center()
-	end
-
-	Imgui.SameLine()
-	if Imgui.Button(FONT_ICONS.ICON_MINUS) then
-		self.scale = self.scale - 0.1
-	end
-
-	Imgui.SameLine()
-	local scale_percentage = math.floor(self.scale * 100)
-	if Imgui.Button(scale_percentage .. "%") then
-		self.scale = 1
-	end
-
-	Imgui.SameLine()
-	if Imgui.Button(FONT_ICONS.ICON_PLUS) then
-		self.scale = self.scale + 0.1
-	end
-
-	local region = Imgui.GetContentRegionAvail()
-
-	local width, height = self.canvas:getDimensions()
-
-	if region.x ~= width or region.y ~= height then
-		if region.x > 0 and region.y > 0 then
-			self.canvas = love.graphics.newCanvas(region.x, region.y)
-		end
-	end
-	width, height = self.canvas:getDimensions()
-
-	local win_pos = Imgui.GetWindowPos()
-	local cursor_pos = Imgui.GetCursorPos()
-	self.pos.x = win_pos.x + cursor_pos.x
-	self.pos.y = win_pos.y + cursor_pos.y
-
-	-- Start rendering to viewport canvas.
-	love.graphics.setCanvas(self.canvas)
-	love.graphics.push()
-
-	love.graphics.clear(self.bg_color)
-
-	love.graphics.translate(self.offset.x, self.offset.y)
-	love.graphics.scale(self.scale, self.scale)
-
-	if Editor.loaded_project then
-		love.graphics.setColor(1, 1, 1, 1)
-
-		if Editor.scenes.current then
-			Editor.scenes.current.data:draw()
+function Viewport:draw_scene()
+	for _, entity in pairs(Editor.scenes.current.data.entities) do
+		if entity.layer.active then
+			entity:draw()
 		end
 	end
 
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.circle("fill", self.mouse_x, self.mouse_y, 12)
-
-	love.graphics.pop()
-
-	-- Grid.
-
-	love.graphics.push()
-	love.graphics.translate(self.offset.x, self.offset.y)
-
-	love.graphics.setLineStyle("rough")
-
-	if Editor.loaded_project then
-		love.graphics.rectangle(
-			"line",
-			0,
-			0,
-			Editor.loaded_project.game_width * self.scale,
-			Editor.loaded_project.game_height * self.scale
-		)
-	end
-
-	local gs = self.grid_size * self.scale
-
-	local xt = math.ceil((self.canvas:getWidth() - self.offset.x) / gs)
-	local yt = math.ceil((self.canvas:getHeight() - self.offset.y) / gs)
-
-	local start_x = math.floor(-self.offset.x / gs)
-	local start_y = math.floor(-self.offset.y / gs)
-
-	love.graphics.setColor(1, 1, 1, 0.05)
-	for x = start_x, xt, 1 do
-		for y = start_y, yt, 1 do
-			local posx = (x * gs)
-			local posy = (y * gs)
-			love.graphics.rectangle("line", posx, posy, gs, gs)
+	for _, layer in pairs(Editor.scenes.current.data.layers) do
+		if layer.active and layer.draw ~= nil then
+			layer.draw()
 		end
 	end
-
-	love.graphics.setLineStyle("smooth")
-	love.graphics.pop()
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.setCanvas()
-
-	local size = Imgui.ImVec2_Float(self.canvas:getDimensions())
-	Imgui.Image(self.canvas, size)
-
-	self.mouse_over = Imgui.IsItemHovered()
-
-	Imgui.End()
 end

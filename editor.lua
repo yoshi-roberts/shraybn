@@ -5,7 +5,7 @@ FONT_ICONS = require("editor.font_icons")
 
 require("editor.command")
 
-require("editor.util")
+-- require("editor.util")
 require("editor.menubar")
 require("editor.dockspace")
 require("editor.project_manager")
@@ -28,7 +28,10 @@ Editor = {
 
 	history = CommandHistory(),
 
+	---@type Layer
 	selected_layer = nil,
+	---@type Entity
+	selected_entity = nil,
 	drag_payload = nil,
 }
 
@@ -38,7 +41,7 @@ function Editor:save_scene()
 end
 
 function Editor:save_all_scenes()
-	for _, scene in pairs(self.open_scenes) do
+	for _, scene in pairs(self.scenes.open) do
 		---@cast scene SceneData
 
 		scene.data:save(scene.path)

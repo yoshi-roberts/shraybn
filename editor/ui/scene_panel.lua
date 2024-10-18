@@ -35,6 +35,7 @@ local function layer_list_entities(scene, layer)
 		end
 
 		if Imgui.Selectable_Bool(entity.name) then
+			Editor.selected_entity = entity
 			Inspector:inspect("entity", entity)
 		end
 

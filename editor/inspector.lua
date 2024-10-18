@@ -2,7 +2,7 @@ local ffi = require("ffi")
 
 Inspector = {
 
-	item = nil, -- The "item" we are inspecting.
+	-- item = nil, -- The "item" we are inspecting.
 	type = nil,
 
 	viewer_width = 256,
