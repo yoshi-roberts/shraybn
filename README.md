@@ -13,6 +13,14 @@
 Shraybn uses **Lua** for scripting game code, as well as **Shrift**, a custom scripting language for interactive dialogue.</br>
 Targets OpenGL, Vulkan, and Metal.</br>
 
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="/assets/brainmade/white-logo.svg">
+    <source media="(prefers-color-scheme: light)" srcset="/assets/brainmade/black-logo.svg">
+    <img alt="Humanmade mark." src="/assets/brainmade/black-logo.svg">
+</picture></br>
+
+[brainmade.org](https://brainmade.org/)
+
 ### Shrift
 
 ```
@@ -50,4 +58,3 @@ $is_tired false                 # Define a variable.
     Charles: Nice!
     Charles: Great weather for it.
 ```
-
