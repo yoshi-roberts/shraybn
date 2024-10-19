@@ -58,7 +58,7 @@ local function display()
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.circle("fill", Viewport.mouse_x, Viewport.mouse_y, 12)
+	-- love.graphics.circle("fill", Viewport.mouse_x, Viewport.mouse_y, 12)
 
 	love.graphics.pop()
 
