@@ -21,9 +21,7 @@ function Viewport:init()
 end
 
 function Viewport:center()
-	if not Editor.loaded_project then
-		return
-	end
+	if not Editor.loaded_project then return end
 
 	local width, height = self.canvas:getDimensions()
 	local gw = Editor.loaded_project.game_width
@@ -47,9 +45,7 @@ function Viewport:update_mouse()
 end
 
 function Viewport:update()
-	if not self.mouse_over then
-		return
-	end
+	if not self.mouse_over then return end
 
 	local mpos = Input:get_mouse_position()
 
@@ -68,13 +64,9 @@ function Viewport:update()
 		self.offset.y = mpos.y - self.dragging.diffy
 	end
 
-	if Input:wheel_up() then
-		self.scale = self.scale + 0.1
-	end
+	if Input:wheel_up() then self.scale = self.scale + 0.1 end
 
-	if Input:wheel_down() then
-		self.scale = self.scale - 0.1
-	end
+	if Input:wheel_down() then self.scale = self.scale - 0.1 end
 
 	if Editor.selected_entity and Editor.selected_entity:is(Trigger) then
 		self:edit_trigger(Editor.selected_entity --[[@as Trigger]])
@@ -98,9 +90,7 @@ function Viewport:draw_scene()
 	end
 
 	for _, layer in pairs(Editor.scenes.current.data.layers) do
-		if layer.active and layer.draw ~= nil then
-			layer.draw()
-		end
+		if layer.active and layer.draw ~= nil then layer.draw() end
 	end
 end
 
@@ -111,11 +101,13 @@ end
 
 ---@param t Trigger
 function Viewport:edit_trigger(t)
+	local r = 6 / self.scale
+
 	for i = 1, #t.verticies, 2 do
 		local x = t.position.x + t.verticies[i]
 		local y = t.position.y + t.verticies[i + 1]
 
-		if point_in_circle(self.mouse_x, self.mouse_y, x, y, 4) then
+		if point_in_circle(self.mouse_x, self.mouse_y, x, y, r) then
 			if Input:button_pressed(MOUSE_BUTTON.LEFT) then
 				self.drag_vert.acitve = true
 				self.drag_vert.diffx = self.mouse_x - x
@@ -142,7 +134,7 @@ end
 
 ---@param t Trigger
 function Viewport:draw_trigger(t)
-	local r = 6
+	local r = 6 / self.scale
 
 	love.graphics.push()
 	love.graphics.translate(t.position.x, t.position.y)
