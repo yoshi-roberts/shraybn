@@ -23,7 +23,7 @@ if (errors < 100) {
 
 // Dialogue.
 label start {
-	say Charles {
+	say Charles:
 		"Hey there!"
 		"This is the first part."
 		"Want to get to the next part?"
@@ -31,9 +31,7 @@ label start {
 
 	text "What do I do?"
 
-	choice "Sure!" {
-		goto next
-	}
+	choice "Sure!" goto next
 	choice "Not realy." {
 		say Charles "Huh."
 		say Charles "That's too bad."

@@ -11,9 +11,7 @@ local utils = {}
 
 ---@param parser Parser
 function utils.check_parse_errors(parser)
-	if #parser.errors == 0 then
-		return
-	end
+	if #parser.errors == 0 then return end
 
 	print(string.format("		Parser has %d errors.", #parser.errors))
 	for _, msg in pairs(parser.errors) do
@@ -119,5 +117,8 @@ function utils.test_boolean_object(obj, expected)
 	expect(obj:is(object.Boolean)).to.equal(true)
 	expect(obj.value).to.equal(expected)
 end
+
+---@param obj ObjectInterface
+function utils.test_null_object(obj) expect(obj).to.equal(evaluator.NULL) end
 
 return utils
