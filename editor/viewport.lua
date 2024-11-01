@@ -1,3 +1,4 @@
+local mlib = require("libs.mlib")
 local trigger = require("editor.trigger-edit") --[[@as trigger]]
 
 Viewport = {
@@ -16,9 +17,7 @@ Viewport = {
 	display = require("editor.ui.viewport"),
 }
 
-function Viewport:init()
-	self.canvas = love.graphics.newCanvas(Window.width, Window.height)
-end
+function Viewport:init() self.canvas = love.graphics.newCanvas(Window.width, Window.height) end
 
 function Viewport:center()
 	if not Editor.loaded_project then return end
@@ -55,9 +54,7 @@ function Viewport:update()
 		self.dragging.diffy = mpos.y - self.offset.y
 	end
 
-	if Input:button_released(MOUSE_BUTTON.MIDDLE) then
-		self.dragging.acitve = false
-	end
+	if Input:button_released(MOUSE_BUTTON.MIDDLE) then self.dragging.acitve = false end
 
 	if self.dragging.acitve then
 		self.offset.x = mpos.x - self.dragging.diffx
@@ -69,7 +66,7 @@ function Viewport:update()
 	if Input:wheel_down() then self.scale = self.scale - 0.1 end
 
 	if Editor.selected_entity and Editor.selected_entity:is(Trigger) then
-		self:edit_trigger(Editor.selected_entity --[[@as Trigger]])
+		-- self:edit_trigger(Editor.selected_entity --[[@as Trigger]])
 	end
 
 	self:update_mouse()
@@ -83,7 +80,7 @@ function Viewport:draw_scene()
 			if entity == Editor.selected_entity then
 				if entity:is(Trigger) then
 					---@cast entity Trigger
-					Viewport:draw_trigger(entity)
+					trigger:draw(entity)
 				end
 			end
 		end
@@ -106,41 +103,6 @@ function Viewport:edit_trigger(t)
 	for i = 1, #t.verticies, 2 do
 		local x = t.position.x + t.verticies[i]
 		local y = t.position.y + t.verticies[i + 1]
-
-		if point_in_circle(self.mouse_x, self.mouse_y, x, y, r) then
-			if Input:button_pressed(MOUSE_BUTTON.LEFT) then
-				self.drag_vert.acitve = true
-				self.drag_vert.diffx = self.mouse_x - x
-				self.drag_vert.diffy = self.mouse_y - y
-				self.drag_vert.index = i
-			end
-		end
-
-		if self.drag_vert.acitve then
-			if self.drag_vert.index == i then
-				t.verticies[i] = (self.mouse_x - self.drag_vert.diffx)
-					- t.position.x
-				t.verticies[i + 1] = (self.mouse_y - self.drag_vert.diffy)
-					- t.position.y
-			end
-		end
-
-		if Input:button_released(MOUSE_BUTTON.LEFT) then
-			self.drag_vert.acitve = false
-			t.tris = love.math.triangulate(t.verticies)
-		end
-	end
-end
-
----@param t Trigger
-function Viewport:draw_trigger(t)
-	local r = 6 / self.scale
-
-	love.graphics.push()
-	love.graphics.translate(t.position.x, t.position.y)
-	for i = 1, #t.verticies, 2 do
-		local x = t.verticies[i]
-		local y = t.verticies[i + 1]
 		local nx = x
 		local ny = y
 
@@ -152,24 +114,36 @@ function Viewport:draw_trigger(t)
 			ny = t.verticies[2]
 		end
 
-		love.graphics.setColor(0.5, 0.5, 0.5, 1)
-		love.graphics.line(x, y, nx, ny)
-
-		if
-			point_in_circle(
-				self.mouse_x,
-				self.mouse_y,
-				t.position.x + x,
-				t.position.y + y,
-				r
-			)
-		then
-			love.graphics.setColor(0, 1, 0, 1)
+		if point_in_circle(self.mouse_x, self.mouse_y, x, y, r) then
+			if Input:button_pressed(MOUSE_BUTTON.LEFT) then
+				self.drag_vert.acitve = true
+				self.drag_vert.diffx = self.mouse_x - x
+				self.drag_vert.diffy = self.mouse_y - y
+				self.drag_vert.index = i
+			end
 		else
-			love.graphics.setColor(0.5, 0.5, 0.5, 1)
+			local cx, cy = mlib.line.getClosestPoint(self.mouse_x, self.mouse_y, x, y, nx, ny)
+
+			if mlib.line.segment.checkPoint(cx, cy, x, y, nx, ny) then
+				if point_in_circle(self.mouse_x, self.mouse_y, cx, cy, r) then
+					if Input:button_pressed(MOUSE_BUTTON.LEFT) then
+						table.insert(t.verticies, i + 2, self.mouse_x)
+						table.insert(t.verticies, i + 3, self.mouse_y)
+					end
+				end
+			end
 		end
 
-		love.graphics.circle("fill", x, y, r)
+		if self.drag_vert.acitve then
+			if self.drag_vert.index == i then
+				t.verticies[i] = (self.mouse_x - self.drag_vert.diffx) - t.position.x
+				t.verticies[i + 1] = (self.mouse_y - self.drag_vert.diffy) - t.position.y
+			end
+		end
+
+		if Input:button_released(MOUSE_BUTTON.LEFT) then
+			self.drag_vert.acitve = false
+			t.tris = love.math.triangulate(t.verticies)
+		end
 	end
-	love.graphics.pop()
 end
