@@ -2,6 +2,7 @@ local mlib = require("libs.mlib")
 
 ---@class trigger
 local trigger = {
+	selected = nil,
 	selected_point = nil,
 }
 
@@ -56,16 +57,25 @@ function trigger:draw(t)
 		local segment_color = { 0.5, 0.5, 0.5, 1 }
 		local nx, ny
 
-		if mouse_in_node(sx, sy) then
+		if mouse_in_node(sx + t.position.x, sy + t.position.y) then
 			nx = sx
 			ny = sy
-		elseif mouse_in_node(ex, ey) then
+		elseif mouse_in_node(ex + t.position.x, ey + t.position.y) then
 			nx = ex
 			ny = ey
 		end
 
 		if not nx and not ny then
-			if mouse_in_segment(sx, sy, ex, ey) then segment_color = { 0, 1, 0, 1 } end
+			if
+				mouse_in_segment(
+					sx + t.position.x,
+					sy + t.position.y,
+					ex + t.position.x,
+					ey + t.position.y
+				)
+			then
+				segment_color = { 0, 1, 0, 1 }
+			end
 		end
 
 		love.graphics.setColor(segment_color)
