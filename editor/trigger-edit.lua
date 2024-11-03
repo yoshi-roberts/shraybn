@@ -2,14 +2,24 @@ local mlib = require("libs.mlib")
 
 ---@class trigger
 local trigger = {
+	---@type Trigger
 	selected = nil,
 	selected_point = nil,
+	segment_selected = false,
 }
 
 ---@return boolean
 local function mouse_in_node(x, y)
 	local r = 6 / Viewport.scale
-	local intersects = mlib.circle.checkPoint(Viewport.mouse_x, Viewport.mouse_y, x, y, r)
+	local t = trigger.selected
+
+	local intersects = mlib.circle.checkPoint(
+		Viewport.mouse_x,
+		Viewport.mouse_y,
+		x + t.position.x,
+		y + t.position.y,
+		r
+	)
 
 	return intersects
 end
@@ -17,28 +27,34 @@ end
 ---@return boolean
 local function mouse_in_segment(sx, sy, ex, ey)
 	local r = 6 / Viewport.scale
+	local t = trigger.selected
 
 	local intersects = mlib.circle.getSegmentIntersection(
 		Viewport.mouse_x,
 		Viewport.mouse_y,
 		r,
-		sx,
-		sy,
-		ex,
-		ey
+		sx + t.position.x,
+		sy + t.position.y,
+		ex + t.position.x,
+		ey + t.position.y
 	)
 
 	return intersects
 end
 
 ---@param t Trigger
-function trigger:draw(t)
-	local r = 6 / Viewport.scale
+function trigger:update(t)
+	self.selected = t
+end
 
-	self.selected_point = nil
+function trigger:draw()
+	local r = 6 / Viewport.scale
+	local t = self.selected
 
 	love.graphics.push()
 	love.graphics.translate(t.position.x, t.position.y)
+
+	self.segment_selected = false
 
 	for i = 1, #t.verticies, 2 do
 		local sx = t.verticies[i]
@@ -57,23 +73,17 @@ function trigger:draw(t)
 		local segment_color = { 0.5, 0.5, 0.5, 1 }
 		local nx, ny
 
-		if mouse_in_node(sx + t.position.x, sy + t.position.y) then
+		if mouse_in_node(sx, sy) then
 			nx = sx
 			ny = sy
-		elseif mouse_in_node(ex + t.position.x, ey + t.position.y) then
+		elseif mouse_in_node(ex, ey) then
 			nx = ex
 			ny = ey
 		end
 
 		if not nx and not ny then
-			if
-				mouse_in_segment(
-					sx + t.position.x,
-					sy + t.position.y,
-					ex + t.position.x,
-					ey + t.position.y
-				)
-			then
+			if not self.segment_selected and mouse_in_segment(sx, sy, ex, ey) then
+				self.segment_selected = true
 				segment_color = { 0, 1, 0, 1 }
 			end
 		end

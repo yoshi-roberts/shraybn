@@ -17,10 +17,14 @@ Viewport = {
 	display = require("editor.ui.viewport"),
 }
 
-function Viewport:init() self.canvas = love.graphics.newCanvas(Window.width, Window.height) end
+function Viewport:init()
+	self.canvas = love.graphics.newCanvas(Window.width, Window.height)
+end
 
 function Viewport:center()
-	if not Editor.loaded_project then return end
+	if not Editor.loaded_project then
+		return
+	end
 
 	local width, height = self.canvas:getDimensions()
 	local gw = Editor.loaded_project.game_width
@@ -44,7 +48,9 @@ function Viewport:update_mouse()
 end
 
 function Viewport:update()
-	if not self.mouse_over then return end
+	if not self.mouse_over then
+		return
+	end
 
 	local mpos = Input:get_mouse_position()
 
@@ -54,19 +60,25 @@ function Viewport:update()
 		self.dragging.diffy = mpos.y - self.offset.y
 	end
 
-	if Input:button_released(MOUSE_BUTTON.MIDDLE) then self.dragging.acitve = false end
+	if Input:button_released(MOUSE_BUTTON.MIDDLE) then
+		self.dragging.acitve = false
+	end
 
 	if self.dragging.acitve then
 		self.offset.x = mpos.x - self.dragging.diffx
 		self.offset.y = mpos.y - self.dragging.diffy
 	end
 
-	if Input:wheel_up() then self.scale = self.scale + 0.1 end
+	if Input:wheel_up() then
+		self.scale = self.scale + 0.1
+	end
 
-	if Input:wheel_down() then self.scale = self.scale - 0.1 end
+	if Input:wheel_down() then
+		self.scale = self.scale - 0.1
+	end
 
 	if Editor.selected_entity and Editor.selected_entity:is(Trigger) then
-		-- self:edit_trigger(Editor.selected_entity --[[@as Trigger]])
+		trigger:update(Editor.selected_entity --[[@as Trigger]])
 	end
 
 	self:update_mouse()
@@ -77,17 +89,16 @@ function Viewport:draw_scene()
 		if entity.layer.active then
 			entity:draw()
 
-			if entity == Editor.selected_entity then
-				if entity:is(Trigger) then
-					---@cast entity Trigger
-					trigger:draw(entity)
-				end
+			if entity == trigger.selected then
+				trigger:draw()
 			end
 		end
 	end
 
 	for _, layer in pairs(Editor.scenes.current.data.layers) do
-		if layer.active and layer.draw ~= nil then layer.draw() end
+		if layer.active and layer.draw ~= nil then
+			layer.draw()
+		end
 	end
 end
 
