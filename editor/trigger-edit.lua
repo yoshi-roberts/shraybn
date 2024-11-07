@@ -6,6 +6,7 @@ local trigger = {
 	selected = nil,
 	selected_point = nil,
 	selected_segment = nil,
+	dragging = { active = false, diffx = 0, diffy = 0 },
 }
 
 ---@param t Trigger
@@ -25,6 +26,15 @@ local function get_verts(t, i)
 	end
 
 	return sx, sy, ex, ey
+end
+
+---@param t Trigger
+---@param i integer
+---@param x integer
+---@param y integer
+local function set_vert(t, i, x, y)
+	t.verticies[i] = x
+	t.verticies[i + 1] = y
 end
 
 local function same_node(a, b)
@@ -76,7 +86,9 @@ function trigger:update(t)
 
 	local r = 6 / Viewport.scale
 
-	self.selected_point = nil
+	if not self.dragging.acitve then
+		self.selected_point = nil
+	end
 	self.selected_segment = nil
 
 	for i = 1, #t.verticies, 2 do
@@ -94,13 +106,34 @@ function trigger:update(t)
 
 		-- Node is selected.
 		if nx and ny then
-			self.selected_point = { nx, ny }
+			self.selected_point = { nx, ny, i }
 		else
 			-- Segment is selected.
 			if not self.selected_segment and mouse_in_segment(sx, sy, ex, ey) then
 				self.selected_segment = { sx, sy, ex, ey }
 			end
 		end
+	end
+
+	if Input:button_pressed(MOUSE_BUTTON.LEFT) and self.selected_point then
+		self.dragging.acitve = true
+		self.dragging.diffx = Viewport.mouse_x - self.selected_point[1]
+		self.dragging.diffy = Viewport.mouse_y - self.selected_point[2]
+	end
+
+	if Input:button_released(MOUSE_BUTTON.LEFT) and self.dragging.acitve then
+		self.dragging.acitve = false
+		t.tris = love.math.triangulate(t.verticies)
+	end
+
+	if self.dragging.acitve then
+		print("dragging!")
+		set_vert(
+			t,
+			self.selected_point[3],
+			Viewport.mouse_x - self.dragging.diffx,
+			Viewport.mouse_y - self.dragging.diffy
+		)
 	end
 end
 
