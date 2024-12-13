@@ -7,6 +7,6 @@ it("Parser split lines", function()
 	local lines = parser:split_lines()
 
 	expect(#lines).to.equal(2)
-	expect(lines[1]).to.equal("Character: Text.")
-	expect(lines[2]).to.equal("Character: More text.")
+	expect(lines[1].str).to.equal("Character: Text.")
+	expect(lines[2].str).to.equal("Character: More text.")
 end)
