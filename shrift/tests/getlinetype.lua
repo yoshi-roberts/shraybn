@@ -20,9 +20,8 @@ local results = {
 
 it("Parser get line type", function()
 	local parser = Parser:new(input)
-	local lines = parser:split_lines()
 
-	for k, line in pairs(lines) do
+	for k, line in pairs(parser.lines) do
 		local type = parser:get_line_type(line)
 		expect(type).to.equal(results[k])
 	end

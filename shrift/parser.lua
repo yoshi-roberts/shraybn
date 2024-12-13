@@ -19,6 +19,13 @@ function Parser:init(input)
 	self.input = input
 	self.lines = {}
 	self.errors = {}
+
+	self:split_lines()
+	self:parse_lines()
+
+	for _, err in pairs(self.errors) do
+		print(err)
+	end
 end
 
 function Parser:error(line, message)
@@ -26,19 +33,31 @@ function Parser:error(line, message)
 	table.insert(self.errors, err)
 end
 
----@return ShriftLineData[]
 function Parser:split_lines()
-	local lines = {}
-
 	local i = 1
 	for str in self.input:gmatch("[^\r\n]+") do
 		local stripped = util.strip_trailing_whitespace(str)
 		local line = line_data.new(i, stripped)
-		table.insert(lines, line)
+		table.insert(self.lines, line)
 		i = i + 1
 	end
+end
 
-	return lines
+function Parser:parse_lines()
+	for _, line in pairs(self.lines) do
+		---@cast line ShriftLineData
+		local type = self:get_line_type(line)
+		local data = nil
+
+		if type == "DIALOGUE" then
+			data = self:parse_dialogue(line)
+		elseif type == "LABEL" then
+			data = self:parse_label(line)
+		end
+
+		---@cast data table
+		line.data = data
+	end
 end
 
 ---@param line ShriftLineData
@@ -56,15 +75,19 @@ function Parser:get_line_type(line)
 end
 
 ---@param line ShriftLineData
----@return string[]?
+---@return table
 function Parser:parse_dialogue(line)
 	local parts = util.split_str(line.str, ":")
 
 	if not parts then
 		self:error(line, "Dialogue must contain a character name and text seperated by a ':'")
+		return {}
 	end
 
-	return parts
+	return {
+		character = parts[1],
+		text = parts[2],
+	}
 end
 
 ---@param line ShriftLineData
@@ -74,6 +97,8 @@ function Parser:parse_label(line)
 	if not label_name then
 		self:error(line, "Labels must be enclosed in brackets.")
 	end
+
+	return { name = label_name }
 end
 
 return Parser

@@ -9,14 +9,10 @@ local input = [[
 
 it("Parser parse dialogue line", function()
 	local parser = Parser:new(input)
-	local lines = parser:split_lines()
 
-	expect(#lines).to.equal(2)
+	expect(#parser.lines).to.equal(2)
 
-	local parts1 = parser:parse_dialogue(lines[1])
-	local parts2 = parser:parse_dialogue(lines[2])
-
-	expect(parts1[1]).to.equal("Character")
-	expect(parts1[2]).to.equal("Some dialogue.")
+	expect(parser.lines[1].data.character).to.equal("Character")
+	expect(parser.lines[1].data.text).to.equal("Some dialogue.")
 	expect(#parser.errors).to.equal(1)
 end)
