@@ -1,48 +1,35 @@
-let errors = 0
-let arr = [1, 3, 5]
+-- What is needed? --
 
-fn update_errors() {
-	if (errors < 100) {
-		errors = errors + 1
-	}
-}
+Lines of dialogue with specified character names.
+Text not spoken by any particular character.
+Syntax for adding effects to text.
+Labels/Segments.
+Choices.
+Branching.
+Variables.
+Modify variables and evaluate expressions.
+Conditions for text and choices.
+Call game commands.
+Comments.
 
-let update_errors = fn() {
-	if (errors < 100) {
-		errors = errors + 1
-	}
-}
+-------------------------------------------------
 
-if (errors < 100) {
-	println("Less!")
-} elseif (errors > 100) {
-	println("More!")
-} else {
-	println("Equal!")
-}
+# Comment.
+$var = false
 
-// Dialogue.
-label start {
-	say Charles:
-		"Hey there!"
-		"This is the first part."
-		"Want to get to the next part?"
-	}
+[Label]
 
-	text "What do I do?"
+Character: Some line of dialogue.
+Character: Dialogue with {shake}effects!{/shake}
 
-	choice "Sure!" goto next
-	choice "Not realy." {
-		say Charles "Huh."
-		say Charles "That's too bad."
-		update_errors()
-	}
-}	
+* Choice #1 : Label #2
+* Choice #2 : Label #3 {not $var}
 
-label next {
-	say Charles {
-		"Well, here we are."
-		"In the next part."
-		"Exciting!"
-	}
-}
+[Label #2]
+
+Character: A second label.
+
+[Label #3]
+
+Character: You can only get here if a condition was met.
+$var = true

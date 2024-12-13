@@ -38,6 +38,7 @@ function Object:implement(...)
 	end
 end
 
+---@return boolean
 function Object:is(T)
 	local mt = getmetatable(self)
 	while mt do
@@ -54,7 +55,9 @@ function Object:__tostring()
 	return "Object"
 end
 
----@private
+---@generic T : Object
+---@param self T
+---@return T
 function Object:__call(...)
 	local obj = setmetatable({}, self)
 	obj:new(...)
