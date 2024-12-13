@@ -18,6 +18,12 @@ LINE_TYPE = {
 function Parser:init(input)
 	self.input = input
 	self.lines = {}
+	self.errors = {}
+end
+
+function Parser:error(line, message)
+	local err = string.format("Shrift: Error at line %d\n%s", line.num, message)
+	table.insert(self.errors, err)
 end
 
 ---@return ShriftLineData[]
@@ -50,12 +56,23 @@ function Parser:get_line_type(line)
 end
 
 ---@param line ShriftLineData
----@return string[]
+---@return string[]?
 function Parser:parse_dialogue(line)
 	local parts = util.split_str(line.str, ":")
 
-	if parts then
-		return parts
+	if not parts then
+		self:error(line, "Dialogue must contain a character name and text seperated by a ':'")
+	end
+
+	return parts
+end
+
+---@param line ShriftLineData
+function Parser:parse_label(line)
+	local label_name = string.match(line.str, "^%[(.-)%]$")
+
+	if not label_name then
+		self:error(line, "Labels must be enclosed in brackets.")
 	end
 end
 
