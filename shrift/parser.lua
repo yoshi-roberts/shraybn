@@ -11,7 +11,7 @@ LINE_TYPE = {
 	["ASSIGN"] = "%$",
 	["LABEL"] = "%[",
 	["CHOICE"] = "%*",
-	["DIALOGUE"] = "^[a-zA-Z{]",
+	["DIALOGUE"] = "^[%a{]",
 	["ILLEGAL"] = "ILLEGAL",
 }
 
@@ -25,7 +25,7 @@ function Parser:init(input)
 	self:parse_lines()
 
 	for _, err in pairs(self.errors) do
-		print(err)
+		io.write(err)
 	end
 end
 
@@ -34,6 +34,7 @@ function Parser:inspect()
 end
 
 local err_template = [[
+
 shrift: error at line %d
 	-> '%s'
 %s
@@ -85,6 +86,8 @@ function Parser:parse_lines()
 			data = self:parse_choice(line)
 		elseif line.type == "LABEL" then
 			data = self:parse_label(line)
+		elseif line.type == "ASSIGN" then
+			data = self:parse_assign(line)
 		end
 
 		---@cast data table
@@ -180,6 +183,37 @@ function Parser:parse_choice(line)
 		text = text,
 		destination = destination,
 		condition = condition,
+	}
+
+	return data
+end
+
+---@param line ShriftLineData
+---@return table
+function Parser:parse_assign(line)
+	local line_content = line.str:sub(2, #line.str)
+	line_content = utils.strip_trailing_whitespace(line_content)
+
+	local parts = utils.split_str(line_content, "=")
+
+	if not parts then
+		self:error(line, "Variables must be given a name and a value seperated by '='")
+		return {}
+	end
+
+	if parts[1] == "" then
+		self:error(line, "Variables must be given a name")
+		return {}
+	end
+
+	if parts[2] == "" then
+		self:error(line, "Variables must be given a value")
+		return {}
+	end
+
+	local data = {
+		name = parts[1],
+		expression = parts[2],
 	}
 
 	return data

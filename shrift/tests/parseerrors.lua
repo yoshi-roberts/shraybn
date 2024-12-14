@@ -7,11 +7,16 @@ local input = [[
 	Malformed dialogue.
 	{true Character: Malformed dialogue condition.
 	* {false Malformed choice condition: destination
+	$var true
+	$var
+	$var = 
+	$ = false
 ]]
 
 it("Parser parse errors", function()
 	local parser = Parser:new(input)
 
-	expect(#parser.lines).to.equal(4)
-	expect(#parser.errors).to.equal(4)
+	local num = 8
+	expect(#parser.lines).to.equal(num)
+	expect(#parser.errors).to.equal(num)
 end)
