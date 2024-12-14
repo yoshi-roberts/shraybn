@@ -3,7 +3,7 @@ local utils = require("shrift.utils") --[[@as shrift.utils]]
 local line_data = require("shrift.line") --[[@as shrift.line_data]]
 local pprint = require("libs.pprint")
 
----@class ShriftParser : Class
+---@class shrift.Parser : Class
 local Parser = Class:extend()
 
 ---@enum ShriftLineType
@@ -20,13 +20,20 @@ function Parser:init(input)
 	self.input = input
 	self.lines = {}
 	self.errors = {}
+end
 
+function Parser:parse()
 	self:split_lines()
 	self:parse_lines()
 
 	for _, err in pairs(self.errors) do
 		io.write(err)
 	end
+end
+
+---@param path string
+function Parser:parse_file(path)
+	-- Parse file.
 end
 
 function Parser:inspect()
@@ -47,16 +54,23 @@ end
 
 function Parser:split_lines()
 	local i = 1
-	for str in self.input:gmatch("[^\r\n]+") do
-		local stripped = utils.strip_trailing_whitespace(str)
-		local type = self:get_line_type(stripped)
-		local line = line_data.new(i, type, stripped)
 
-		if type == "ILLEGAL" then
-			self:error(line, "Invalid line type")
+	for str in self.input:gmatch("([^\n]*)\n?") do
+		local stripped = utils.strip_trailing_whitespace(str)
+		stripped = stripped:match("^(.-)#") or stripped
+		stripped = utils.strip_trailing_whitespace(stripped)
+
+		if stripped:sub(1, 1) ~= "#" and stripped ~= "" then
+			local type = self:get_line_type(stripped)
+			local line = line_data.new(i, type, stripped)
+
+			if type == "ILLEGAL" then
+				self:error(line, "Invalid line type")
+			end
+
+			table.insert(self.lines, line)
 		end
 
-		table.insert(self.lines, line)
 		i = i + 1
 	end
 end
@@ -77,7 +91,7 @@ end
 
 function Parser:parse_lines()
 	for _, line in pairs(self.lines) do
-		---@cast line ShriftLineData
+		---@cast line shrift.LineData
 		local data = nil
 
 		if line.type == "DIALOGUE" then
@@ -95,7 +109,7 @@ function Parser:parse_lines()
 	end
 end
 
----@param line ShriftLineData
+---@param line shrift.LineData
 ---@return table
 function Parser:parse_label(line)
 	local label_name = string.match(line.str, "^%[(.-)%]$")
@@ -119,7 +133,7 @@ function Parser:parse_condition(line)
 	return condition
 end
 
----@param line ShriftLineData
+---@param line shrift.LineData
 ---@return table
 function Parser:parse_dialogue(line)
 	local condition = nil
@@ -150,7 +164,7 @@ function Parser:parse_dialogue(line)
 	}
 end
 
----@param line ShriftLineData
+---@param line shrift.LineData
 ---@return table
 function Parser:parse_choice(line)
 	local line_content = line.str:sub(2, #line.str)
@@ -188,7 +202,7 @@ function Parser:parse_choice(line)
 	return data
 end
 
----@param line ShriftLineData
+---@param line shrift.LineData
 ---@return table
 function Parser:parse_assign(line)
 	local line_content = line.str:sub(2, #line.str)
@@ -208,6 +222,11 @@ function Parser:parse_assign(line)
 
 	if parts[2] == "" then
 		self:error(line, "Variables must be given a value")
+		return {}
+	end
+
+	if parts[1]:match("[^%a_]") then
+		self:error(line, "Variables names may only contain letters and underscores.")
 		return {}
 	end
 

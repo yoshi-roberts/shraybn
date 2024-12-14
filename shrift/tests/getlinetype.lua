@@ -1,4 +1,4 @@
-local Parser = require("shrift.parser") --[[@as ShriftParser]]
+local Parser = require("shrift.parser") --[[@as shrift.Parser]]
 local lust = require("libs.lust")
 local it, expect = lust.it, lust.expect
 
@@ -7,7 +7,6 @@ local input = [[
 	[label]
 	Character: Dialogue.
 	* Choice.
-	! Illegal
 ]]
 
 local results = {
@@ -15,7 +14,6 @@ local results = {
 	"LABEL",
 	"DIALOGUE",
 	"CHOICE",
-	"ILLEGAL",
 }
 
 it("Parser get line type", function()

@@ -1,7 +1,7 @@
 ---@class shrift.line_data
 local line_data = {}
 
----@class ShriftLineData
+---@class shrift.LineData
 ---@field num integer
 ---@field type string
 ---@field str string
@@ -11,7 +11,7 @@ local line = {}
 ---@param num integer
 ---@param type string
 ---@param content string
----@return ShriftLineData
+---@return shrift.LineData
 function line_data.new(num, type, content)
 	return {
 		num = num,

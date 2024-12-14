@@ -11,12 +11,14 @@ local input = [[
 	$var
 	$var = 
 	$ = false
+	$1var = false
+	$var-two = false
 ]]
 
 it("Parser parse errors", function()
 	local parser = Parser:new(input)
 
-	local num = 8
+	local num = 10
 	expect(#parser.lines).to.equal(num)
 	expect(#parser.errors).to.equal(num)
 end)
