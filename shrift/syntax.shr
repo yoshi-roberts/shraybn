@@ -23,7 +23,7 @@ Character: Some line of dialogue.
 Character: Dialogue with {shake}effects!{/shake}
 
 * Choice #1 : Label #2
-* Choice #2 : Label #3 {not $var}
+* {not $var} Choice #2 : Label #3
 
 [Label #2]
 
@@ -33,3 +33,4 @@ Character: A second label.
 
 Character: You can only get here if a condition was met.
 $var = true
+{$var} Character: Conditional dialogue.

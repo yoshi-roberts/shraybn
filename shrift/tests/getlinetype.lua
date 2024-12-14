@@ -22,7 +22,6 @@ it("Parser get line type", function()
 	local parser = Parser:new(input)
 
 	for k, line in pairs(parser.lines) do
-		local type = parser:get_line_type(line)
-		expect(type).to.equal(results[k])
+		expect(line.type).to.equal(results[k])
 	end
 end)

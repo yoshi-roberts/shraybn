@@ -1,6 +1,7 @@
 local Class = require("libs.class") --[[@as Class]]
-local util = require("shrift.util") --[[@as shrift.util]]
+local utils = require("shrift.utils") --[[@as shrift.utils]]
 local line_data = require("shrift.line") --[[@as shrift.line_data]]
+local pprint = require("libs.pprint")
 
 ---@class ShriftParser : Class
 local Parser = Class:extend()
@@ -10,7 +11,7 @@ LINE_TYPE = {
 	["ASSIGN"] = "%$",
 	["LABEL"] = "%[",
 	["CHOICE"] = "%*",
-	["DIALOGUE"] = "%w",
+	["DIALOGUE"] = "^[a-zA-Z{]",
 	["ILLEGAL"] = "ILLEGAL",
 }
 
@@ -28,6 +29,10 @@ function Parser:init(input)
 	end
 end
 
+function Parser:inspect()
+	pprint(self.lines)
+end
+
 function Parser:error(line, message)
 	local err = string.format("Shrift: Error at line %d\n%s", line.num, message)
 	table.insert(self.errors, err)
@@ -36,8 +41,9 @@ end
 function Parser:split_lines()
 	local i = 1
 	for str in self.input:gmatch("[^\r\n]+") do
-		local stripped = util.strip_trailing_whitespace(str)
-		local line = line_data.new(i, stripped)
+		local stripped = utils.strip_trailing_whitespace(str)
+		local type = self:get_line_type(stripped)
+		local line = line_data.new(i, type, stripped)
 		table.insert(self.lines, line)
 		i = i + 1
 	end
@@ -46,12 +52,13 @@ end
 function Parser:parse_lines()
 	for _, line in pairs(self.lines) do
 		---@cast line ShriftLineData
-		local type = self:get_line_type(line)
 		local data = nil
 
-		if type == "DIALOGUE" then
+		if line.type == "DIALOGUE" then
 			data = self:parse_dialogue(line)
-		elseif type == "LABEL" then
+		elseif line.type == "CHOICE" then
+			data = self:parse_choice(line)
+		elseif line.type == "LABEL" then
 			data = self:parse_label(line)
 		end
 
@@ -60,10 +67,10 @@ function Parser:parse_lines()
 	end
 end
 
----@param line ShriftLineData
+---@param line string
 ---@return string
 function Parser:get_line_type(line)
-	local first = line.str:sub(1, 1)
+	local first = string.sub(line, 1, 1)
 
 	for type, prefix in pairs(LINE_TYPE) do
 		if first:match(prefix) then
@@ -76,8 +83,39 @@ end
 
 ---@param line ShriftLineData
 ---@return table
+function Parser:parse_label(line)
+	local label_name = string.match(line.str, "^%[(.-)%]$")
+
+	if not label_name then
+		self:error(line, "Labels must be enclosed in brackets.")
+	end
+
+	return { name = label_name }
+end
+
+---@param line string
+---@return string
+function Parser:parse_condition(line)
+	local condition = string.match(line, "^%{(.-)%}")
+
+	if condition then
+		condition = utils.strip_trailing_whitespace(condition)
+	end
+
+	return condition
+end
+
+---@param line ShriftLineData
+---@return table
 function Parser:parse_dialogue(line)
-	local parts = util.split_str(line.str, ":")
+	local condition = self:parse_condition(line.str)
+
+	local line_content = line.str
+	if condition then
+		line_content = line.str:match("}(.+)")
+	end
+
+	local parts = utils.split_str(line_content, ":")
 
 	if not parts then
 		self:error(line, "Dialogue must contain a character name and text seperated by a ':'")
@@ -87,18 +125,39 @@ function Parser:parse_dialogue(line)
 	return {
 		character = parts[1],
 		text = parts[2],
+		condition = condition,
 	}
 end
 
 ---@param line ShriftLineData
-function Parser:parse_label(line)
-	local label_name = string.match(line.str, "^%[(.-)%]$")
+---@return table
+function Parser:parse_choice(line)
+	local line_content = line.str:sub(2, #line.str)
+	line_content = utils.strip_trailing_whitespace(line_content)
 
-	if not label_name then
-		self:error(line, "Labels must be enclosed in brackets.")
+	local condition = self:parse_condition(line_content)
+
+	if condition then
+		line_content = line.str:match("}(.+)")
 	end
 
-	return { name = label_name }
+	local parts = utils.split_str(line_content, ":")
+
+	local text = utils.strip_trailing_whitespace(line_content)
+	local destination = nil
+
+	if parts then
+		text = utils.strip_trailing_whitespace(parts[1])
+		destination = utils.strip_trailing_whitespace(parts[2])
+	end
+
+	local data = {
+		text = text,
+		destination = destination,
+		condition = condition,
+	}
+
+	return data
 end
 
 return Parser
