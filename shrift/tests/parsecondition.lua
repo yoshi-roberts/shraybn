@@ -9,7 +9,6 @@ local input = [[
 
 it("Parser parse condition", function()
 	local parser = Parser:new(input)
-	parser:inspect()
 
 	expect(#parser.lines).to.equal(2)
 	expect(parser.lines[1].type).to.equal("DIALOGUE")
