@@ -19,10 +19,9 @@ LINE_TYPE = {
 function Parser:init(input)
 	self.input = input
 	self.lines = {}
+	self.env = { vars = {} }
 	self.errors = {}
-end
 
-function Parser:parse()
 	self:split_lines()
 	self:parse_lines()
 
@@ -232,7 +231,7 @@ function Parser:parse_assign(line)
 
 	local data = {
 		name = parts[1],
-		expression = parts[2],
+		value = parts[2],
 	}
 
 	return data
