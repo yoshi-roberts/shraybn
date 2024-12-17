@@ -15,7 +15,7 @@ local input = [[
 	$var-two = false
 ]]
 
-it("Parser parse errors", function()
+it("Shrift parse errors", function()
 	local parser = Parser:new(input)
 
 	local num = 10

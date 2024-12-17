@@ -8,7 +8,7 @@ local input = [[
 	Character: Some more dialogue. # Comment
 ]]
 
-it("Parser parse comments", function()
+it("Shrift parse comments", function()
 	local parser = Parser:new(input)
 
 	expect(#parser.lines).to.equal(2)

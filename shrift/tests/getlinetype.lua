@@ -16,7 +16,7 @@ local results = {
 	"CHOICE",
 }
 
-it("Parser get line type", function()
+it("Shrift get line type", function()
 	local parser = Parser:new(input)
 
 	for k, line in pairs(parser.lines) do

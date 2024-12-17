@@ -14,9 +14,9 @@ it("Shrift eval assignment", function()
 
 	expect(#parser.lines).to.equal(3)
 
-	evaluator.evaluate_value(parser.lines[1], parser.env)
-	evaluator.evaluate_value(parser.lines[2], parser.env)
-	evaluator.evaluate_value(parser.lines[3], parser.env)
+	evaluator.eval_value(parser.lines[1], parser.env)
+	evaluator.eval_value(parser.lines[2], parser.env)
+	evaluator.eval_value(parser.lines[3], parser.env)
 
 	expect(parser.env.vars.var).to.equal(true)
 	expect(parser.env.vars.var_two).to.equal(false)

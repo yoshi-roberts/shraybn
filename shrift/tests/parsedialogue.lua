@@ -6,7 +6,7 @@ local input = [[
 	Character: Some dialogue.
 ]]
 
-it("Parser parse dialogue", function()
+it("Shrift parse dialogue", function()
 	local parser = Parser:new(input)
 
 	expect(#parser.lines).to.equal(1)

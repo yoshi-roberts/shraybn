@@ -8,7 +8,7 @@ local input = [[
 	$var_three = $var_two
 ]]
 
-it("Parser parse assignment", function()
+it("Shrift parse assignment", function()
 	local parser = Parser:new(input)
 
 	expect(#parser.lines).to.equal(3)

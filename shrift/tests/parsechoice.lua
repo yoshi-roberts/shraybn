@@ -7,7 +7,7 @@ local input = [[
 	* Choice 2
 ]]
 
-it("Parser parse choice", function()
+it("Shrift parse choice", function()
 	local parser = Parser:new(input)
 
 	expect(#parser.lines).to.equal(2)

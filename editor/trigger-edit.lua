@@ -118,14 +118,15 @@ function trigger:update(t)
 	if Input:button_pressed(MOUSE_BUTTON.LEFT) then
 		if self.selected_segment then
 			local i = self.selected_segment[5]
-			table.insert(t.verticies, i + 2, Viewport.mouse_x)
-			table.insert(t.verticies, i + 3, Viewport.mouse_y)
+			table.insert(t.verticies, i + 2, Viewport.mouse_x - self.selected.position.x)
+			table.insert(t.verticies, i + 3, Viewport.mouse_y - self.selected.position.y)
 		end
 
 		if self.selected_point then
 			self.dragging.acitve = true
 			self.dragging.diffx = Viewport.mouse_x - self.selected_point[1]
 			self.dragging.diffy = Viewport.mouse_y - self.selected_point[2]
+			t.tris = love.math.triangulate(t.verticies)
 		end
 	end
 
