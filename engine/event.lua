@@ -130,7 +130,7 @@ function love.mousereleased(x, y, button, istouch, presses)
 		presses = presses,
 	}
 
-	if input.process_button(data, true) then
+	if input.process_button(data, false) then
 		event.fire(event.code.MOUSE_RELEASE, data)
 	end
 end

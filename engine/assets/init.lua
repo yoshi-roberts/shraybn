@@ -1,3 +1,5 @@
+local log = require("libs.log")
+
 ---@class engine.assets
 local assets = {
 	data = nil,
@@ -41,12 +43,12 @@ end
 ---@param name string
 function assets.get(type, name)
 	if not assets:loaded() then
-		Log.error("[ASSETS] No asset pack loaded. Can not load asset '" .. name .. "'")
+		log.error("[ASSETS] No asset pack loaded. Can not load asset '" .. name .. "'")
 		return false
 	end
 
 	if not assets.data[type][name] then
-		Log.error("[ASSETS] Asset '" .. name .. "' does not exist.")
+		log.error("[ASSETS] Asset '" .. name .. "' does not exist.")
 		return nil
 	end
 
