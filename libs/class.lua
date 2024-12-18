@@ -3,6 +3,7 @@
 
 ---@class Class
 ---@field init function
+---@field super Class
 Class = {}
 ---@private
 Class.__index = Class

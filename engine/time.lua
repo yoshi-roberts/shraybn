@@ -3,6 +3,7 @@ local timer = {
 	sleep = 0.001,
 }
 
+---@diagnostic disable-next-line: duplicate-set-field
 function love.run()
 	if love.load then
 		love.load(love.arg.parseGameArguments(arg), arg)

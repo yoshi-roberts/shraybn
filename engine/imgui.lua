@@ -1,34 +1,39 @@
 local lib_path = "./"
-local extension = jit.os == "Windows" and "dll" or jit.os == "Linux" and "so" or jit.os == "OSX" and "dylib"
+local extension = jit.os == "Windows" and "dll"
+	or jit.os == "Linux" and "so"
+	or jit.os == "OSX" and "dylib"
 package.cpath = string.format("%s;%s/?.%s", package.cpath, lib_path, extension)
 
-Imgui = require("libs.cimgui")
+local event = require("engine.event")
+local imgui = require("libs.cimgui")
 
 function ImguiEvent(code, data)
 	local handled = true
 
-	if code == EVENT_CODE.KEY_PRESS then
-		Imgui.love.KeyPressed(data.key)
-		handled = Imgui.love.GetWantCaptureKeyboard()
-	elseif code == EVENT_CODE.KEY_RELEASE then
-		Imgui.love.KeyReleased(data.key)
-		handled = Imgui.love.GetWantCaptureKeyboard()
-	elseif code == EVENT_CODE.MOUSE_PRESS then
-		Imgui.love.MousePressed(data.button)
-		handled = Imgui.love.GetWantCaptureMouse()
-	elseif code == EVENT_CODE.MOUSE_RELEASE then
-		Imgui.love.MouseReleased(data.button)
-		handled = Imgui.love.GetWantCaptureMouse()
-	elseif code == EVENT_CODE.MOUSE_MOVE then
-		Imgui.love.MouseMoved(data.x, data.y)
-		handled = Imgui.love.GetWantCaptureMouse()
-	elseif code == EVENT_CODE.TEXT_INPUT then
-		Imgui.love.TextInput(data)
-		handled = Imgui.love.GetWantCaptureKeyboard()
-	elseif code == EVENT_CODE.MOUSE_WHEEL then
-		Imgui.love.WheelMoved(data.x, data.y)
-		handled = Imgui.love.GetWantCaptureMouse()
+	if code == event.code.KEY_PRESS then
+		imgui.love.KeyPressed(data.key)
+		handled = imgui.love.GetWantCaptureKeyboard()
+	elseif code == event.code.KEY_RELEASE then
+		imgui.love.KeyReleased(data.key)
+		handled = imgui.love.GetWantCaptureKeyboard()
+	elseif code == event.code.MOUSE_PRESS then
+		imgui.love.MousePressed(data.button)
+		handled = imgui.love.GetWantCaptureMouse()
+	elseif code == event.code.MOUSE_RELEASE then
+		imgui.love.MouseReleased(data.button)
+		handled = imgui.love.GetWantCaptureMouse()
+	elseif code == event.code.MOUSE_MOVE then
+		imgui.love.MouseMoved(data.x, data.y)
+		handled = imgui.love.GetWantCaptureMouse()
+	elseif code == event.code.TEXT_INPUT then
+		imgui.love.TextInput(data)
+		handled = imgui.love.GetWantCaptureKeyboard()
+	elseif code == event.code.MOUSE_WHEEL then
+		imgui.love.WheelMoved(data.x, data.y)
+		handled = imgui.love.GetWantCaptureMouse()
 	end
 
 	return handled
 end
+
+return imgui

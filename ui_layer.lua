@@ -1,39 +1,45 @@
+local event = require("engine.event")
+local input = require("engine.input")
+local window = require("engine.window")
+local imgui = require("engine.imgui")
+
+---@type event_callback
 local function ui_event(code, data)
 	return ImguiEvent(code, data)
 end
 
 local function ui_attach()
-	Imgui.love.Init()
-	Event:register_category(EVENT_CATEGORY.INPUT, ui_event)
+	imgui.love.Init()
+	event.register_category(event.category.INPUT, ui_event)
 end
 
 local function ui_detach()
-	Imgui.love.Shutdown()
+	imgui.love.Shutdown()
 end
 
 local function ui_update(dt)
-	Imgui.love.Update(dt)
-	Imgui.NewFrame()
+	imgui.love.Update(dt)
+	imgui.NewFrame()
 end
 
 local function ui_draw()
-	local window_flags = Imgui.love.WindowFlags("NoMove", "NoResize")
+	local window_flags = imgui.love.WindowFlags("NoMove", "NoResize")
 
-	Imgui.SetNextWindowPos(Imgui.ImVec2_Float(12, 12))
-	Imgui.SetNextWindowSize(Imgui.ImVec2_Float(128 * 2, 128))
+	imgui.SetNextWindowPos(imgui.ImVec2_Float(12, 12))
+	imgui.SetNextWindowSize(imgui.ImVec2_Float(128 * 2, 128))
 
-	Imgui.Begin("Debug Info", nil, window_flags)
+	imgui.Begin("Debug Info", nil, nil)
 
-	Imgui.Text("FPS: " .. love.timer.getFPS())
-	Imgui.Text("Window Size: " .. Window.width .. "x" .. Window.height)
+	imgui.Text("FPS: " .. love.timer.getFPS())
+	imgui.Text("Window Size: " .. window.width .. "x" .. window.height)
 
-	local mpos = Input:get_mouse_position()
-	Imgui.Text("Mouse Position: (" .. mpos.x .. ", " .. mpos.y .. ")")
+	local mpos = input.get_mouse_position()
+	imgui.Text("Mouse Position: (" .. mpos.x .. ", " .. mpos.y .. ")")
 
-	Imgui.End()
+	imgui.End()
 
-	Imgui.Render()
-	Imgui.love.RenderDrawLists()
+	imgui.Render()
+	imgui.love.RenderDrawLists()
 end
 
 return {

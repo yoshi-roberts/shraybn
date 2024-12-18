@@ -1,10 +1,12 @@
----@class Layer
+local Class = require("libs.class")
+
+---@class engine.Layer : Class
 ---@field name string
-Layer = Object:extend()
+local Layer = Class:extend()
 
 ---@param callbacks table
 ---@param depth integer
-function Layer:new(callbacks, depth)
+function Layer:init(callbacks, depth)
 	self.depth = depth or 0
 	self.active = true
 
@@ -22,4 +24,4 @@ function Layer:new(callbacks, depth)
 	end
 end
 
-return true
+return Layer

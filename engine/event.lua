@@ -1,10 +1,12 @@
----@class Event
-Event = {
-	registered = {},
-}
+local window = require("engine.window")
+local input = require("engine.input")
 
----@enum event_code
-EVENT_CODE = {
+---@class engine.event
+local event = {}
+event.registered = {}
+
+---@enum event.code
+event.code = {
 	NONE = nil,
 	WINDOW_RESIZE = 1,
 	WINDOW_FOCUS = 2,
@@ -24,32 +26,37 @@ EVENT_CODE = {
 	MAX_CODE = 16,
 }
 
----@enum event_category
-EVENT_CATEGORY = {
+---@enum event.category
+event.category = {
 	NONE = nil,
-	WINDOW = { EVENT_CODE.WINDOW_RESIZE, EVENT_CODE.WINDOW_MOVE },
-	KEYBOARD = { EVENT_CODE.KEY_PRESS, EVENT_CODE.TEXT_INPUT },
-	MOUSE = { EVENT_CODE.MOUSE_PRESS, EVENT_CODE.MOUSE_ENTER },
-	INPUT = { EVENT_CODE.KEY_PRESS, EVENT_CODE.MOUSE_ENTER },
+	WINDOW = { event.code.WINDOW_RESIZE, event.code.WINDOW_MOVE },
+	KEYBOARD = { event.code.KEY_PRESS, event.code.TEXT_INPUT },
+	MOUSE = { event.code.MOUSE_PRESS, event.code.MOUSE_ENTER },
+	INPUT = { event.code.KEY_PRESS, event.code.MOUSE_ENTER },
 }
 
----@alias event_callback fun(code: event_code, data: table): boolean
+---@alias event_callback fun(code: event.code, data: table): boolean
 
-function Event:register(code, callback)
-	if not self.registered[code] then
-		self.registered[code] = {}
+---@param code event.code
+---@param callback event_callback
+function event.register(code, callback)
+	if not event.registered[code] then
+		event.registered[code] = {}
 		-- table.insert(self.registered, code, {})
 	end
 
-	table.insert(self.registered[code], callback)
+	table.insert(event.registered[code], callback)
 end
 
-function Event:fire(code, data)
-	if not self.registered[code] then
+---@param code event.code
+---@param data any
+---@return boolean
+function event.fire(code, data)
+	if not event.registered[code] then
 		return false
 	end
 
-	for _, callbacks in pairs(self.registered) do
+	for _, callbacks in pairs(event.registered) do
 		for _, callback in pairs(callbacks) do
 			if callback(code, data) then
 				-- Event handled.
@@ -62,73 +69,96 @@ function Event:fire(code, data)
 	return false
 end
 
-function Event:register_category(category, callback)
-	for _, code in pairs(EVENT_CODE) do
+---@param category event.category
+---@param callback event_callback
+function event.register_category(category, callback)
+	for _, code in pairs(event.code) do
 		if code >= category[1] and code <= category[2] then
-			Event:register(code, callback)
+			event.register(code, callback)
 		end
 	end
 end
 
 function love.keypressed(key, scancode, isrepeat)
-	Input:process_key({
+	local data = {
 		key = key,
 		scancode = scancode,
 		isrepeat = isrepeat,
-	}, true)
+	}
+
+	if input.process_key(data, true) then
+		event.fire(event.code.KEY_PRESS, data)
+	end
 end
 
 function love.keyreleased(key, scancode)
-	Input:process_key({
+	local data = {
 		key = key,
 		scancode = scancode,
-	}, false)
+	}
+
+	if input.process_key(data, false) then
+		event.fire(event.code.KEY_RELEASE, data)
+	end
 end
 
 function love.textinput(t)
-	Event:fire(EVENT_CODE.TEXT_INPUT, t)
+	event.fire(event.code.TEXT_INPUT, t)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.mousepressed(x, y, button, istouch, presses)
-	Input:process_button({
+	local data = {
 		x = x,
 		y = y,
 		button = button,
 		istouch = istouch,
 		presses = presses,
-	}, true)
+	}
+
+	if input.process_button(data, true) then
+		event.fire(event.code.MOUSE_PRESS, data)
+	end
 end
 
 function love.mousereleased(x, y, button, istouch, presses)
-	Input:process_button({
+	local data = {
 		x = x,
 		y = y,
 		button = button,
 		istouch = istouch,
 		presses = presses,
-	}, false)
+	}
+
+	if input.process_button(data, true) then
+		event.fire(event.code.MOUSE_RELEASE, data)
+	end
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)
-	Input:process_mouse_move({
+	local data = {
 		x = x,
 		y = y,
 		dx = dx,
 		dy = dy,
 		istouch = istouch,
-	})
+	}
+
+	input.process_mouse_move(data)
+	event.fire(event.code.MOUSE_MOVE, data)
 end
 
 function love.wheelmoved(x, y)
-	Input:process_mouse_wheel({
-		x = x,
-		y = y,
-	})
+	local data = { x, y }
+
+	input.process_mouse_wheel(data)
+	event.fire(event.code.MOUSE_WHEEL, data)
 end
 
 function love.resize(w, h)
-	Window:process_resize(w, h)
+	if window.process_resize(w, h) then
+		event.fire(event.code.WINDOW_RESIZE, { w, h })
+	end
 end
 
-return true
+return event

@@ -1,10 +1,12 @@
----@class Sprite: Entity
----@field super Entity
-Sprite = Entity:extend()
+local Entity = require("engine.entity")
+local assets = require("engine.assets")
+
+---@class Sprite: engine.Entity
+local Sprite = Entity:extend()
 
 ---@param path string
-function Sprite:new(name, path)
-	Sprite.super.new(self --[[@as Entity]], name)
+function Sprite:init(name, path)
+	Sprite.super.new(self, name)
 
 	self.asset_path = path
 end
@@ -16,12 +18,26 @@ function Sprite:draw(position, scale)
 		return
 	end
 
+	local asset = assets.get("image", self.asset_path)
+
+	if not asset then
+		return
+	end
+
 	love.graphics.setColor(1, 1, 1, 1)
 
-	local asset = Assets:get("image", self.asset_path)
-	love.graphics.draw(asset.resource, self.position.x, self.position.y, self.rotation, self.scale.x, self.scale.y)
+	love.graphics.draw(
+		asset.resource,
+		self.position.x,
+		self.position.y,
+		self.rotation,
+		self.scale.x,
+		self.scale.y
+	)
 end
 
 function Sprite:__tostring()
 	return "Sprite"
 end
+
+return Sprite

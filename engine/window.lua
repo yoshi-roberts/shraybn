@@ -1,33 +1,43 @@
-Window = {
+---@class engine.window
+local window = {
 	title = "",
 	width = 0,
 	height = 0,
 }
 
-function Window:init(width, height, title)
+---@param width integer
+---@param height integer
+---@param title string?
+function window.init(width, height, title)
 	love.window.setMode(width or 0, height or 0, {
 		vsync = false,
 		resizable = true,
 	})
 
-	love.window.setTitle(self.title or "Shraybn")
+	love.window.setTitle(window.title or "Shraybn")
 
-	self.title = title or love.window.getTitle()
-	self.width = width or love.graphics.getWidth()
-	self.height = height or love.graphics.getHeight()
+	window.title = title or love.window.getTitle()
+	window.width = width or love.graphics.getWidth()
+	window.height = height or love.graphics.getHeight()
 end
 
-function Window:process_resize(width, height)
-	if self.width ~= width or self.height ~= height then
-		self.width = width
-		self.height = height
+---@param width integer
+---@param height integer
+---@return boolean
+function window.process_resize(width, height)
+	if window.width ~= width or window.height ~= height then
+		window.width = width
+		window.height = height
 
-		for _, canvas in pairs(Engine.canvases) do
-			canvas:update()
-		end
+		-- TODO: Needs to be handled by the engine module.
+		-- for _, canvas in pairs(engine.canvases) do
+		-- 	canvas:update()
+		-- end
 
-		Event:fire(EVENT_CODE.WINDOW_RESIZE, { width, height })
+		return true
 	end
+
+	return false
 end
 
-return true
+return window

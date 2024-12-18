@@ -1,6 +1,8 @@
----@class Trigger: Entity
----@field super Entity
-Trigger = Entity:extend()
+local Class = require("libs.class")
+local input = require("engine.input")
+
+---@class engine.Trigger: Class
+local Trigger = Class:extend()
 
 ---@param verticies table
 function Trigger:new(verticies, name)
@@ -8,6 +10,7 @@ function Trigger:new(verticies, name)
 
 	self.foccussed = false
 	self.verticies = verticies
+	self.position = Vec2(0, 0)
 
 	if self.verticies then
 		self.tris = love.math.triangulate(self.verticies)
@@ -28,7 +31,7 @@ local function in_tri(x, y, p)
 end
 
 function Trigger:update()
-	local pos = Input:get_mouse_position()
+	local pos = input.get_mouse_position()
 
 	-- Check if mouse coords intersect any of the triangles.
 	for _, tri in pairs(self.tris) do
@@ -53,3 +56,5 @@ end
 function Trigger:__tostring()
 	return "Trigger"
 end
+
+return Trigger

@@ -1,16 +1,16 @@
----@class Scene
-Scene = Object:extend()
+local Class = require("libs.class")
+local binser = require("libs.binser")
+local nativefs = require("libs.nativefs")
+local log = require("libs.log")
+
+---@class engine.Scene : Class
+local Scene = Class:extend()
 
 ---@param name string
----@return Scene
-function Scene:new(name)
-	---@type Layer[]
-	self.layers = {}
-	---@type Entity[]
-	self.entities = {}
-
-	Engine.scenes[name] = self
-	return Engine.scenes[name]
+function Scene:init(name)
+	self.name = name
+	self.layers = {} ---@type engine.Layer[]
+	self.entities = {} ---@type engine.Entity[]
 end
 
 function Scene:shutdown()
@@ -43,9 +43,9 @@ function Scene:draw()
 	end
 end
 
----@param layer Layer
+---@param layer engine.Layer
 ---@param index ?integer
----@return Layer
+---@return engine.Layer
 function Scene:add_layer(layer, index)
 	layer.depth = #self.layers + 1
 	table.insert(self.layers, index or (#self.layers + 1), layer)
@@ -69,8 +69,8 @@ function Scene:remove_layer(index)
 	return table.remove(self.layers, index)
 end
 
----@param entity Entity
----@param layer Layer
+---@param entity engine.Entity
+---@param layer engine.Layer
 ---@param index ?integer
 function Scene:add_entity(entity, layer, index)
 	entity.layer = layer
@@ -78,26 +78,27 @@ function Scene:add_entity(entity, layer, index)
 	table.insert(self.entities, index or (#self.entities + 1), entity)
 end
 
+---@param index integer
 function Scene:remove_entity(index)
 	return table.remove(self.entities, index)
 end
 
 ---@param path string
----@return Scene
+---@return engine.Scene
 function Scene.load(path)
 	-- .scd are scene data files.
-	local contents = Nativefs.read(path)
-	local deserialized = Binser.deserialize(contents)
+	local contents = nativefs.read(path)
+	local deserialized = binser.deserialize(contents)
 
 	return deserialized[1]
 end
 
 ---@param path string
 function Scene:save(path)
-	local serialized = Binser.serialize(self)
+	local serialized = binser.serialize(self)
 
-	if not Nativefs.write(path, serialized, #serialized) then
-		Log.error("Scene data could not be written.")
+	if not nativefs.write(path, serialized, #serialized) then
+		log.error("Scene data could not be written.")
 	end
 end
 
@@ -119,4 +120,4 @@ function Scene:entity_count()
 	return counts
 end
 
-return true
+return Scene
