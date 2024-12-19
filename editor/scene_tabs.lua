@@ -1,26 +1,29 @@
+local editor = require("editor")
+local font_icon = require("editor.font_icons")
+local imgui = require("engine.imgui")
+
 local function scene_tabs()
-	if Imgui.BeginTabBar("##scene_tabs", Imgui.ImGuiTabBarFlags_AutoSelectNewTabs) then
-		if not Editor.scenes.current then
-			if Imgui.BeginTabItem("[empty]") then
-				Imgui.EndTabItem()
+	if imgui.BeginTabBar("##scene_tabs", imgui.ImGuiTabBarFlags_AutoSelectNewTabs) then
+		if not editor.scenes.current then
+			if imgui.BeginTabItem("[empty]") then
+				imgui.EndTabItem()
 			end
 		end
 
-		for name, scene in pairs(Editor.scenes.open) do
-			---@cast scene SceneData
-
-			local text = string.format("%s %s", FONT_ICONS.ICON_BOOK, string.match(name, "^.+/(.+)$"))
+		for name, scene in pairs(editor.scenes.open) do
+			local text =
+				string.format("%s %s", font_icon.ICON_BOOK, string.match(name, "^.+/(.+)$"))
 			if scene.saved == false then
 				text = text .. "(*)"
 			end
 
-			if Imgui.BeginTabItem(text) then
-				Editor.scenes.current = scene
-				Imgui.EndTabItem()
+			if imgui.BeginTabItem(text) then
+				editor.scenes.current = scene
+				imgui.EndTabItem()
 			end
 		end
 
-		Imgui.EndTabBar()
+		imgui.EndTabBar()
 	end
 end
 

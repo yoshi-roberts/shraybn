@@ -1,8 +1,12 @@
-local mlib = require("libs.mlib")
+local Trigger = require("engine.trigger")
+local editor = require("editor")
+local window = require("engine.window")
+local input = require("engine.input")
 local trigger = require("editor.trigger-edit") --[[@as trigger]]
 
-Viewport = {
-	canvas = nil,
+---@class editor.viewport
+local viewport = {
+	canvas = nil, ---@type love.Canvas
 	image = nil,
 	scale = 1,
 	grid_size = 32,
@@ -17,75 +21,75 @@ Viewport = {
 	display = require("editor.ui.viewport"),
 }
 
-function Viewport:init()
-	self.canvas = love.graphics.newCanvas(Window.width, Window.height)
+function viewport.init()
+	viewport.canvas = love.graphics.newCanvas(window.width, window.height)
 end
 
-function Viewport:center()
-	if not Editor.loaded_project then
+function viewport.center()
+	if not editor.loaded_project then
 		return
 	end
 
-	local width, height = self.canvas:getDimensions()
-	local gw = Editor.loaded_project.game_width
-	local gh = Editor.loaded_project.game_height
+	local width, height = viewport.canvas:getDimensions()
+	local gw = editor.loaded_project.game_width
+	local gh = editor.loaded_project.game_height
 
 	local sx = width / gw
 	local sy = height / gh
 	local scale = math.min(sx, sy)
-	self.scale = scale
+	viewport.scale = scale
 
 	local x = (width - (gw * scale))
 	local y = (height - (gh * scale))
-	self.offset.x = (x / 2)
-	self.offset.y = (y / 2)
+	viewport.offset.x = (x / 2)
+	viewport.offset.y = (y / 2)
 end
 
-function Viewport:update_mouse()
-	local mouse_pos = Input:get_mouse_position()
-	self.mouse_x = ((mouse_pos.x - (self.pos.x + self.offset.x)) / self.scale)
-	self.mouse_y = ((mouse_pos.y - (self.pos.y + self.offset.y)) / self.scale)
+function viewport.update_mouse()
+	local mouse_pos = input.get_mouse_position()
+	viewport.mouse_x = ((mouse_pos.x - (viewport.pos.x + viewport.offset.x)) / viewport.scale)
+	viewport.mouse_y = ((mouse_pos.y - (viewport.pos.y + viewport.offset.y)) / viewport.scale)
 end
 
-function Viewport:update()
-	if not self.mouse_over then
+function viewport.update()
+	if not viewport.mouse_over then
 		return
 	end
 
-	local mpos = Input:get_mouse_position()
+	local mpos = input.get_mouse_position()
 
-	if Input:button_pressed(MOUSE_BUTTON.MIDDLE) then
-		self.dragging.acitve = true
-		self.dragging.diffx = mpos.x - self.offset.x
-		self.dragging.diffy = mpos.y - self.offset.y
+	if input.button_pressed(input.mouse_button.MIDDLE) then
+		viewport.dragging.acitve = true
+		viewport.dragging.diffx = mpos.x - viewport.offset.x
+		viewport.dragging.diffy = mpos.y - viewport.offset.y
 	end
 
-	if Input:button_released(MOUSE_BUTTON.MIDDLE) then
-		self.dragging.acitve = false
+	if input.button_released(input.mouse_button.MIDDLE) then
+		viewport.dragging.acitve = false
 	end
 
-	if self.dragging.acitve then
-		self.offset.x = mpos.x - self.dragging.diffx
-		self.offset.y = mpos.y - self.dragging.diffy
+	if viewport.dragging.acitve then
+		viewport.offset.x = mpos.x - viewport.dragging.diffx
+		viewport.offset.y = mpos.y - viewport.dragging.diffy
 	end
 
-	if Input:wheel_up() then
-		self.scale = self.scale + 0.1
+	if input:wheel_up() then
+		viewport.scale = viewport.scale + 0.1
 	end
 
-	if Input:wheel_down() then
-		self.scale = self.scale - 0.1
+	if input:wheel_down() then
+		viewport.scale = viewport.scale - 0.1
 	end
 
-	if Editor.selected_entity and Editor.selected_entity:is(Trigger) then
-		trigger:update(Editor.selected_entity --[[@as Trigger]])
+	if editor.selected_entity and editor.selected_entity:is(Trigger) then
+		trigger:update(editor.selected_entity)
 	end
 
-	self:update_mouse()
+	viewport.update_mouse()
 end
 
-function Viewport:draw_scene()
-	for _, entity in pairs(Editor.scenes.current.data.entities) do
+function viewport.draw_scene()
+	for _, entity in pairs(editor.scenes.current.data.entities) do
 		if entity.layer.active then
 			entity:draw()
 
@@ -95,9 +99,11 @@ function Viewport:draw_scene()
 		end
 	end
 
-	for _, layer in pairs(Editor.scenes.current.data.layers) do
+	for _, layer in pairs(editor.scenes.current.data.layers) do
 		if layer.active and layer.draw ~= nil then
 			layer.draw()
 		end
 	end
 end
+
+return viewport

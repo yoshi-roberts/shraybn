@@ -1,14 +1,15 @@
----@class CommandHistory
----@field commands table <Command>
-CommandHistory = Object:extend()
+local Class = require("libs.class")
 
-function CommandHistory:new()
-	self.commands = {}
+---@class editor.CommandHistory : Class
+local CommandHistory = Class:extend()
+
+function CommandHistory:init()
+	self.commands = {} ---@type editor.Command[]
 	self.current = 0
 	self.limit = 64
 end
 
----@param cmd Command
+---@param cmd editor.Command
 ---@param merge boolean
 function CommandHistory:add(cmd, merge)
 	cmd.mergable = merge or false
@@ -57,3 +58,5 @@ function CommandHistory:redo()
 		self.commands[self.current]:execute()
 	end
 end
+
+return CommandHistory

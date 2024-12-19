@@ -1,8 +1,9 @@
----@class ChangeField: Command
----@field super Command
-ChangeField = Command:extend()
+local Command = require("editor.command.command")
 
-function ChangeField:new(target, field, new)
+---@class editor.command.ChangeField: editor.Command
+local ChangeField = Command:extend()
+
+function ChangeField:init(target, field, new)
 	ChangeField.super.new(self)
 
 	self.target = target
@@ -19,7 +20,8 @@ function ChangeField:undo()
 	self.target[self.field] = self.old
 end
 
----@param cmd ChangeField
+---@param cmd editor.command.ChangeField
+---@return boolean
 function ChangeField:merge(cmd)
 	if not cmd:is(ChangeField) then
 		return false
@@ -40,3 +42,5 @@ end
 function ChangeField:__tostring()
 	return "ChangeField"
 end
+
+return ChangeField

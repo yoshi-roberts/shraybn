@@ -1,6 +1,11 @@
+local Scene = require("engine.scene")
+local nativefs = require("libs.nativefs")
+local file_panel = require("editor.file_panel")
+local editor = require("editor")
 local ffi = require("ffi")
 
-Menubar = {
+---@class editor.menubar
+local menubar = {
 	scene = {
 		popup = false,
 		name = "New Scene",
@@ -10,12 +15,12 @@ Menubar = {
 	display = require("editor.ui.menubar"),
 }
 
-function Menubar:new_scene()
-	local scene = Scene(self.scene.name)
-	local path = "scenes/" .. self.scene.name .. ".scd"
+function menubar.new_scene()
+	local scene = Scene:new(menubar.scene.name)
+	local path = "scenes/" .. menubar.scene.name .. ".scd"
 
-	Nativefs.setWorkingDirectory(Editor.loaded_project.name)
-	local exists = Nativefs.getInfo(path)
+	nativefs.setWorkingDirectory(editor.loaded_project.name)
+	local exists = nativefs.getInfo(path)
 
 	if exists ~= nil then
 		return false, nil
@@ -24,7 +29,9 @@ function Menubar:new_scene()
 	scene:save(path)
 
 	-- Set working directory back to projects/
-	Nativefs.setWorkingDirectory("..")
+	nativefs.setWorkingDirectory("..")
 
-	FilePanel:create_tree(Editor.loaded_project.name, FilePanel.tree)
+	file_panel.create_tree(editor.loaded_project.name, file_panel.tree)
 end
+
+return menubar

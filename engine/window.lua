@@ -5,8 +5,8 @@ local window = {
 	height = 0,
 }
 
----@param width integer
----@param height integer
+---@param width integer?
+---@param height integer?
 ---@param title string?
 function window.init(width, height, title)
 	love.window.setMode(width or 0, height or 0, {

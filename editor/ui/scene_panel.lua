@@ -1,28 +1,33 @@
----@param scene SceneData
----@param layer Layer
+local AddEntity, RemoveEntity = require("editor.command.commands.entity")
+local Sprite = require("engine.sprite")
+
+local editor = require("editor")
+local font_icon = require("editor.font_icons")
+local imgui = require("engine.imgui")
+
+---@param scene editor.SceneData
+---@param layer engine.Layer
 ---@param index integer
 local function layer_context_menu(scene, layer, index)
-	if Imgui.BeginPopupContextItem() then
-		if Imgui.BeginMenu(FONT_ICONS.ICON_PLUS .. "Add") then
-			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_PICTURE_O .. " Sprite") then
-				Editor.history:add(AddEntity(scene, layer, Sprite()))
+	if imgui.BeginPopupContextItem() then
+		if imgui.BeginMenu(font_icon.ICON_PLUS .. "Add") then
+			if imgui.MenuItem_Bool(font_icon.ICON_PICTURE_O .. " Sprite") then
+				editor.history:add(AddEntity:new(scene, layer, Sprite:new()))
 			end
 
-			if
-				Imgui.MenuItem_Bool(FONT_ICONS.ICON_MOUSE_POINTER .. " Trigger")
-			then
+			if imgui.MenuItem_Bool(font_icon.ICON_MOUSE_POINTER .. " Trigger") then
 				local points = { 0, 0, 64, 0, 64, 64, 0, 64 }
-				Editor.history:add(AddEntity(scene, layer, Trigger(points)))
+				editor.history:add(AddEntity(scene, layer, Trigger(points)))
 			end
 
-			Imgui.EndMenu()
+			imgui.EndMenu()
 		end
 
-		if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
-			Editor.history:add(RemoveLayer(scene, index))
+		if imgui.MenuItem_Bool(font_icon.ICON_TRASH .. " Delete") then
+			editor.history:add(RemoveLayer(scene, index))
 		end
 
-		Imgui.EndPopup()
+		imgui.EndPopup()
 	end
 end
 
@@ -34,76 +39,70 @@ local function layer_list_entities(scene, layer)
 			break
 		end
 
-		if Imgui.Selectable_Bool(entity.name) then
-			Editor.selected_entity = entity
+		if imgui.Selectable_Bool(entity.name) then
+			editor.selected_entity = entity
 			Inspector:inspect("entity", entity)
 		end
 
-		if Imgui.BeginPopupContextItem() then
-			if Imgui.MenuItem_Bool(FONT_ICONS.ICON_TRASH .. " Delete") then
-				Editor.history:add(RemoveEntity(scene, j))
+		if imgui.BeginPopupContextItem() then
+			if imgui.MenuItem_Bool(font_icon.ICON_TRASH .. " Delete") then
+				editor.history:add(RemoveEntity(scene, j))
 			end
 
-			Imgui.EndPopup()
+			imgui.EndPopup()
 		end
 	end
 end
 
 local function display()
-	Imgui.Begin("Scene", nil)
+	imgui.Begin("Scene", nil)
 
-	if not Editor.scenes.current then
-		Imgui.End()
+	if not editor.scenes.current then
+		imgui.End()
 		return
 	end
 
 	-- The scene data the editor is interactibg with.
 	---@type SceneData
-	local scene = Editor.scenes.current
+	local scene = editor.scenes.current
 
-	local btn_width = Imgui.GetContentRegionAvail().x
-	if
-		Imgui.Button(
-			FONT_ICONS.ICON_PLUS .. " New Layer",
-			Imgui.ImVec2_Float(btn_width, 0)
-		)
-	then
-		Editor.history:add(AddLayer(scene, Layer({})))
+	local btn_width = imgui.GetContentRegionAvail().x
+	if imgui.Button(font_icon.ICON_PLUS .. " New Layer", imgui.ImVec2_Float(btn_width, 0)) then
+		editor.history:add(AddLayer(scene, Layer({})))
 	end
 
 	for k, layer in pairs(scene.data.layers) do
 		local node_flags = { "OpenOnArrow", "OpenOnDoubleClick" }
 
-		if Editor.selected_layer == layer then
+		if editor.selected_layer == layer then
 			table.insert(node_flags, "Selected")
 		end
 
-		local eye = layer.active and FONT_ICONS.ICON_EYE
-			or FONT_ICONS.ICON_EYE_SLASH
+		local eye = layer.active and font_icon.ICON_EYE or font_icon.ICON_EYE_SLASH
 
-		if Imgui.Button(eye .. "##" .. layer.name) then
+		if imgui.Button(eye .. "##" .. layer.name) then
 			layer.active = not layer.active
 			scene.saved = false
 		end
 
-		Imgui.SameLine()
-		local tree_node_flags = Imgui.love.TreeNodeFlags(unpack(node_flags))
-		local node_open = Imgui.TreeNodeEx_Str(layer.name, tree_node_flags)
+		imgui.SameLine()
+		local tree_node_flags = imgui.love.TreeNodeFlags(unpack(node_flags))
+		local node_open = imgui.TreeNodeEx_Str(layer.name, tree_node_flags)
 
 		layer_context_menu(scene, layer, k)
 
 		if node_open then
 			layer_list_entities(scene, layer)
-			Imgui.TreePop()
+			imgui.TreePop()
 		end
 
-		if Imgui.IsItemClicked() then
-			Editor.selected_layer = layer
-			Inspector:inspect("layer", Editor.selected_layer)
+		if imgui.IsItemClicked() then
+			editor.selected_layer = layer
+			Inspector:inspect("layer", editor.selected_layer)
 		end
 	end
 
-	Imgui.End()
+	imgui.End()
 end
 
 return display

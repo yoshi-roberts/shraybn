@@ -1,102 +1,110 @@
+local dockspace = require("editor.dockspace")
+local editor = require("editor")
 local ffi = require("ffi")
 
-local function scene_menu(self)
-	if Imgui.MenuItem_Bool(string.format("%s New", FONT_ICONS.ICON_PLUS), nil, nil) then
-		self.scene.popup = true
+local font_icon = require("editor.font_icons")
+local imgui = require("engine.imgui")
+
+---@param menubar editor.menubar
+local function scene_menu(menubar)
+	if imgui.MenuItem_Bool(string.format("%s New", font_icon.ICON_PLUS), nil, nil) then
+		menubar.scene.popup = true
 	end
-	if Imgui.MenuItem_Bool(string.format("%s Save", FONT_ICONS.ICON_FLOPPY_O), nil, nil) then
-		Editor:save_scene()
+	if imgui.MenuItem_Bool(string.format("%s Save", font_icon.ICON_FLOPPY_O), nil, nil) then
+		editor:save_scene()
 	end
-	if Imgui.MenuItem_Bool(string.format("%s Save All", FONT_ICONS.ICON_FLOPPY_O), nil, nil) then
-		Editor:save_all_scenes()
+	if imgui.MenuItem_Bool(string.format("%s Save All", font_icon.ICON_FLOPPY_O), nil, nil) then
+		editor:save_all_scenes()
 	end
 
-	Imgui.Separator()
+	imgui.Separator()
 
-	if Imgui.MenuItem_Bool(string.format("%s Undo", FONT_ICONS.ICON_UNDO), nil, nil) then
-		Editor.history:undo()
+	if imgui.MenuItem_Bool(string.format("%s Undo", font_icon.ICON_UNDO), nil, nil) then
+		editor.history:undo()
 	end
 
-	if Imgui.MenuItem_Bool(string.format("%s Redo", FONT_ICONS.ICON_REPEAT), nil, nil) then
-		Editor.history:redo()
+	if imgui.MenuItem_Bool(string.format("%s Redo", font_icon.ICON_REPEAT), nil, nil) then
+		editor.history:redo()
 	end
 end
 
 local function project_menu()
-	if Imgui.MenuItem_Bool(string.format("%s Open", FONT_ICONS.ICON_FILE), nil, nil) then
-		ProjectManager.open[0] = true
+	if imgui.MenuItem_Bool(string.format("%s Open", font_icon.ICON_FILE), nil, nil) then
+		-- FIX: Probably bad
+		-- ProjectManager.open[0] = true
 	end
 
-	Imgui.MenuItem_Bool(FONT_ICONS.ICON_COG .. " Settings", nil, nil)
-	Imgui.MenuItem_Bool(FONT_ICONS.ICON_PLAY .. " Run", nil, nil)
-	Imgui.MenuItem_Bool(FONT_ICONS.ICON_FLOPPY_O .. " Save", nil, nil)
+	imgui.MenuItem_Bool(font_icon.ICON_COG .. " Settings", nil, nil)
+	imgui.MenuItem_Bool(font_icon.ICON_PLAY .. " Run", nil, nil)
+	imgui.MenuItem_Bool(font_icon.ICON_FLOPPY_O .. " Save", nil, nil)
 end
 
 local function editor_menu()
-	if Imgui.BeginMenu(string.format("%s Layout", FONT_ICONS.ICON_ALIGN_JUSTIFY)) then
-		if Imgui.MenuItem_Bool("Default", nil, nil) then
-			Dockspace:layout("default")
+	if imgui.BeginMenu(string.format("%s Layout", font_icon.ICON_ALIGN_JUSTIFY)) then
+		if imgui.MenuItem_Bool("Default", nil, nil) then
+			dockspace.layout("default")
 		end
-		if Imgui.MenuItem_Bool("Left", nil, nil) then
-			Dockspace:layout("left")
+		if imgui.MenuItem_Bool("Left", nil, nil) then
+			dockspace.layout("left")
 		end
-		if Imgui.MenuItem_Bool("Right", nil, nil) then
-			Dockspace:layout("right")
+		if imgui.MenuItem_Bool("Right", nil, nil) then
+			dockspace.layout("right")
 		end
-		if Imgui.MenuItem_Bool("Center", nil, nil) then
-			Dockspace:layout("center")
+		if imgui.MenuItem_Bool("Center", nil, nil) then
+			dockspace.layout("center")
 		end
-		Imgui.EndMenu()
+		imgui.EndMenu()
 	end
 end
 
-local function display(self)
-	if Imgui.BeginMenuBar() then
-		local no_proj = (Editor.loaded_project == nil)
+---@param menubar editor.menubar
+local function display(menubar)
+	if imgui.BeginMenuBar() then
+		local no_proj = (editor.loaded_project == nil)
 
-		Imgui.BeginDisabled(no_proj)
+		imgui.BeginDisabled(no_proj)
 
-		if Imgui.BeginMenu("Scene") then
-			scene_menu(self)
-			Imgui.EndMenu()
+		if imgui.BeginMenu("Scene") then
+			scene_menu(menubar)
+			imgui.EndMenu()
 		end
 
-		Imgui.EndDisabled(no_proj)
+		imgui.EndDisabled(no_proj)
 
-		if Imgui.BeginMenu("Project") then
+		if imgui.BeginMenu("Project") then
 			project_menu()
-			Imgui.EndMenu()
+			imgui.EndMenu()
 		end
 
-		if Imgui.BeginMenu("Editor") then
+		if imgui.BeginMenu("Editor") then
 			editor_menu()
-			Imgui.EndMenu()
+			imgui.EndMenu()
 		end
 
-		Imgui.EndMenuBar()
+		imgui.EndMenuBar()
 	end
 
-	if self.scene.popup then
-		Imgui.OpenPopup_Str("new_scene")
-		self.scene.popup = false
+	if menubar.scene.popup then
+		imgui.OpenPopup_Str("new_scene")
+		menubar.scene.popup = false
 	end
 
-	if Imgui.BeginPopup("new_scene") then
-		Imgui.Text("Scene Name")
-		if Imgui.InputText("##scene_field", self.buf, 128) then
-			self.scene.name = ffi.string(self.buf)
+	if imgui.BeginPopup("new_scene") then
+		imgui.Text("Scene Name")
+		if imgui.InputText("##scene_field", menubar.buf, 128) then
+			menubar.scene.name = ffi.string(menubar.buf)
 		end
 
-		if Imgui.Button("Create") then
-			self:new_scene()
-			Imgui.CloseCurrentPopup()
+		if imgui.Button("Create") then
+			menubar.new_scene()
+			imgui.CloseCurrentPopup()
 		end
 
-		Imgui.SameLine()
-		if Imgui.Button("Cancel") then
-			Imgui.CloseCurrentPopup()
+		imgui.SameLine()
+		if imgui.Button("Cancel") then
+			imgui.CloseCurrentPopup()
 		end
-		Imgui.EndPopup()
+		imgui.EndPopup()
 	end
 end
 

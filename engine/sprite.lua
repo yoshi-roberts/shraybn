@@ -1,7 +1,7 @@
 local Entity = require("engine.entity")
 local assets = require("engine.assets")
 
----@class Sprite: engine.Entity
+---@class engine.Sprite: engine.Entity
 local Sprite = Entity:extend()
 
 ---@param path string

@@ -1,12 +1,13 @@
-ScenePanel = {
+---@class editor.scene_panel
+local scene_panel = {
 	display = require("editor.ui.scene_panel"),
 }
 
----@param scene SceneData
----@param layer Layer
----@param entity Entity
+---@param scene editor.SceneData
+---@param layer engine.Layer
+---@param entity engine.Entity
 ---@param index ?integer
-function ScenePanel.add_entity(scene, layer, entity, index)
+function scene_panel.add_entity(scene, layer, entity, index)
 	local type = tostring(entity)
 	local name = tostring(entity)
 
@@ -37,17 +38,16 @@ function ScenePanel.add_entity(scene, layer, entity, index)
 
 	scene.data:add_entity(entity, layer, index)
 
-	scene.entity_count[layer.name][type] = scene.entity_count[layer.name][type]
-		+ 1
+	scene.entity_count[layer.name][type] = scene.entity_count[layer.name][type] + 1
 	scene.saved = false
 
 	-- Return the index of the added entity.
 	return #scene.data.entities
 end
 
----@param scene SceneData
+---@param scene editor.SceneData
 ---@param index integer
-function ScenePanel.remove_entity(scene, index)
+function scene_panel.remove_entity(scene, index)
 	local ent = scene.data.entities[index]
 	local type = tostring(ent)
 
@@ -70,10 +70,10 @@ function ScenePanel.remove_entity(scene, index)
 	return removed
 end
 
----@param scene SceneData
----@param layer Layer
+---@param scene editor.SceneData
+---@param layer engine.Layer
 ---@param index ?integer
-function ScenePanel.add_layer(scene, layer, index)
+function scene_panel.add_layer(scene, layer, index)
 	layer.name = "Layer " .. #scene.data.layers + 1
 	scene.data:add_layer(layer, index)
 
@@ -81,13 +81,15 @@ function ScenePanel.add_layer(scene, layer, index)
 	return #scene.data.layers
 end
 
----@param scene SceneData
+---@param scene editor.SceneData
 ---@param index integer
----@return Layer
-function ScenePanel.remove_layer(scene, index)
+---@return engine.Layer
+function scene_panel.remove_layer(scene, index)
 	local layer = scene.data:remove_layer(index)
 	scene.entity_count = scene.data:entity_count()
 
 	scene.saved = false
 	return layer
 end
+
+return scene_panel

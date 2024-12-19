@@ -1,10 +1,15 @@
----@class AddEntity
-AddEntity = Command:extend()
+-- TODO: Adding and removing entities should not be functions of scene_panel
+local Command = require("editor.command.command")
 
----@param scene SceneData
----@param layer Layer
----@param entity Entity
-function AddEntity:new(scene, layer, entity)
+---@class editor.command.AddEntity : editor.Command
+local AddEntity = Command:extend()
+
+---@param scene editor.SceneData
+---@param layer engine.Layer
+---@param entity engine.Entity
+function AddEntity:init(scene, layer, entity)
+	AddEntity.super.new(self)
+
 	self.scene = scene
 	self.layer = layer
 	self.entity = entity
@@ -12,28 +17,31 @@ function AddEntity:new(scene, layer, entity)
 end
 
 function AddEntity:execute()
-	self.index = ScenePanel.add_entity(self.scene, self.layer, self.entity)
+	-- self.index = scene_panel.add_entity(self.scene, self.layer, self.entity)
 end
 
 function AddEntity:undo()
-	ScenePanel.remove_entity(self.scene, self.index)
+	-- scene_panel.remove_entity(self.scene, self.index)
 end
 
----@class RemoveEntity
----@field entity Entity
-RemoveEntity = Command:extend()
+---@class editor.command.RemoveEntity : editor.Command
+---@field entity engine.Entity
+local RemoveEntity = Command:extend()
 
----@param scene SceneData
+---@param scene editor.SceneData
 ---@param index integer
-function RemoveEntity:new(scene, index)
+function RemoveEntity:init(scene, index)
 	self.scene = scene
 	self.index = index
 end
 
 function RemoveEntity:execute()
-	self.entity = ScenePanel.remove_entity(self.scene, self.index)
+	-- self.entity = scene_panel.remove_entity(self.scene, self.index)
 end
 
 function RemoveEntity:undo()
-	ScenePanel.add_entity(self.scene, self.entity.layer, self.entity, self.index)
+	-- scene_panel.add_entity(self.scene, self.entity.layer, self.entity, self.index)
 end
+
+---@return editor.command.AddEntity, editor.command.RemoveEntity
+return AddEntity, RemoveEntity

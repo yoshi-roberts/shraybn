@@ -1,4 +1,5 @@
-local FONT_ICON = {
+---@enum font_icon
+local font_icon = {
 	FILE_NAME_FK = "forkawesome-webfont.ttf",
 
 	ICON_MIN = 0xf000,
@@ -818,4 +819,4 @@ local FONT_ICON = {
 	ICON_UBUNTU = "\u{f36b}",
 }
 
-return FONT_ICON
+return font_icon

@@ -1,58 +1,61 @@
-local trigger = require("editor.trigger-edit") --[[@as trigger]]
+local editor = require "editor"
+local font_icon = require "editor.font_icons"
+local imgui = require "engine.imgui"
 
-local function display()
-	Imgui.Begin("Viewport", nil, nil)
+---@param viewport editor.viewport
+local function display(viewport)
+	imgui.Begin("Viewport", nil, nil)
 
-	if Imgui.Button(FONT_ICONS.ICON_ARROWS_ALT) then
-		Viewport:center()
+	if imgui.Button(font_icon.ICON_ARROWS_ALT) then
+		viewport.center()
 	end
 
-	Imgui.SameLine()
-	if Imgui.Button(FONT_ICONS.ICON_MINUS) then
-		Viewport.scale = Viewport.scale - 0.1
+	imgui.SameLine()
+	if imgui.Button(font_icon.ICON_MINUS) then
+		viewport.scale = viewport.scale - 0.1
 	end
 
-	Imgui.SameLine()
-	local scale_percentage = math.floor(Viewport.scale * 100)
-	if Imgui.Button(scale_percentage .. "%") then
-		Viewport.scale = 1
+	imgui.SameLine()
+	local scale_percentage = math.floor(viewport.scale * 100)
+	if imgui.Button(scale_percentage .. "%") then
+		viewport.scale = 1
 	end
 
-	Imgui.SameLine()
-	if Imgui.Button(FONT_ICONS.ICON_PLUS) then
-		Viewport.scale = Viewport.scale + 0.1
+	imgui.SameLine()
+	if imgui.Button(font_icon.ICON_PLUS) then
+		viewport.scale = viewport.scale + 0.1
 	end
 
-	local region = Imgui.GetContentRegionAvail()
+	local region = imgui.GetContentRegionAvail()
 
-	local width, height = Viewport.canvas:getDimensions()
+	local width, height = viewport.canvas:getDimensions()
 
 	if region.x ~= width or region.y ~= height then
 		if region.x > 0 and region.y > 0 then
-			Viewport.canvas = love.graphics.newCanvas(region.x, region.y)
+			viewport.canvas = love.graphics.newCanvas(region.x, region.y)
 		end
 	end
-	width, height = Viewport.canvas:getDimensions()
+	width, height = viewport.canvas:getDimensions()
 
-	local win_pos = Imgui.GetWindowPos()
-	local cursor_pos = Imgui.GetCursorPos()
-	Viewport.pos.x = win_pos.x + cursor_pos.x
-	Viewport.pos.y = win_pos.y + cursor_pos.y
+	local win_pos = imgui.GetWindowPos()
+	local cursor_pos = imgui.GetCursorPos()
+	viewport.pos.x = win_pos.x + cursor_pos.x
+	viewport.pos.y = win_pos.y + cursor_pos.y
 
 	-- Start rendering to viewport canvas.
-	love.graphics.setCanvas(Viewport.canvas)
+	love.graphics.setCanvas(viewport.canvas)
 	love.graphics.push()
 
-	love.graphics.clear(Viewport.bg_color)
+	love.graphics.clear(viewport.bg_color)
 
-	love.graphics.translate(Viewport.offset.x, Viewport.offset.y)
-	love.graphics.scale(Viewport.scale, Viewport.scale)
+	love.graphics.translate(viewport.offset.x, viewport.offset.y)
+	love.graphics.scale(viewport.scale, viewport.scale)
 
-	if Editor.loaded_project then
+	if editor.loaded_project then
 		love.graphics.setColor(1, 1, 1, 1)
 
-		if Editor.scenes.current then
-			Viewport:draw_scene()
+		if editor.scenes.current then
+			viewport.draw_scene()
 			-- Editor.scenes.current.data:draw()
 		end
 	end
@@ -65,27 +68,27 @@ local function display()
 	-- Grid.
 
 	love.graphics.push()
-	love.graphics.translate(Viewport.offset.x, Viewport.offset.y)
+	love.graphics.translate(viewport.offset.x, viewport.offset.y)
 
 	love.graphics.setLineStyle("rough")
 
-	if Editor.loaded_project then
+	if editor.loaded_project then
 		love.graphics.rectangle(
 			"line",
 			0,
 			0,
-			Editor.loaded_project.game_width * Viewport.scale,
-			Editor.loaded_project.game_height * Viewport.scale
+			editor.loaded_project.game_width * viewport.scale,
+			editor.loaded_project.game_height * viewport.scale
 		)
 	end
 
-	local gs = Viewport.grid_size * Viewport.scale
+	local gs = viewport.grid_size * viewport.scale
 
-	local xt = math.ceil((Viewport.canvas:getWidth() - Viewport.offset.x) / gs)
-	local yt = math.ceil((Viewport.canvas:getHeight() - Viewport.offset.y) / gs)
+	local xt = math.ceil((viewport.canvas:getWidth() - viewport.offset.x) / gs)
+	local yt = math.ceil((viewport.canvas:getHeight() - viewport.offset.y) / gs)
 
-	local start_x = math.floor(-Viewport.offset.x / gs)
-	local start_y = math.floor(-Viewport.offset.y / gs)
+	local start_x = math.floor(-viewport.offset.x / gs)
+	local start_y = math.floor(-viewport.offset.y / gs)
 
 	love.graphics.setColor(1, 1, 1, 0.05)
 	for x = start_x, xt, 1 do
@@ -101,12 +104,12 @@ local function display()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setCanvas()
 
-	local size = Imgui.ImVec2_Float(Viewport.canvas:getDimensions())
-	Imgui.Image(Viewport.canvas, size)
+	local size = imgui.ImVec2_Float(viewport.canvas:getDimensions())
+	imgui.Image(viewport.canvas, size)
 
-	Viewport.mouse_over = Imgui.IsItemHovered()
+	viewport.mouse_over = imgui.IsItemHovered()
 
-	Imgui.End()
+	imgui.End()
 end
 
 return display

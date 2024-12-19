@@ -1,7 +1,14 @@
+local Project = require("engine.project")
+local nativefs = require("libs.nativefs")
+local imgui = require("engine.imgui")
+local assets = require("engine.assets")
+local viewport = require("editor.viewport")
+local editor = require("editor")
 local ffi = require("ffi")
 
-ProjectManager = {
-	projects = Nativefs.getDirectoryItems("projects"),
+---@class editor.project_manager
+local project_manager = {
+	projects = nativefs.getDirectoryItems("projects"),
 	open = ffi.new("bool[1]", false),
 	selected = 1,
 	warning = "",
@@ -10,8 +17,8 @@ ProjectManager = {
 	buf = ffi.new("char[?]", 128, "New Project"),
 
 	-- Imgui --
-	win_size = Imgui.ImVec2_Float(0.0, 0.0),
-	win_flags = Imgui.love.WindowFlags(
+	win_size = imgui.ImVec2_Float(0.0, 0.0),
+	win_flags = imgui.love.WindowFlags(
 		"NoDocking",
 		"NoCollapse",
 		"NoResize",
@@ -25,36 +32,41 @@ ProjectManager = {
 	display = require("editor.ui.project_manager"),
 }
 
-function ProjectManager:create(name)
-	local proj_exists = Nativefs.getInfo(name)
+---@param name string
+---@return boolean
+function project_manager.create(name)
+	local proj_exists = nativefs.getInfo(name)
 	if proj_exists then
 		print("Exists!")
-		self.warning = "Project '" .. name .. "' already exists."
+		project_manager.warning = "Project '" .. name .. "' already exists."
 		return false
 	end
 
-	Nativefs.createDirectory(name)
-	Nativefs.setWorkingDirectory(name)
+	nativefs.createDirectory(name)
+	nativefs.setWorkingDirectory(name)
 
-	Nativefs.createDirectory("assets")
-	Nativefs.createDirectory("scenes")
+	nativefs.createDirectory("assets")
+	nativefs.createDirectory("scenes")
 
-	local proj = Project(name)
+	local proj = Project:new(name)
 	proj:save()
 
 	-- Update project list.
-	Nativefs.setWorkingDirectory("..")
-	self.projects = Nativefs.getDirectoryItems("./")
+	nativefs.setWorkingDirectory("..")
+	project_manager.projects = nativefs.getDirectoryItems("./")
 
 	return true
 end
 
-function ProjectManager:load(name)
+---@param name string
+function project_manager.load(name)
 	local proj = Project.load(name)
-	Editor.loaded_project = proj
+	editor.loaded_project = proj
 
-	Assets:init(proj.name, true)
-	Assets:load()
+	assets.init(proj.name, true)
+	assets.load()
 
-	Viewport:center()
+	viewport.center()
 end
+
+return project_manager

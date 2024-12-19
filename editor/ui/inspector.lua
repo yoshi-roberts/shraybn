@@ -1,17 +1,20 @@
-local function display(self)
-	Imgui.Begin("Inspector", nil)
+local imgui = require("engine.imgui")
 
-	if self.item then
-		if self.type == "image" then
-			self:image(self.item)
-		elseif self.type == "entity" then
-			self:entity()
-		elseif self.type == "layer" then
-			self:layer()
+---@param inspector editor.inspector
+local function display(inspector)
+	imgui.Begin("Inspector", nil)
+
+	if inspector.item then
+		if inspector.type == "image" then
+			inspector.image(inspector.item)
+		elseif inspector.type == "entity" then
+			inspector.entity()
+		elseif inspector.type == "layer" then
+			inspector.layer()
 		end
 	end
 
-	Imgui.End()
+	imgui.End()
 end
 
 return display

@@ -1,48 +1,43 @@
-require("engine")
-require("engine.imgui")
+local CommandHistory = require("editor.command.command_history")
+local Scene = require("engine.scene")
+local Layer = require("engine.layer")
+local nativefs = require("libs.nativefs")
+local window = require("engine.window")
+local engine = require("engine")
 
-FONT_ICONS = require("editor.font_icons")
+-- require("editor.menubar")
+-- require("editor.dockspace")
+-- require("editor.project_manager")
+-- require("editor.scene_data")
+-- require("editor.scene_panel")
+-- require("editor.file_panel")
+-- require("editor.inspector")
+-- require("editor.viewport")
 
-require("editor.command")
-
--- require("editor.util")
-require("editor.menubar")
-require("editor.dockspace")
-require("editor.project_manager")
-require("editor.scene_data")
-require("editor.scene_panel")
-require("editor.file_panel")
-require("editor.inspector")
-require("editor.viewport")
-
-Editor = {
-	---@type Project
-	loaded_project = nil,
+---@class editor
+local editor = {
+	loaded_project = nil, ---@type engine.Project
 
 	scenes = {
-		---@type SceneData[]
-		open = {},
-		---@type SceneData
-		current = nil,
+		open = {}, ---@type editor.SceneData[]
+		current = nil, ---@type editor.SceneData
 	},
 
-	history = CommandHistory(),
+	history = CommandHistory:new(),
 
-	---@type Layer
-	selected_layer = nil,
-	---@type Entity
-	selected_entity = nil,
+	selected_layer = nil, ---@type engine.Layer
+	selected_entity = nil, ---@type engine.Entity
 	drag_payload = nil,
 }
 
-function Editor:save_scene()
-	self.scenes.current.data:save(self.scenes.current.path)
-	self.scenes.current.saved = true
+function editor.save_scene()
+	editor.scenes.current.data:save(editor.scenes.current.path)
+	editor.scenes.current.saved = true
 end
 
-function Editor:save_all_scenes()
-	for _, scene in pairs(self.scenes.open) do
-		---@cast scene SceneData
+function editor.save_all_scenes()
+	for _, scene in pairs(editor.scenes.open) do
+		---@cast scene editor.SceneData
 
 		scene.data:save(scene.path)
 		scene.saved = true
@@ -51,37 +46,40 @@ end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
-	Window:init()
+	window.init()
 
-	local editor_scene = Scene("editor_scene")
-	editor_scene:add_layer(Layer(require("editor.ui.ui_layer")))
+	local editor_scene = engine.add_scene(Scene:new("editor_scene"))
+	editor_scene:add_layer(Layer:new(require("editor.ui.ui_layer")))
 
-	Engine:set_scene("editor_scene")
+	engine.set_scene("editor_scene")
 
 	-- Make sure projects dir exists and is our working dir.
-	local proj_dir_exists = Nativefs.getInfo("projects/")
+	local proj_dir_exists = nativefs.getInfo("projects/")
 	if not proj_dir_exists then
-		Nativefs.createDirectory("projects")
+		nativefs.createDirectory("projects")
 	end
-	Nativefs.setWorkingDirectory("projects")
+	nativefs.setWorkingDirectory("projects")
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.update(dt)
-	Engine:update(dt)
-	FilePanel:update()
+	engine.update(dt)
+	-- file_panel.update() -- FIX: Should not be here.
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.draw()
-	Engine:draw()
+	engine.draw()
 
-	love.graphics.setColor(1, 0, 0, 1)
-	love.graphics.circle("fill", Viewport.pos.x, Viewport.pos.y, 4)
-	love.graphics.setColor(1, 1, 1, 1)
+	-- FIX: No no.
+	-- love.graphics.setColor(1, 0, 0, 1)
+	-- love.graphics.circle("fill", viewport.pos.x, viewport.pos.y, 4)
+	-- love.graphics.setColor(1, 1, 1, 1)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.quit()
-	Engine:shutdown()
+	engine.shutdown()
 end
+
+return editor

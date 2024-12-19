@@ -34,7 +34,7 @@ function Project:save()
 	end
 
 	-- FIX: NO! Major bullshit. Fix this.
-	Editor:save_all_scenes()
+	-- editor:save_all_scenes()
 end
 
 return Project

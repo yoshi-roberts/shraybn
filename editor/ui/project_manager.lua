@@ -1,79 +1,81 @@
-local ffi = require("ffi")
+local imgui = require "engine.imgui"
+local ffi = require "ffi"
 
 local function project_list(self)
-	if Imgui.BeginListBox("##Projects", nil) then
+	if imgui.BeginListBox("##Projects", nil) then
 		for k, v in pairs(self.projects) do
 			local selected = (k == self.selected)
 
-			if Imgui.Selectable_Bool(v, selected) then
+			if imgui.Selectable_Bool(v, selected) then
 				self.selected = k
 			end
 
 			if selected then
-				Imgui.SetItemDefaultFocus()
+				imgui.SetItemDefaultFocus()
 			end
 		end
 
-		Imgui.EndListBox()
+		imgui.EndListBox()
 	end
 end
 
-local function display(self)
-	if self.open[0] == false then
-		self.create_new = false
+---@param project_manager editor.project_manager
+local function display(project_manager)
+	if project_manager.open[0] == false then
+		project_manager.create_new = false
 		return
 	end
 
-	if not Imgui.Begin("Project Manager", self.open, self.win_flags) then
-		Imgui.End()
+	if not imgui.Begin("Project Manager", project_manager.open, project_manager.win_flags) then
+		imgui.End()
 	else
-		self.win_size = Imgui.GetWindowSize()
+		project_manager.win_size = imgui.GetWindowSize()
 		local screen_w, screen_h = love.graphics.getDimensions()
 
-		local pos_x = (screen_w - self.win_size.x) / 2
-		local pos_y = (screen_h - self.win_size.y) / 2
+		local pos_x = (screen_w - project_manager.win_size.x) / 2
+		local pos_y = (screen_h - project_manager.win_size.y) / 2
 
-		Imgui.SetWindowPos_Vec2(Imgui.ImVec2_Float(pos_x, pos_y))
+		imgui.SetWindowPos_Vec2(imgui.ImVec2_Float(pos_x, pos_y))
 
-		if Imgui.Button("Open") then
-			local name = self.projects[self.selected]
-			ProjectManager:load(name)
-			self.open[0] = false
+		if imgui.Button("Open") then
+			local name = project_manager.projects[project_manager.selected]
+			project_manager.load(name)
+			project_manager.open[0] = false
 		end
 
-		Imgui.SameLine()
-		if Imgui.Button("Delete") then
+		imgui.SameLine()
+		if imgui.Button("Delete") then
 		end
 
-		Imgui.SameLine()
-		if Imgui.Button("New") then
-			self.create_new = true
+		imgui.SameLine()
+		if imgui.Button("New") then
+			project_manager.create_new = true
 		end
 
-		project_list(self)
+		project_list(project_manager)
 
-		if self.create_new == true then
-			if Imgui.InputText("##project_name", self.buf, 128) then
-				self.name = ffi.string(self.buf)
+		if project_manager.create_new == true then
+			if imgui.InputText("##project_name", project_manager.buf, 128) then
+				project_manager.name = ffi.string(project_manager.buf)
 			end
 
-			if #self.warning > 0 then
-				Imgui.Text(self.warning)
+			if #project_manager.warning > 0 then
+				imgui.Text(project_manager.warning)
 			end
 
-			if Imgui.Button("Create") then
-				if ProjectManager:create(self.name) then
-					self.open[0] = false
+			if imgui.Button("Create") then
+				if project_manager.create(project_manager.name) then
+					project_manager.open[0] = false
 				end
 			end
 
-			Imgui.SameLine()
-			if Imgui.Button("Cancel") then
-				self.create_new = false
+			imgui.SameLine()
+			if imgui.Button("Cancel") then
+				project_manager.create_new = false
 			end
 		end
 
-		Imgui.End()
+		imgui.End()
 	end
 end
 

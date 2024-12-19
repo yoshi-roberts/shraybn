@@ -1,6 +1,12 @@
+local Sprite = require("engine.sprite")
+local ChangeField = require("editor.command.commands.change_field")
+local editor = require("editor")
+local assets = require("engine.assets")
+local imgui = require("engine.imgui")
 local ffi = require("ffi")
 
-Inspector = {
+---@class editor.inspector
+local inspector = {
 
 	-- item = nil, -- The "item" we are inspecting.
 	type = nil,
@@ -21,84 +27,85 @@ Inspector = {
 
 ---@param type string | "entity" | "image" | "layer"
 ---@param item any
-function Inspector:inspect(type, item)
-	self.item = item
-	self.type = type
+function inspector.inspect(type, item)
+	inspector.item = item
+	inspector.type = type
 end
 
 ---@param label string
 ---@param target Vec2
-function Inspector:vec2(label, target)
-	self.vec_x[0] = target.x
-	self.vec_y[0] = target.y
+function inspector.vec2(label, target)
+	inspector.vec_x[0] = target.x
+	inspector.vec_y[0] = target.y
 
-	Imgui.Text(label .. ":")
+	imgui.Text(label .. ":")
 
-	Imgui.PushItemWidth(80)
+	imgui.PushItemWidth(80)
 
-	Imgui.DragInt("X##" .. label .. "_VEC_X", self.vec_x)
-	if Imgui.IsItemActive() then
-		Editor.history:add(ChangeField(target, "x", self.vec_x[0]), true)
+	imgui.DragInt("X##" .. label .. "_VEC_X", inspector.vec_x)
+	if imgui.IsItemActive() then
+		editor.history:add(ChangeField:new(target, "x", inspector.vec_x[0]), true)
 	end
 
-	Imgui.DragInt("Y##" .. label .. "_VEC_Y", self.vec_y)
-	if Imgui.IsItemActive() then
-		Editor.history:add(ChangeField(target, "y", self.vec_y[0]), true)
+	imgui.DragInt("Y##" .. label .. "_VEC_Y", inspector.vec_y)
+	if imgui.IsItemActive() then
+		editor.history:add(ChangeField:new(target, "y", inspector.vec_y[0]), true)
 	end
 
-	Imgui.PopItemWidth()
+	imgui.PopItemWidth()
 
-	Editor.scenes.current.saved = false
+	editor.scenes.current.saved = false
 end
 
-function Inspector:bool(label, target)
-	self.check_bool[0] = target
+function inspector.bool(label, target)
+	inspector.check_bool[0] = target
 
 	local tag = label .. "##" .. label .. "_CHECKBOX_BOOL"
 
-	if Imgui.Checkbox(tag, self.check_bool) then
-		Editor.scenes.current.saved = false
-		return self.check_bool[0]
+	if imgui.Checkbox(tag, inspector.check_bool) then
+		editor.scenes.current.saved = false
+		return inspector.check_bool[0]
 	end
 
 	return target
 end
 
-function Inspector:resource(target, field)
+function inspector.resource(target, field)
 	local text = target[field] or "No Resource"
-	Imgui.Text(text)
+	imgui.Text(text)
 
-	if Imgui.BeginDragDropTarget() then
-		Imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
+	if imgui.BeginDragDropTarget() then
+		imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
 
-		if Imgui.IsMouseReleased_Nil(0) and Editor.drag_payload then
-			Editor.history:add(ChangeField(target, field, Editor.drag_payload))
+		if imgui.IsMouseReleased_Nil(0) and editor.drag_payload then
+			editor.history:add(ChangeField:new(target, field, editor.drag_payload))
 
-			Editor.drag_payload = nil
-			Editor.scenes.current.saved = false
+			editor.drag_payload = nil
+			editor.scenes.current.saved = false
 		end
 
-		Imgui.EndDragDropTarget()
+		imgui.EndDragDropTarget()
 	end
 end
 
-function Inspector:image(image)
-	local win_width = Imgui.GetContentRegionAvail().x
+function inspector.image(image)
+	local win_width = imgui.GetContentRegionAvail().x
 
+	-- TODO: Find a better way to do this.
 	-- Resize the canvas if needed.
-	if self.viewer_width ~= win_width then
-		self.viewer_width = win_width
-		if self.viewer_width > 0 and self.viewer_height > 0 then
-			self.viewer_canvas =
-				love.graphics.newCanvas(self.viewer_width, self.viewer_height)
+	if inspector.viewer_width ~= win_width then
+		inspector.viewer_width = win_width
+		if inspector.viewer_width > 0 and inspector.viewer_height > 0 then
+			inspector.viewer_canvas =
+				love.graphics.newCanvas(inspector.viewer_width, inspector.viewer_height)
 		end
 	end
 
-	love.graphics.setCanvas(self.viewer_canvas)
+	love.graphics.setCanvas(inspector.viewer_canvas)
 
 	local tile_size = 32
-	local x_tiles = math.ceil(self.viewer_width / tile_size)
-	local y_tiles = math.ceil(self.viewer_height / tile_size)
+	local x_tiles = math.ceil(inspector.viewer_width / tile_size)
+	local y_tiles = math.ceil(inspector.viewer_height / tile_size)
 
 	-- Draw grid to canvas.
 	for x = 1, x_tiles, 1 do
@@ -106,60 +113,64 @@ function Inspector:image(image)
 			local pos_x = (x - 1) * tile_size
 			local pos_y = (y - 1) * tile_size
 
-			love.graphics.draw(self.bk_grid, pos_x, pos_y)
+			love.graphics.draw(inspector.bk_grid, pos_x, pos_y)
 		end
 	end
 
 	if image then
 		local res = image.resource
 
-		local scale_x = self.viewer_canvas:getWidth() / res:getWidth()
-		local scale_y = self.viewer_canvas:getHeight() / res:getHeight()
+		local scale_x = inspector.viewer_canvas:getWidth() / res:getWidth()
+		local scale_y = inspector.viewer_canvas:getHeight() / res:getHeight()
 		local scale = math.min(scale_x, scale_y)
 
 		local width = res:getWidth() * scale
 		local height = res:getHeight() * scale
-		local x = (self.viewer_canvas:getWidth() / 2) - (width / 2)
-		local y = (self.viewer_canvas:getHeight() / 2) - (height / 2)
+		local x = (inspector.viewer_canvas:getWidth() / 2) - (width / 2)
+		local y = (inspector.viewer_canvas:getHeight() / 2) - (height / 2)
 
 		love.graphics.draw(res, x, y, 0, scale)
 	end
 
 	love.graphics.setCanvas()
 
-	local size = Imgui.ImVec2_Float(self.viewer_canvas:getDimensions())
-	Imgui.Image(self.viewer_canvas, size)
+	local size = imgui.ImVec2_Float(inspector.viewer_canvas:getDimensions())
+	imgui.Image(inspector.viewer_canvas, size)
 end
 
-function Inspector:sprite()
-	local sprite = self.item
+function inspector.sprite()
+	local sprite = inspector.item
 
 	if sprite.asset_path then
-		self:image(Assets:get("image", sprite.asset_path))
+		inspector.image(assets.get("image", sprite.asset_path))
 	end
 
-	self:resource(sprite, "asset_path")
+	inspector.resource(sprite, "asset_path")
 end
 
-function Inspector:entity()
-	local entity = self.item
+function inspector.entity()
+	local entity = inspector.item
+	---@cast entity engine.Entity
 
-	Imgui.Text("Entity: " .. entity.name)
-	Imgui.Separator()
+	imgui.Text("Entity: " .. entity.name)
+	imgui.Separator()
 
 	if entity:is(Sprite) then
-		self:sprite()
+		inspector:sprite()
 	end
 
-	self:vec2("Position", entity.position)
-	self:vec2("Scale", entity.scale)
+	inspector.vec2("Position", entity.position)
+	inspector.vec2("Scale", entity.scale)
 end
 
-function Inspector:layer()
-	local layer = self.item
+function inspector.layer()
+	local layer = inspector.item
+	---@cast layer engine.Layer
 
-	Imgui.Text("Layer: " .. layer.name)
-	Imgui.Separator()
+	imgui.Text("Layer: " .. layer.name)
+	imgui.Separator()
 
-	layer.active = self:bool("Active", layer.active)
+	layer.active = inspector.bool("Active", layer.active)
 end
+
+return inspector

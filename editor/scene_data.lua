@@ -1,5 +1,7 @@
----@class SceneData
-SceneData = Object:extend()
+local Class = require("libs.class")
+
+---@class editor.SceneData : Class
+local SceneData = Class:extend()
 
 local function contains(table, value)
 	for _, v in pairs(table) do
@@ -10,9 +12,9 @@ local function contains(table, value)
 	return false
 end
 
----@param data Scene
+---@param data engine.Scene
 ---@param path string
-function SceneData:new(data, path)
+function SceneData:init(data, path)
 	self.data = data
 	self.path = path
 	self.saved = true
@@ -80,3 +82,5 @@ function SceneData:get_available_names()
 		end
 	end
 end
+
+return SceneData

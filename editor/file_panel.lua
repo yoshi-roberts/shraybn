@@ -1,4 +1,12 @@
-FilePanel = {
+local nativefs = require "libs.nativefs"
+local log = require "libs.log"
+local assets = require "engine.assets"
+local editor = require "editor"
+
+local Scene = require "engine.scene"
+local SceneData = require "editor.scene_data"
+---@class editor.file_panel
+local file_panel = {
 	reload_needed = true,
 	selected = 0,
 	tree = {
@@ -17,25 +25,25 @@ local filetypes = {
 	["jpeg"] = "image",
 }
 
-function FilePanel:open_file(file)
+function file_panel.open_file(file)
 	local ext = file:match("^.+%.([^.]+)$")
 
 	if ext == "scd" then
-		if not Editor.scenes.open[file] then
+		if not editor.scenes.open[file] then
 			local scene = Scene.load(file)
 
-			Editor.scenes.open[file] = SceneData(scene, file)
-			Editor.scenes.open[file]:get_available_names()
+			editor.scenes.open[file] = SceneData:new(scene, file)
+			editor.scenes.open[file]:get_available_names()
 		end
 
-		Editor.scenes.current = Editor.scenes.open[file]
+		editor.scenes.current = editor.scenes.open[file]
 	elseif ext == "png" then
-		Inspector:inspect("image", Assets:get("image", file))
+		Inspector:inspect("image", assets.get("image", file))
 	end
 end
 
-function FilePanel:create_tree(path, branch)
-	local items = Nativefs.getDirectoryItems(path)
+function file_panel.create_tree(path, branch)
+	local items = nativefs.getDirectoryItems(path)
 
 	for _, name in pairs(items) do
 		-- Skip hidden files.
@@ -44,11 +52,11 @@ function FilePanel:create_tree(path, branch)
 		end
 
 		local item_path = path .. "/" .. name
-		local info = Nativefs.getInfo(item_path)
+		local info = nativefs.getInfo(item_path)
 
 		if info.type == "directory" then
 			branch.dirs[name] = { dirs = {}, files = {} }
-			self:create_tree(item_path, branch.dirs[name])
+			file_panel.create_tree(item_path, branch.dirs[name])
 		elseif info.type == "file" then
 			local ext = name:match("^.+%.([^.]+)$")
 			local type = filetypes[ext]
@@ -62,14 +70,16 @@ function FilePanel:create_tree(path, branch)
 	end
 end
 
-function FilePanel:update()
-	if not Editor.loaded_project or Assets.processing then
+function file_panel.update()
+	if not editor.loaded_project or assets.processing then
 		return
 	end
 
-	if self.reload_needed == true then
-		self.reload_needed = false
-		Log.info("[EDITOR] Rebuilding file tree.")
-		self:create_tree(Editor.loaded_project.name, self.tree)
+	if file_panel.reload_needed == true then
+		file_panel.reload_needed = false
+		log.info("[EDITOR] Rebuilding file tree.")
+		file_panel.create_tree(editor.loaded_project.name, file_panel.tree)
 	end
 end
+
+return file_panel

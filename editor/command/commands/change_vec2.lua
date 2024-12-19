@@ -1,8 +1,9 @@
----@class ChangeVec2: Command
----@field super Command
-ChangeVec2 = Command:extend()
+local Command = require("editor.command.command")
 
-function ChangeVec2:new(target, new)
+---@class editor.command.ChangeVec2: editor.Command
+local ChangeVec2 = Command:extend()
+
+function ChangeVec2:init(target, new)
 	ChangeVec2.super.new(self)
 
 	self.target = target
@@ -21,7 +22,8 @@ function ChangeVec2:undo()
 	self.target.y = self.old.y
 end
 
----@param cmd ChangeVec2
+---@param cmd editor.command.ChangeVec2
+---@return boolean
 function ChangeVec2:merge(cmd)
 	if not cmd:is(ChangeVec2) then
 		return false
@@ -38,3 +40,5 @@ end
 function ChangeVec2:__tostring()
 	return "ChangeVec2"
 end
+
+return ChangeVec2

@@ -1,33 +1,40 @@
-local function display_tree(self, branch)
+local font_icon = require "editor.font_icons"
+local imgui = require "engine.imgui"
+local editor = require "editor"
+
+---@param file_panel editor.file_panel
+---@param branch table
+local function display_tree(file_panel, branch)
 	for name, item in pairs(branch.dirs) do
-		if Imgui.TreeNode_Str(string.format("%s %s", FONT_ICONS.ICON_FOLDER, name)) then
-			display_tree(self, item)
-			Imgui.TreePop()
+		if imgui.TreeNode_Str(string.format("%s %s", font_icon.ICON_FOLDER, name)) then
+			display_tree(file_panel, item)
+			imgui.TreePop()
 		end
 	end
 
 	for name, item in pairs(branch.files) do
-		Imgui.Selectable_Bool(FONT_ICONS.ICON_FILE .. " " .. name, self.selected == item)
+		imgui.Selectable_Bool(font_icon.ICON_FILE .. " " .. name, file_panel.selected == item)
 
 		-- Double click item to open.
-		if Imgui.IsItemHovered() and Imgui.IsMouseDoubleClicked_Nil(0) then
-			self.selected = item
-			self:open_file(self.selected)
+		if imgui.IsItemHovered() and imgui.IsMouseDoubleClicked_Nil(0) then
+			file_panel.selected = item
+			file_panel.open_file(file_panel.selected)
 		end
 
-		if Imgui.BeginDragDropSource(Imgui.ImGuiDragDropFlags_None) then
-			Imgui.SetDragDropPayload("DRAG_DROP_FILE", item, #item)
-			Editor.drag_payload = item
-			Imgui.Text(name)
-			Imgui.EndDragDropSource()
+		if imgui.BeginDragDropSource(imgui.ImGuiDragDropFlags_None) then
+			imgui.SetDragDropPayload("DRAG_DROP_FILE", item, #item)
+			editor.drag_payload = item
+			imgui.Text(name)
+			imgui.EndDragDropSource()
 		end
 	end
 end
 
-local function display(self)
-	Imgui.Begin("Files", nil)
-	display_tree(self, self.tree)
-	Imgui.End()
+---@param file_panel editor.file_panel
+local function display(file_panel)
+	imgui.Begin("Files", nil)
+	display_tree(file_panel, file_panel.tree)
+	imgui.End()
 end
 
 return display

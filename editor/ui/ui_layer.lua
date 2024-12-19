@@ -1,49 +1,57 @@
-local apply_theme = require("editor.ui.theme")
+local event = require("engine.event")
+local menubar = require("editor.menubar")
+local viewport = require("editor.viewport")
+local dockspace = require("editor.dockspace")
+local scene_panel = require("editor.scene_panel")
+local file_panel = require("editor.file_panel")
+local inspector = require("editor.inspector")
+local project_manager = require("editor.project_manager")
+
+local imgui = require("engine.imgui")
+local theme = require("editor.ui.theme")
 
 local function ui_event(code, data)
 	return ImguiEvent(code, data)
 end
 
 local function ui_attach()
-	Imgui.love.Init()
+	imgui.love.Init()
 
-	local io = Imgui.GetIO()
-	io.ConfigFlags = bit.bor(io.ConfigFlags, Imgui.ImGuiConfigFlags_DockingEnable)
+	local io = imgui.GetIO()
+	io.ConfigFlags = bit.bor(io.ConfigFlags, imgui.ImGuiConfigFlags_DockingEnable)
 
-	apply_theme()
+	theme.apply()
 
-	Viewport:init()
+	viewport.init()
 
-	Event:register_category(EVENT_CATEGORY.INPUT, ui_event)
+	event.register_category(event.category.INPUT, ui_event)
 end
 
 local function ui_detach()
-	Imgui.love.Shutdown()
+	imgui.love.Shutdown()
 end
 
 local function ui_update(dt)
-	Imgui.love.Update(dt)
-	Imgui.NewFrame()
+	imgui.love.Update(dt)
+	imgui.NewFrame()
 
-	Viewport:update()
+	viewport.update()
 end
 
 local function ui_draw()
-	Dockspace:display()
+	dockspace.display()
+	menubar.display(menubar)
+	dockspace.finish()
 
-	ScenePanel.display()
-
-	FilePanel:display()
-
-	Viewport:display()
-
-	Inspector:display()
-
-	ProjectManager:display()
+	scene_panel.display()
+	file_panel.display(file_panel)
+	viewport.display(viewport)
+	inspector.display(inspector)
+	project_manager.display(project_manager)
 
 	-- code to render imgui
-	Imgui.Render()
-	Imgui.love.RenderDrawLists()
+	imgui.Render()
+	imgui.love.RenderDrawLists()
 end
 
 return {

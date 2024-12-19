@@ -1,11 +1,13 @@
 local scene_tabs = require("editor.scene_tabs")
+local imgui = require("engine.imgui")
 local ffi = require("ffi")
 
-Dockspace = {
+---@class editor.dockspace
+local dockspace = {
 	id = 0,
 }
 
-local window_flags = Imgui.love.WindowFlags(
+local window_flags = imgui.love.WindowFlags(
 	"MenuBar",
 	"NoDocking",
 	"NoTitleBar",
@@ -16,41 +18,41 @@ local window_flags = Imgui.love.WindowFlags(
 	"NoNavFocus"
 )
 
-Dockspace.layouts = {
+dockspace.layouts = {
 	default = function(id)
-		Imgui.DockBuilderDockWindow("Scene", id.left_top[0])
-		Imgui.DockBuilderDockWindow("Files", id.left_bottom[0])
-		Imgui.DockBuilderDockWindow("Inspector", id.right[0])
-		Imgui.DockBuilderDockWindow("Viewport", id.center[0])
+		imgui.DockBuilderDockWindow("Scene", id.left_top[0])
+		imgui.DockBuilderDockWindow("Files", id.left_bottom[0])
+		imgui.DockBuilderDockWindow("Inspector", id.right[0])
+		imgui.DockBuilderDockWindow("Viewport", id.center[0])
 	end,
 
 	left = function(id)
-		Imgui.DockBuilderDockWindow("Viewport", id.center[0])
-		Imgui.DockBuilderDockWindow("Scene", id.left_top[0])
-		Imgui.DockBuilderDockWindow("Inspector", id.left_top[0])
-		Imgui.DockBuilderDockWindow("Files", id.left_top[0])
+		imgui.DockBuilderDockWindow("Viewport", id.center[0])
+		imgui.DockBuilderDockWindow("Scene", id.left_top[0])
+		imgui.DockBuilderDockWindow("Inspector", id.left_top[0])
+		imgui.DockBuilderDockWindow("Files", id.left_top[0])
 	end,
 
 	right = function(id)
-		Imgui.DockBuilderDockWindow("Viewport", id.center[0])
-		Imgui.DockBuilderDockWindow("Scene", id.right[0])
-		Imgui.DockBuilderDockWindow("Inspector", id.right[0])
-		Imgui.DockBuilderDockWindow("Files", id.right[0])
+		imgui.DockBuilderDockWindow("Viewport", id.center[0])
+		imgui.DockBuilderDockWindow("Scene", id.right[0])
+		imgui.DockBuilderDockWindow("Inspector", id.right[0])
+		imgui.DockBuilderDockWindow("Files", id.right[0])
 	end,
 
 	center = function(id)
-		Imgui.DockBuilderDockWindow("Files", id.center[0])
-		Imgui.DockBuilderDockWindow("Scene", id.center[0])
-		Imgui.DockBuilderDockWindow("Inspector", id.center[0])
-		Imgui.DockBuilderDockWindow("Viewport", id.center[0])
+		imgui.DockBuilderDockWindow("Files", id.center[0])
+		imgui.DockBuilderDockWindow("Scene", id.center[0])
+		imgui.DockBuilderDockWindow("Inspector", id.center[0])
+		imgui.DockBuilderDockWindow("Viewport", id.center[0])
 	end,
 }
 
-function Dockspace:layout(name)
-	local viewport = Imgui.GetMainViewport()
-	Imgui.DockBuilderRemoveNode(self.id)
-	Imgui.DockBuilderAddNode(self.id, Imgui.ImGuiDockNodeFlags_DockSpace)
-	Imgui.DockBuilderSetNodeSize(self.id, viewport.Size)
+function dockspace.layout(name)
+	local viewport = imgui.GetMainViewport()
+	imgui.DockBuilderRemoveNode(dockspace.id)
+	imgui.DockBuilderAddNode(dockspace.id, imgui.ImGuiDockNodeFlags_DockSpace)
+	imgui.DockBuilderSetNodeSize(dockspace.id, viewport.Size)
 
 	local id = {
 		left = ffi.new("ImGuiID[1]"),
@@ -62,41 +64,53 @@ function Dockspace:layout(name)
 
 	-- local left_id = ffi.new("ImGuiID[1]")
 	local right_id = ffi.new("ImGuiID[1]")
-	Imgui.DockBuilderSplitNode(self.id, Imgui.ImGuiDir_Left, 0.25, id.left, right_id)
+	imgui.DockBuilderSplitNode(dockspace.id, imgui.ImGuiDir_Left, 0.25, id.left, right_id)
 
-	Imgui.DockBuilderSplitNode(id.left[0], Imgui.ImGuiDir_Down, 0.50, id.left_bottom, id.left_top)
+	imgui.DockBuilderSplitNode(
+		id.left[0],
+		imgui.ImGuiDir_Down,
+		0.50,
+		id.left_bottom,
+		id.left_top
+	)
 
 	-- Center and right-hand side nodes.
-	Imgui.DockBuilderSplitNode(right_id[0], Imgui.ImGuiDir_Right, 0.25, id.right, id.center)
+	imgui.DockBuilderSplitNode(right_id[0], imgui.ImGuiDir_Right, 0.25, id.right, id.center)
 
-	local fn = self.layouts[name]
+	local fn = dockspace.layouts[name]
 	fn(id)
 
-	Imgui.DockBuilderFinish(self.id)
+	imgui.DockBuilderFinish(dockspace.id)
 end
 
-function Dockspace:display()
-	local viewport = Imgui.GetMainViewport()
-	Imgui.SetNextWindowPos(viewport.WorkPos)
-	Imgui.SetNextWindowSize(viewport.WorkSize)
-	Imgui.SetNextWindowViewport(viewport.ID)
+function dockspace.display()
+	local viewport = imgui.GetMainViewport()
+	imgui.SetNextWindowPos(viewport.WorkPos)
+	imgui.SetNextWindowSize(viewport.WorkSize)
+	imgui.SetNextWindowViewport(viewport.ID)
 
-	Imgui.PushStyleVar_Float(Imgui.ImGuiStyleVar_WindowRounding, 0.0)
-	Imgui.PushStyleVar_Float(Imgui.ImGuiStyleVar_WindowBorderSize, 0.0)
+	imgui.PushStyleVar_Float(imgui.ImGuiStyleVar_WindowRounding, 0.0)
+	imgui.PushStyleVar_Float(imgui.ImGuiStyleVar_WindowBorderSize, 0.0)
 
-	Imgui.PushStyleVar_Vec2(Imgui.ImGuiStyleVar_WindowPadding, Imgui.ImVec2_Float(0.0, 0.0))
+	imgui.PushStyleVar_Vec2(imgui.ImGuiStyleVar_WindowPadding, imgui.ImVec2_Float(0.0, 0.0))
 
-	Imgui.Begin("##dockspace", nil, window_flags)
+	imgui.Begin("##dockspace", nil, window_flags)
 
-	Imgui.PopStyleVar()
-	Imgui.PopStyleVar(2)
+	imgui.PopStyleVar()
+	imgui.PopStyleVar(2)
 
 	scene_tabs()
 
-	self.id = Imgui.GetID_Str("Dockspace")
-	Imgui.DockSpace(self.id, Imgui.ImVec2_Float(0.0, 0.0), Imgui.ImGuiDockNodeFlags_PassthruCentralNode)
-
-	Menubar:display()
-
-	Imgui.End()
+	dockspace.id = imgui.GetID_Str("Dockspace")
+	imgui.DockSpace(
+		dockspace.id,
+		imgui.ImVec2_Float(0.0, 0.0),
+		imgui.ImGuiDockNodeFlags_PassthruCentralNode
+	)
 end
+
+function dockspace.finish()
+	imgui.End()
+end
+
+return dockspace
