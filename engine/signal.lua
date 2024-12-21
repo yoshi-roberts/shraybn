@@ -1,9 +1,9 @@
 ---@class engine.signal
 local signal = {}
-local signals = {}
+local signals = {} ---@type {[string]: function[]}
 
----@param name string
----@param callback function
+---@param name string: The name of the event.
+---@param callback function The function to register.
 function signal.register(name, callback)
 	if not signals[name] then
 		signals[name] = {}
@@ -12,8 +12,8 @@ function signal.register(name, callback)
 	table.insert(signals[name], callback)
 end
 
----@param name string
----@param callback function
+---@param name string: The name of the event.
+---@param callback function: The function to unregister.
 function signal.unregister(name, callback)
 	if not signals[name] then
 		return
@@ -26,12 +26,13 @@ function signal.unregister(name, callback)
 	end
 end
 
----@param name string
+---@param name string: The name of the event.
 function signal.clear(name)
 	signals[name] = nil
 end
 
----@param name string
+---@param name string: The name of the event.
+---@param ... any: Additional arguments to pass.
 function signal.emit(name, ...)
 	if not signals[name] then
 		return

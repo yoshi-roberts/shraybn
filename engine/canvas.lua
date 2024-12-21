@@ -1,5 +1,4 @@
 local Class = require("libs.class")
-local window = require("engine.window")
 
 ---@class engine.Canvas : Class
 local Canvas = Class:extend()
@@ -14,17 +13,17 @@ function Canvas:new(width, height, filter)
 	self.x = 0
 	self.y = 0
 	self.scale = 0
-
-	self:update()
 end
 
-function Canvas:update()
-	local sx = (window.height / self.height)
-	local sy = (window.width / self.width)
+---@param width integer
+---@param height integer
+function Canvas:update(width, height)
+	local sx = (height / self.height)
+	local sy = (width / self.width)
 	self.scale = math.min(sx, sy)
 
-	self.x = (window.width / 2) - ((self.width * self.scale) / 2)
-	self.y = (window.height / 2) - ((self.height * self.scale) / 2)
+	self.x = (width / 2) - ((self.width * self.scale) / 2)
+	self.y = (height / 2) - ((self.height * self.scale) / 2)
 end
 
 function Canvas:start()

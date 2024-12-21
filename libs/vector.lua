@@ -32,6 +32,8 @@ local sqrt, cos, sin, atan2 = math.sqrt, math.cos, math.sin, math.atan2
 local vector = {}
 vector.__index = vector
 
+---@param x number
+---@param y number
 local function new(x, y)
 	return setmetatable({ x = x or 0, y = y or 0 }, vector)
 end
@@ -88,13 +90,19 @@ function vector.__mul(a, b)
 	elseif type(b) == "number" then
 		return new(b * a.x, b * a.y)
 	else
-		assert(isvector(a) and isvector(b), "Mul: wrong argument types (<vector> or <number> expected)")
+		assert(
+			isvector(a) and isvector(b),
+			"Mul: wrong argument types (<vector> or <number> expected)"
+		)
 		return a.x * b.x + a.y * b.y
 	end
 end
 
 function vector.__div(a, b)
-	assert(isvector(a) and type(b) == "number", "wrong argument types (expected <vector> / <number>)")
+	assert(
+		isvector(a) and type(b) == "number",
+		"wrong argument types (expected <vector> / <number>)"
+	)
 	return new(a.x / b, a.y / b)
 end
 

@@ -29,11 +29,6 @@ function window.process_resize(width, height)
 		window.width = width
 		window.height = height
 
-		-- TODO: Needs to be handled by the engine module.
-		-- for _, canvas in pairs(engine.canvases) do
-		-- 	canvas:update()
-		-- end
-
 		return true
 	end
 

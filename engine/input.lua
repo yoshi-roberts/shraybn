@@ -1,4 +1,4 @@
-require("engine.util")
+require "engine.util"
 
 ---@class engine.input
 local input = {

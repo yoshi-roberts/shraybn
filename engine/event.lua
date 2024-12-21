@@ -1,5 +1,5 @@
-local window = require("engine.window")
-local input = require("engine.input")
+local window = require "engine.window"
+local input = require "engine.input"
 
 ---@class engine.event
 local event = {}
@@ -27,6 +27,7 @@ event.code = {
 }
 
 ---@enum event.category
+-- Each category contains two events that are the start and end of a range of events.
 event.category = {
 	NONE = nil,
 	WINDOW = { event.code.WINDOW_RESIZE, event.code.WINDOW_MOVE },
@@ -35,33 +36,33 @@ event.category = {
 	INPUT = { event.code.KEY_PRESS, event.code.MOUSE_ENTER },
 }
 
+-- Return true if the event has been handled.
+-- Return false to pass the event on to other callbacks.
 ---@alias event_callback fun(code: event.code, data: table): boolean
 
----@param code event.code
----@param callback event_callback
+---@param code event.code: The event code.
+---@param callback event_callback: The callback to register.
 function event.register(code, callback)
 	if not event.registered[code] then
 		event.registered[code] = {}
-		-- table.insert(self.registered, code, {})
 	end
 
 	table.insert(event.registered[code], callback)
 end
 
----@param code event.code
----@param data any
+---@param code event.code: The event to fire.
+---@param data any: Data to pass to registered callbacks.
 ---@return boolean
 function event.fire(code, data)
 	if not event.registered[code] then
 		return false
 	end
 
-	for _, callbacks in pairs(event.registered) do
-		for _, callback in pairs(callbacks) do
-			if callback(code, data) then
-				-- Event handled.
-				return true
-			end
+	for _, callback in pairs(event.registered[code]) do
+		---@cast callback event_callback
+		if callback(code, data) then
+			-- Event handled.
+			return true
 		end
 	end
 
@@ -69,8 +70,8 @@ function event.fire(code, data)
 	return false
 end
 
----@param category event.category
----@param callback event_callback
+---@param category event.category: The category code.
+---@param callback event_callback: The callback to register.
 function event.register_category(category, callback)
 	for _, code in pairs(event.code) do
 		if code >= category[1] and code <= category[2] then
@@ -78,6 +79,8 @@ function event.register_category(category, callback)
 		end
 	end
 end
+
+-- Capture LOVE events and fire off engine events. --
 
 function love.keypressed(key, scancode, isrepeat)
 	local data = {
@@ -106,7 +109,6 @@ function love.textinput(t)
 	event.fire(event.code.TEXT_INPUT, t)
 end
 
----@diagnostic disable-next-line: duplicate-set-field
 function love.mousepressed(x, y, button, istouch, presses)
 	local data = {
 		x = x,
@@ -157,7 +159,7 @@ end
 
 function love.resize(w, h)
 	if window.process_resize(w, h) then
-		event.fire(event.code.WINDOW_RESIZE, { w, h })
+		event.fire(event.code.WINDOW_RESIZE, { width = w, height = h })
 	end
 end
 

@@ -1,5 +1,6 @@
 Vec2 = require("libs.vector")
 
+local event = require("engine.event")
 local binser = require("libs.binser")
 local assets = require("engine.assets")
 local input = require("engine.input")
@@ -15,7 +16,18 @@ engine.canvases = {}
 engine.scenes = {}
 engine.active_scene = nil ---@type engine.Scene
 
-function engine:init() end
+---@type event_callback
+local function update_canvases(code, data)
+	for _, canvas in pairs(engine.canvases) do
+		canvas:update(data.width, data.height)
+	end
+
+	return false
+end
+
+function engine.init()
+	event.register(event.code.WINDOW_RESIZE, update_canvases)
+end
 
 -- Register metatables for serialization.
 binser.register(Vec2, "Vec2")

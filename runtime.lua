@@ -5,6 +5,7 @@ local window = require("engine.window")
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.load()
+	engine.init()
 	window.init(1280, 720)
 
 	local default_scene = engine.add_scene(Scene:new("default_scene"))

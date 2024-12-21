@@ -1,6 +1,6 @@
-local scene_tabs = require("editor.scene_tabs")
-local imgui = require("engine.imgui")
-local ffi = require("ffi")
+local scene_tabs = require "editor.scene_tabs"
+local imgui = require "engine.imgui"
+local ffi = require "ffi"
 
 ---@class editor.dockspace
 local dockspace = {
