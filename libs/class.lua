@@ -1,3 +1,5 @@
+local binser = require("libs.binser")
+
 -- Slightly modified version of classic by rxi
 -- Works better with the lua-language-server type system.
 
@@ -49,4 +51,5 @@ function Class:new(...)
 	return instance
 end
 
+binser.register(Class, "Class")
 return Class

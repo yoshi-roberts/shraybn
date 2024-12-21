@@ -29,15 +29,7 @@ function engine.init()
 	event.register(event.code.WINDOW_RESIZE, update_canvases)
 end
 
--- Register metatables for serialization.
 binser.register(Vec2, "Vec2")
--- binser.register(Object, "Object")
--- binser.register(Project, "Project")
--- binser.register(Scene, "Scene")
--- binser.register(Layer, "Layer")
--- binser.register(Entity, "Entity")
--- binser.register(Sprite, "Sprite")
--- binser.register(Trigger, "Trigger")
 
 log.info("Engine initialized.")
 

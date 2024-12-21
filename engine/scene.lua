@@ -120,4 +120,5 @@ function Scene:entity_count()
 	return counts
 end
 
+binser.register(Scene, "Scene")
 return Scene

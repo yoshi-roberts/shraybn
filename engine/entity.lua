@@ -1,3 +1,4 @@
+local binser = require("libs.binser")
 local Class = require("libs.class")
 
 ---@class engine.Entity: Class
@@ -16,4 +17,5 @@ function Entity:init(position, rotation, name)
 	self.rotation = rotation or 0
 end
 
+binser.register(Entity, "Entity")
 return Entity

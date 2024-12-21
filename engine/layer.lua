@@ -1,3 +1,4 @@
+local binser = require("libs.binser")
 local Class = require("libs.class")
 
 ---@class engine.Layer : Class
@@ -24,4 +25,5 @@ function Layer:init(callbacks, depth)
 	end
 end
 
+binser.register(Layer, "Layer")
 return Layer

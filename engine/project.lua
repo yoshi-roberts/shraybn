@@ -37,4 +37,5 @@ function Project:save()
 	-- editor:save_all_scenes()
 end
 
+binser.register(Project, "Project")
 return Project
