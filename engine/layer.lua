@@ -1,5 +1,5 @@
-local binser = require("libs.binser")
 local Class = require("libs.class")
+local binser = require("libs.binser")
 
 ---@class engine.Layer : Class
 ---@field name string

@@ -1,5 +1,5 @@
-local binser = require("libs.binser")
 local Class = require("libs.class")
+local binser = require("libs.binser")
 
 ---@class engine.Canvas : Class
 local Canvas = Class:extend()
@@ -16,6 +16,7 @@ function Canvas:new(width, height, filter)
 	self.scale = 0
 end
 
+-- Update the canvas size and position.
 ---@param width integer
 ---@param height integer
 function Canvas:update(width, height)
@@ -27,11 +28,13 @@ function Canvas:update(width, height)
 	self.y = (height / 2) - ((self.height * self.scale) / 2)
 end
 
+-- Prepare the canvas to be drawn to.
 function Canvas:start()
 	love.graphics.setCanvas(self.target)
 	love.graphics.clear()
 end
 
+-- Finish drawing to the canvas.
 function Canvas:finish()
 	love.graphics.setCanvas()
 end

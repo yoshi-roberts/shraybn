@@ -1,13 +1,11 @@
 Vec2 = require("libs.vector")
 
+local timer = require("engine.time")
 local event = require("engine.event")
 local binser = require("libs.binser")
 local assets = require("engine.assets")
 local input = require("engine.input")
 local log = require("libs.log")
-
-local timer = require("engine.time")
-timer.framerate = 60
 
 ---@class engine
 local engine = {}
@@ -26,6 +24,7 @@ local function update_canvases(code, data)
 end
 
 function engine.init()
+	timer.framerate = 60
 	event.register(event.code.WINDOW_RESIZE, update_canvases)
 end
 

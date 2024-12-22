@@ -24,37 +24,28 @@ Targets OpenGL, Vulkan, and Metal.</br>
 ### Shrift
 
 ```
-# Comment.
-$is_tired false                 # Define a variable.
+$is_set = false
 
-@ Start                         # Create a dialogue "location."
+[Start]
 
-    # Dialogue.
-    Charles: Hey there!
-    Charles: What are you doing?
+Character: This is some dialogue.    
+Character: It is time to make a choice.
 
-    # Choices.
-    - Errands.
+* First choice [First Choice]
+* Second choice [Second Choice]
 
-        I neede a few things.
-        # Check if the variabls "is_tired" is true.
-        = $is_tired true
-            They get pretty exhausting!
-        ;
-        ~ Errands               # Jump to the "Errands" location.
+[First Choice]
 
-    - Not much.
+Character: You chose the first option.
+$is_set = true
+@goto End
 
-        I'm just taking a walk!
-        ~ Not Much              # Jump tp the "Not Much" location.
+[Second Choice]
 
-@ Errands
+Character: You chose the second option.
+@goto End
 
-    Charles: Oh, me too!
-    Charles: I'm picking up some flowers for my mother.
+[End]
 
-@ Not Much
-
-    Charles: Nice!
-    Charles: Great weather for it.
-```
+{$is_set == true} Character: This dialogue only appears if a condition is met.
+Character: You have reached the end.

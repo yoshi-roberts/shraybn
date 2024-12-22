@@ -37,6 +37,7 @@ function Sprite:draw(position, scale)
 	)
 end
 
+---@private
 function Sprite:__tostring()
 	return "Sprite"
 end

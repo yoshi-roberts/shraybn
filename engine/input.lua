@@ -26,6 +26,7 @@ input.mouse_button = {
 }
 
 function input.update()
+	-- Keys.
 	for key, pressed in pairs(input.keyboard_current) do
 		input.keyboard_previous[key] = pressed
 	end
