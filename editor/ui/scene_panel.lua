@@ -1,8 +1,10 @@
 -- FIX: Vile. Putrid.
 -- Got any peak? We got abysmal dogshit.
-local AddEntity, RemoveEntity = require("editor.command.commands.entity")
+local AddEntity = require("editor.command.add_entity")
+local RemoveEntity = require("editor.command.remove_entity")
 local Sprite = require("engine.sprite")
-local Trigger = require("engine.trigger")
+local Layer = require("engine.layer")
+-- local Trigger = require("engine.trigger")
 
 local editor = require("editor")
 local font_icon = require("editor.font_icons")
@@ -15,8 +17,7 @@ local function layer_context_menu(scene_data, layer, index)
 	if imgui.BeginPopupContextItem() then
 		if imgui.BeginMenu(font_icon.ICON_PLUS .. "Add") then
 			if imgui.MenuItem_Bool(font_icon.ICON_PICTURE_O .. " Sprite") then
-				-- editor.history:add(AddEntity:new(scene, layer, Sprite:new()), false)
-				scene_data:add_entity(layer, Sprite:new())
+				editor.history:add(AddEntity:new(scene_data, layer, Sprite:new()))
 			end
 
 			if imgui.MenuItem_Bool(font_icon.ICON_MOUSE_POINTER .. " Trigger") then
@@ -28,6 +29,7 @@ local function layer_context_menu(scene_data, layer, index)
 		end
 
 		if imgui.MenuItem_Bool(font_icon.ICON_TRASH .. " Delete") then
+			-- scene_data:remove_layer(index)
 			-- editor.history:add(RemoveLayer(scene, index))
 		end
 
@@ -50,8 +52,7 @@ local function layer_list_entities(scene_data, layer)
 
 		if imgui.BeginPopupContextItem() then
 			if imgui.MenuItem_Bool(font_icon.ICON_TRASH .. " Delete") then
-				scene_data:remove_entity(j)
-				-- editor.history:add(RemoveEntity(scene_data, j))
+				editor.history:add(RemoveEntity:new(scene_data, j))
 			end
 
 			imgui.EndPopup()
@@ -73,6 +74,7 @@ local function display()
 
 	local btn_width = imgui.GetContentRegionAvail().x
 	if imgui.Button(font_icon.ICON_PLUS .. " New Layer", imgui.ImVec2_Float(btn_width, 0)) then
+		scene_data:add_layer(Layer:new({}))
 		-- editor.history:add(AddLayer(scene, Layer({})))
 	end
 

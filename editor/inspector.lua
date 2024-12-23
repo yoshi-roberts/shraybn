@@ -1,5 +1,5 @@
 local Sprite = require("engine.sprite")
-local ChangeField = require("editor.command.commands.change_field")
+-- local ChangeField = require("editor.command.commands.change_field")
 local editor = require("editor")
 local assets = require("engine.assets")
 local imgui = require("engine.imgui")
@@ -44,12 +44,12 @@ function inspector.vec2(label, target)
 
 	imgui.DragInt("X##" .. label .. "_VEC_X", inspector.vec_x)
 	if imgui.IsItemActive() then
-		editor.history:add(ChangeField:new(target, "x", inspector.vec_x[0]), true)
+		-- editor.history:add(ChangeField:new(target, "x", inspector.vec_x[0]), true)
 	end
 
 	imgui.DragInt("Y##" .. label .. "_VEC_Y", inspector.vec_y)
 	if imgui.IsItemActive() then
-		editor.history:add(ChangeField:new(target, "y", inspector.vec_y[0]), true)
+		-- editor.history:add(ChangeField:new(target, "y", inspector.vec_y[0]), true)
 	end
 
 	imgui.PopItemWidth()
@@ -78,7 +78,7 @@ function inspector.resource(target, field)
 		imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
 
 		if imgui.IsMouseReleased_Nil(0) and editor.drag_payload then
-			editor.history:add(ChangeField:new(target, field, editor.drag_payload))
+			-- editor.history:add(ChangeField:new(target, field, editor.drag_payload))
 
 			editor.drag_payload = nil
 			editor.scenes.current.saved = false

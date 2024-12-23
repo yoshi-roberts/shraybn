@@ -25,5 +25,10 @@ function Layer:init(callbacks, depth)
 	end
 end
 
+---@private
+function Layer:__tostring()
+	return "Layer"
+end
+
 binser.register(Layer, "Layer")
 return Layer

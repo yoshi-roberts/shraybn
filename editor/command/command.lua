@@ -1,11 +1,11 @@
 local Class = require("libs.class")
 
 ---@class editor.Command: Class
----@field merge fun(cmd: editor.Command): boolean
+---@field merge fun(self: editor.Command, cmd: editor.Command): boolean
 local Command = Class:extend()
 
 function Command:init()
-	self.mergable = false
+	self.mergeable = false
 end
 
 function Command:execute() end
