@@ -3,84 +3,108 @@ local Class = require("libs.class")
 ---@class editor.SceneData : Class
 local SceneData = Class:extend()
 
-local function contains(table, value)
-	for _, v in pairs(table) do
-		if v == value then
-			return true
-		end
-	end
-	return false
-end
-
----@param data engine.Scene
+---@param scene engine.Scene
 ---@param path string
-function SceneData:init(data, path)
-	self.data = data
+function SceneData:init(scene, path)
+	self.scene = scene
 	self.path = path
 	self.saved = true
-	self.entity_count = data:entity_count()
-	self.available_names = {}
+	self.entity_count = scene:entity_count()
 end
 
----@param list table
----@param name string
-function SceneData:remove_name(list, name)
-	for k, v in pairs(list) do
-		if v == name then
-			return table.remove(list, k)
-		end
-	end
+---@param layer engine.Layer
+---@param entity engine.Entity
+---@param index integer?
+---@return integer
+function SceneData:add_entity(layer, entity, index)
+	entity.name = self:get_available_entity_name(layer.name, entity)
+	self.scene:add_entity(entity, layer, index)
+	self.saved = false
+
+	return #self.scene.entities
 end
 
-function SceneData:sort_available_names()
-	local sort = function(a, b)
-		return tonumber(a:match("%d+")) < tonumber(b:match("%d+"))
-	end
-
-	for _, types in pairs(self.available_names) do
-		for _, names in pairs(types) do
-			table.sort(names, sort)
-		end
-	end
+---@param index integer
+---@return engine.Entity
+function SceneData:remove_entity(index)
+	self.saved = false
+	return self.scene:remove_entity(index)
 end
 
-function SceneData:get_available_names()
+---@param layer_name string: The layer to get the count from.
+---@param class Class: The entity type to get the count of.
+---@return integer
+function SceneData:get_entity_count(layer_name, class)
+	local class_type = tostring(class)
+
+	if not self.entity_count[layer_name] then
+		return 0
+	end
+
+	if not self.entity_count[layer_name][class_type] then
+		return 0
+	end
+
+	for _, ent in pairs(self.scene.entities) do
+		local ent_layer = ent.layer.name
+		local ent_type = tostring(ent)
+
+		-- Make sure values are not nil.
+		self.entity_count[ent_layer] = self.entity_count[ent_layer] or {}
+
+		local count = self.entity_count[ent_layer][ent_type] or 0
+		self.entity_count[ent_layer][ent_type] = count + 1
+	end
+
+	return self.entity_count[layer_name][class_type]
+end
+
+---@param layer_name string
+---@param class Class
+---@return string
+function SceneData:get_available_entity_name(layer_name, class)
+	local class_type = tostring(class)
+
 	local indicies = {}
 
-	for _, entity in pairs(self.data.entities) do
-		local layer = entity.layer.name
-		local type = tostring(entity)
+	-- Get the indicies of existing entities.
+	for _, ent in pairs(self.scene.entities) do
+		local ent_layer = ent.layer.name
+		local ent_type = tostring(ent)
 
-		indicies[layer] = indicies[layer] or {}
-		indicies[layer][type] = indicies[layer][type] or {}
+		if ent_layer ~= layer_name or ent_type ~= class_type then
+			goto continue
+		end
 
-		local index = entity.name:sub(#entity.name, #entity.name)
+		local index = ent.name:sub(#ent.name, #ent.name)
 		index = tonumber(index)
+
 		if index then
-			table.insert(indicies[layer][type], index)
+			table.insert(indicies, index)
 		end
+
+		::continue::
 	end
 
-	local function sort(a, b)
+	if #indicies == 0 then
+		return class_type .. "1"
+	end
+
+	table.sort(indicies, function(a, b)
 		return a < b
-	end
+	end)
 
-	for layer, types in pairs(indicies) do
-		for type, names in pairs(types) do
-			table.sort(names, sort)
+	local max = indicies[#indicies]
+	local available_name = class_type .. (max + 1)
 
-			local max = names[#names]
-
-			for i = 1, max, 1 do
-				if not contains(names, i) then
-					self.available_names[layer] = self.available_names[layer] or {}
-					self.available_names[layer][type] = self.available_names[layer][type] or {}
-
-					table.insert(self.available_names[layer][type], type .. i)
-				end
-			end
+	for i = 1, max, 1 do
+		if not table.index_of(indicies, i) then
+			available_name = class_type .. i
+			break
 		end
 	end
+
+	return available_name
 end
 
 return SceneData

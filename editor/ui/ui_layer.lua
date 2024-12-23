@@ -35,6 +35,7 @@ local function ui_update(dt)
 	imgui.love.Update(dt)
 	imgui.NewFrame()
 
+	file_panel.update()
 	viewport.update()
 end
 

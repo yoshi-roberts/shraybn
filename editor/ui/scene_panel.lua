@@ -1,52 +1,57 @@
+-- FIX: Vile. Putrid.
+-- Got any peak? We got abysmal dogshit.
 local AddEntity, RemoveEntity = require("editor.command.commands.entity")
 local Sprite = require("engine.sprite")
+local Trigger = require("engine.trigger")
 
 local editor = require("editor")
 local font_icon = require("editor.font_icons")
 local imgui = require("engine.imgui")
 
----@param scene editor.SceneData
+---@param scene_data editor.SceneData
 ---@param layer engine.Layer
 ---@param index integer
-local function layer_context_menu(scene, layer, index)
+local function layer_context_menu(scene_data, layer, index)
 	if imgui.BeginPopupContextItem() then
 		if imgui.BeginMenu(font_icon.ICON_PLUS .. "Add") then
 			if imgui.MenuItem_Bool(font_icon.ICON_PICTURE_O .. " Sprite") then
-				editor.history:add(AddEntity:new(scene, layer, Sprite:new()))
+				-- editor.history:add(AddEntity:new(scene, layer, Sprite:new()), false)
+				scene_data:add_entity(layer, Sprite:new())
 			end
 
 			if imgui.MenuItem_Bool(font_icon.ICON_MOUSE_POINTER .. " Trigger") then
 				local points = { 0, 0, 64, 0, 64, 64, 0, 64 }
-				editor.history:add(AddEntity(scene, layer, Trigger(points)))
+				-- editor.history:add(AddEntity:new(scene, layer, Trigger:new(points)), false)
 			end
 
 			imgui.EndMenu()
 		end
 
 		if imgui.MenuItem_Bool(font_icon.ICON_TRASH .. " Delete") then
-			editor.history:add(RemoveLayer(scene, index))
+			-- editor.history:add(RemoveLayer(scene, index))
 		end
 
 		imgui.EndPopup()
 	end
 end
 
----@param scene SceneData
----@param layer Layer
-local function layer_list_entities(scene, layer)
-	for j, entity in pairs(scene.data.entities) do
+---@param scene_data editor.SceneData
+---@param layer engine.Layer
+local function layer_list_entities(scene_data, layer)
+	for j, entity in pairs(scene_data.scene.entities) do
 		if entity.layer ~= layer then
 			break
 		end
 
 		if imgui.Selectable_Bool(entity.name) then
 			editor.selected_entity = entity
-			Inspector:inspect("entity", entity)
+			-- inspector.inspect("entity", entity)
 		end
 
 		if imgui.BeginPopupContextItem() then
 			if imgui.MenuItem_Bool(font_icon.ICON_TRASH .. " Delete") then
-				editor.history:add(RemoveEntity(scene, j))
+				scene_data:remove_entity(j)
+				-- editor.history:add(RemoveEntity(scene_data, j))
 			end
 
 			imgui.EndPopup()
@@ -63,15 +68,15 @@ local function display()
 	end
 
 	-- The scene data the editor is interactibg with.
-	---@type SceneData
-	local scene = editor.scenes.current
+	---@type editor.SceneData
+	local scene_data = editor.scenes.current
 
 	local btn_width = imgui.GetContentRegionAvail().x
 	if imgui.Button(font_icon.ICON_PLUS .. " New Layer", imgui.ImVec2_Float(btn_width, 0)) then
-		editor.history:add(AddLayer(scene, Layer({})))
+		-- editor.history:add(AddLayer(scene, Layer({})))
 	end
 
-	for k, layer in pairs(scene.data.layers) do
+	for k, layer in pairs(scene_data.scene.layers) do
 		local node_flags = { "OpenOnArrow", "OpenOnDoubleClick" }
 
 		if editor.selected_layer == layer then
@@ -82,23 +87,23 @@ local function display()
 
 		if imgui.Button(eye .. "##" .. layer.name) then
 			layer.active = not layer.active
-			scene.saved = false
+			scene_data.saved = false
 		end
 
 		imgui.SameLine()
 		local tree_node_flags = imgui.love.TreeNodeFlags(unpack(node_flags))
 		local node_open = imgui.TreeNodeEx_Str(layer.name, tree_node_flags)
 
-		layer_context_menu(scene, layer, k)
+		layer_context_menu(scene_data, layer, k)
 
 		if node_open then
-			layer_list_entities(scene, layer)
+			layer_list_entities(scene_data, layer)
 			imgui.TreePop()
 		end
 
 		if imgui.IsItemClicked() then
 			editor.selected_layer = layer
-			Inspector:inspect("layer", editor.selected_layer)
+			-- Inspector:inspect("layer", editor.selected_layer)
 		end
 	end
 

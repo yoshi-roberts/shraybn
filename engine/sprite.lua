@@ -7,7 +7,7 @@ local Sprite = Entity:extend()
 
 ---@param path string
 function Sprite:init(name, path)
-	Sprite.super.new(self, name)
+	Sprite.super.init(self, name)
 
 	self.asset_path = path
 end

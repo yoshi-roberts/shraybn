@@ -1,5 +1,5 @@
-local binser = require("libs.binser")
 local Class = require("libs.class")
+local binser = require("libs.binser")
 
 ---@class engine.Entity: Class
 ---@field draw function

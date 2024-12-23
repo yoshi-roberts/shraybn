@@ -1,5 +1,6 @@
 local dockspace = require("editor.dockspace")
 local editor = require("editor")
+local signal = require("engine.signal")
 local ffi = require("ffi")
 
 local font_icon = require("editor.font_icons")
@@ -30,8 +31,7 @@ end
 
 local function project_menu()
 	if imgui.MenuItem_Bool(string.format("%s Open", font_icon.ICON_FILE), nil, nil) then
-		-- FIX: Probably bad
-		-- ProjectManager.open[0] = true
+		signal.emit("menubar_open_project_manager")
 	end
 
 	imgui.MenuItem_Bool(font_icon.ICON_COG .. " Settings", nil, nil)

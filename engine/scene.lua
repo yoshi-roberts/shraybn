@@ -79,6 +79,7 @@ function Scene:add_entity(entity, layer, index)
 end
 
 ---@param index integer
+---@return engine.Entity
 function Scene:remove_entity(index)
 	return table.remove(self.entities, index)
 end

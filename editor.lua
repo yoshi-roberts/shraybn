@@ -5,33 +5,23 @@ local nativefs = require("libs.nativefs")
 local window = require("engine.window")
 local engine = require("engine")
 
--- require("editor.menubar")
--- require("editor.dockspace")
--- require("editor.project_manager")
--- require("editor.scene_data")
--- require("editor.scene_panel")
--- require("editor.file_panel")
--- require("editor.inspector")
--- require("editor.viewport")
-
 ---@class editor
-local editor = {
-	loaded_project = nil, ---@type engine.Project
+local editor = {}
 
-	scenes = {
-		open = {}, ---@type editor.SceneData[]
-		current = nil, ---@type editor.SceneData
-	},
+editor.loaded_project = nil ---@type engine.Project
+editor.selected_layer = nil ---@type engine.Layer
+editor.selected_entity = nil ---@type engine.Entity
+editor.drag_payload = nil
 
-	history = CommandHistory:new(),
+editor.history = CommandHistory:new()
 
-	selected_layer = nil, ---@type engine.Layer
-	selected_entity = nil, ---@type engine.Entity
-	drag_payload = nil,
+editor.scenes = {
+	open = {}, ---@type editor.SceneData[]
+	current = nil, ---@type editor.SceneData
 }
 
 function editor.save_scene()
-	editor.scenes.current.data:save(editor.scenes.current.path)
+	editor.scenes.current.scene:save(editor.scenes.current.path)
 	editor.scenes.current.saved = true
 end
 
@@ -39,7 +29,7 @@ function editor.save_all_scenes()
 	for _, scene in pairs(editor.scenes.open) do
 		---@cast scene editor.SceneData
 
-		scene.data:save(scene.path)
+		scene.scene:save(scene.path)
 		scene.saved = true
 	end
 end
@@ -64,7 +54,6 @@ end
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.update(dt)
 	engine.update(dt)
-	-- file_panel.update() -- FIX: Should not be here.
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

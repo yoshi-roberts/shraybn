@@ -1,3 +1,5 @@
+require("libs.batteries.tablex")
+
 Vec2 = require("libs.vector")
 
 local timer = require("engine.time")

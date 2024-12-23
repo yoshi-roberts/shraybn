@@ -1,10 +1,12 @@
-local nativefs = require "libs.nativefs"
-local log = require "libs.log"
-local assets = require "engine.assets"
-local editor = require "editor"
+local nativefs = require("libs.nativefs")
+local log = require("libs.log")
+local assets = require("engine.assets")
+local inspector = require("editor.inspector")
+local editor = require("editor")
 
 local Scene = require "engine.scene"
 local SceneData = require "editor.scene_data"
+
 ---@class editor.file_panel
 local file_panel = {
 	reload_needed = true,
@@ -33,12 +35,12 @@ function file_panel.open_file(file)
 			local scene = Scene.load(file)
 
 			editor.scenes.open[file] = SceneData:new(scene, file)
-			editor.scenes.open[file]:get_available_names()
+			-- editor.scenes.open[file]:get_available_names() -- FIX: NOOOOOOOOOO!
 		end
 
 		editor.scenes.current = editor.scenes.open[file]
 	elseif ext == "png" then
-		Inspector:inspect("image", assets.get("image", file))
+		inspector.inspect("image", assets.get("image", file))
 	end
 end
 

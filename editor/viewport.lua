@@ -82,14 +82,15 @@ function viewport.update()
 	end
 
 	if editor.selected_entity and editor.selected_entity:is(Trigger) then
-		trigger:update(editor.selected_entity)
+		-- TODO: ??
+		-- trigger:update(editor.selected_entity)
 	end
 
 	viewport.update_mouse()
 end
 
 function viewport.draw_scene()
-	for _, entity in pairs(editor.scenes.current.data.entities) do
+	for _, entity in pairs(editor.scenes.current.scene.entities) do
 		if entity.layer.active then
 			entity:draw()
 
@@ -99,7 +100,7 @@ function viewport.draw_scene()
 		end
 	end
 
-	for _, layer in pairs(editor.scenes.current.data.layers) do
+	for _, layer in pairs(editor.scenes.current.scene.layers) do
 		if layer.active and layer.draw ~= nil then
 			layer.draw()
 		end

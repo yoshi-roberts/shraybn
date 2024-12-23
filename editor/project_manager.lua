@@ -3,6 +3,7 @@ local nativefs = require("libs.nativefs")
 local imgui = require("engine.imgui")
 local assets = require("engine.assets")
 local viewport = require("editor.viewport")
+local signal = require("engine.signal")
 local editor = require("editor")
 local ffi = require("ffi")
 
@@ -31,6 +32,12 @@ local project_manager = {
 
 	display = require("editor.ui.project_manager"),
 }
+
+local function project_manager_open()
+	project_manager.open[0] = true
+end
+
+signal.register("menubar_open_project_manager", project_manager_open)
 
 ---@param name string
 ---@return boolean
