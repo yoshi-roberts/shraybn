@@ -151,7 +151,7 @@ function love.mousemoved(x, y, dx, dy, istouch)
 end
 
 function love.wheelmoved(x, y)
-	local data = { x, y }
+	local data = { x = x, y = y }
 
 	input.process_mouse_wheel(data)
 	event.fire(event.code.MOUSE_WHEEL, data)
