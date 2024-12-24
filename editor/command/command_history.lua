@@ -10,14 +10,11 @@ function CommandHistory:init()
 end
 
 ---@param cmd editor.Command: The command object to add.
----@param mergeable boolean?: Set to true to make the command mergeable.
-function CommandHistory:add(cmd, mergeable)
-	cmd.mergeable = mergeable or false
+function CommandHistory:add(cmd)
 	cmd:execute()
 
-	-- We don't want to deal with too many commands.
+	-- Remove the oldest command if we are at the limit.
 	if #self.commands == self.limit then
-		-- Remove the oldest command.
 		table.remove(self.commands, 1)
 	end
 
@@ -37,7 +34,7 @@ function CommandHistory:add(cmd, mergeable)
 	local latest = self.commands[#self.commands]
 	local last = self.commands[#self.commands - 1]
 
-	if #self.commands > 1 and last.mergeable and mergeable then
+	if #self.commands > 1 and last.mergeable and latest.mergeable then
 		if last:merge(latest) then
 			table.remove(self.commands, #self.commands)
 			self.current = #self.commands

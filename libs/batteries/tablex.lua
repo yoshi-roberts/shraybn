@@ -1,4 +1,4 @@
---[[
+--[[tablex
 	extra table routines
 ]]
 
@@ -692,5 +692,3 @@ function table.spairs(t, less)
 		end
 	end
 end
-
--- return table
