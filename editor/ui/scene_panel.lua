@@ -1,10 +1,9 @@
--- FIX: Vile. Putrid.
--- Got any peak? We got abysmal dogshit.
 local AddEntity = require("editor.command.add_entity")
 local RemoveEntity = require("editor.command.remove_entity")
+local AddLayer = require("editor.command.add_layer")
+local RemoveLayer = require("editor.command.remove_layer")
 local Sprite = require("engine.sprite")
 local Layer = require("engine.layer")
--- local Trigger = require("engine.trigger")
 
 local editor = require("editor")
 local font_icon = require("editor.font_icons")
@@ -22,15 +21,14 @@ local function layer_context_menu(scene_data, layer, index)
 
 			if imgui.MenuItem_Bool(font_icon.ICON_MOUSE_POINTER .. " Trigger") then
 				local points = { 0, 0, 64, 0, 64, 64, 0, 64 }
-				-- editor.history:add(AddEntity:new(scene, layer, Trigger:new(points)), false)
+				-- TODO: Add trigger.
 			end
 
 			imgui.EndMenu()
 		end
 
 		if imgui.MenuItem_Bool(font_icon.ICON_TRASH .. " Delete") then
-			-- scene_data:remove_layer(index)
-			-- editor.history:add(RemoveLayer(scene, index))
+			editor.history:add(RemoveLayer:new(scene_data, index))
 		end
 
 		imgui.EndPopup()
@@ -68,14 +66,11 @@ local function display()
 		return
 	end
 
-	-- The scene data the editor is interactibg with.
-	---@type editor.SceneData
 	local scene_data = editor.scenes.current
 
 	local btn_width = imgui.GetContentRegionAvail().x
 	if imgui.Button(font_icon.ICON_PLUS .. " New Layer", imgui.ImVec2_Float(btn_width, 0)) then
-		scene_data:add_layer(Layer:new({}))
-		-- editor.history:add(AddLayer(scene, Layer({})))
+		editor.history:add(AddLayer:new(scene_data, Layer:new()))
 	end
 
 	for k, layer in pairs(scene_data.scene.layers) do
@@ -88,8 +83,9 @@ local function display()
 		local eye = layer.active and font_icon.ICON_EYE or font_icon.ICON_EYE_SLASH
 
 		if imgui.Button(eye .. "##" .. layer.name) then
-			layer.active = not layer.active
-			scene_data.saved = false
+			-- TODO: SceneData should handle this.
+			-- layer.active = not layer.active
+			-- scene_data.saved = false
 		end
 
 		imgui.SameLine()

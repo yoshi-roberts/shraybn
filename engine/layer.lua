@@ -6,7 +6,7 @@ local binser = require("libs.binser")
 local Layer = Class:extend()
 
 ---@param callbacks table
----@param depth integer
+---@param depth integer?
 function Layer:init(callbacks, depth)
 	self.depth = depth or 0
 	self.active = true
