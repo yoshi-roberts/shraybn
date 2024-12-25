@@ -103,22 +103,20 @@ function Scene:save(path)
 	end
 end
 
----@return table
-function Scene:entity_count()
-	local counts = {}
+-- Returns a list of all the entities belonging to a layer.
+---@param index integer
+---@return engine.Entity[]
+function Scene:get_layer_entities(index)
+	local layer = self.layers[index]
+	local entities = {}
 
 	for _, entity in pairs(self.entities) do
-		local layer = entity.layer.name
-		local type = tostring(entity)
-
-		-- Make sure values are not nil.
-		counts[layer] = counts[layer] or {}
-		counts[layer][type] = counts[layer][type] or 0
-
-		counts[layer][type] = counts[layer][type] + 1
+		if entity.layer == layer then
+			table.insert(entities, entity)
+		end
 	end
 
-	return counts
+	return entities
 end
 
 binser.register(Scene, "Scene")

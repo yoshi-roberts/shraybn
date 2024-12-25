@@ -9,7 +9,6 @@ function SceneData:init(scene, path)
 	self.scene = scene
 	self.path = path
 	self.saved = true
-	self.entity_count = scene:entity_count()
 end
 
 ---@param layer engine.Layer
