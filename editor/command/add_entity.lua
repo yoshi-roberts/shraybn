@@ -13,14 +13,17 @@ function AddEntity:init(scene_data, layer, entity)
 	self.layer = layer
 	self.entity = entity
 	self.index = 0
+	self.saved = scene_data.saved
 end
 
 function AddEntity:execute()
 	self.index = self.scene_data:add_entity(self.layer, self.entity)
+	self.scene_data.saved = false
 end
 
 function AddEntity:undo()
 	self.scene_data:remove_entity(self.index)
+	self.scene_data.saved = self.saved
 end
 
 ---@return editor.command.AddEntity

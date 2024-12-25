@@ -42,8 +42,8 @@ function Class:__tostring()
 	return "Object"
 end
 
----@generic T : Class
----@param self T
+---@generic T
+---@param self `T`
 ---@return T
 function Class:new(...)
 	local instance = setmetatable({}, self)

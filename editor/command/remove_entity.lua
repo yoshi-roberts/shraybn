@@ -9,14 +9,17 @@ local RemoveEntity = Command:extend()
 function RemoveEntity:init(scene_data, index)
 	self.scene_data = scene_data
 	self.index = index
+	self.saved = scene_data.saved
 end
 
 function RemoveEntity:execute()
-	self.entity = self.scene_data:remove_entity(self.index)
+	self.entity = self.scene_data.scene:remove_entity(self.index)
+	self.scene_data.saved = false
 end
 
 function RemoveEntity:undo()
 	self.scene_data:add_entity(self.entity.layer, self.entity, self.index)
+	self.scene_data.saved = self.saved
 end
 
 ---@return editor.command.RemoveEntity

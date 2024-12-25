@@ -12,8 +12,8 @@ local log = require("libs.log")
 ---@class engine
 local engine = {}
 
-engine.canvases = {}
-engine.scenes = {}
+engine.canvases = {} ---@type engine.Canvas[]
+engine.scenes = {} ---@type engine.Scene[]
 engine.active_scene = nil ---@type engine.Scene
 
 ---@type event_callback

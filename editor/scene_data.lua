@@ -18,16 +18,8 @@ end
 function SceneData:add_entity(layer, entity, index)
 	entity.name = self:get_available_entity_name(layer, entity)
 	self.scene:add_entity(entity, layer, index)
-	self.saved = false
 
 	return #self.scene.entities
-end
-
----@param index integer
----@return engine.Entity
-function SceneData:remove_entity(index)
-	self.saved = false
-	return self.scene:remove_entity(index)
 end
 
 ---@param layer engine.Layer
@@ -37,15 +29,7 @@ function SceneData:add_layer(layer, index)
 	layer.name = self:get_available_layer_name()
 	self.scene:add_layer(layer, index)
 
-	self.saved = false
 	return #self.scene.layers
-end
-
----@param index integer
----@return engine.Layer
-function SceneData:remove_layer(index)
-	self.saved = false
-	return self.scene:remove_layer(index)
 end
 
 ---@param layer engine.Layer
@@ -61,18 +45,14 @@ function SceneData:get_available_entity_name(layer, class)
 		local ent_layer = ent.layer.name
 		local ent_type = tostring(ent)
 
-		if ent_layer ~= layer.name or ent_type ~= class_type then
-			goto continue
+		if ent_layer == layer.name and ent_type == class_type then
+			local index = ent.name:sub(#ent.name, #ent.name)
+			index = tonumber(index)
+
+			if index then
+				table.insert(indicies, index)
+			end
 		end
-
-		local index = ent.name:sub(#ent.name, #ent.name)
-		index = tonumber(index)
-
-		if index then
-			table.insert(indicies, index)
-		end
-
-		::continue::
 	end
 
 	if #indicies == 0 then

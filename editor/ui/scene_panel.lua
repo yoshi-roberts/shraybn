@@ -45,6 +45,7 @@ local function layer_list_entities(scene_data, layer)
 
 		if imgui.Selectable_Bool(entity.name) then
 			editor.selected_entity = entity
+			-- TODO: Probably should not directly call this.
 			-- inspector.inspect("entity", entity)
 		end
 

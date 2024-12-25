@@ -1,7 +1,7 @@
 local Class = require("libs.class")
 local binser = require("libs.binser")
 
----@class engine.Layer : Class
+---@class engine.Layer: Class
 ---@field name string
 local Layer = Class:extend()
 
@@ -15,6 +15,7 @@ function Layer:init(callbacks, depth)
 		return
 	end
 
+	-- NOTE: Just keeping these in a callbacks table might be good.
 	self.attach = callbacks.attach or nil
 	self.detach = callbacks.detach or nil
 	self.update = callbacks.update or nil

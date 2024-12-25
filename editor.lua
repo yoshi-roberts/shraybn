@@ -27,8 +27,6 @@ end
 
 function editor.save_all_scenes()
 	for _, scene in pairs(editor.scenes.open) do
-		---@cast scene editor.SceneData
-
 		scene.scene:save(scene.path)
 		scene.saved = true
 	end
@@ -59,11 +57,6 @@ end
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.draw()
 	engine.draw()
-
-	-- FIX: No no.
-	-- love.graphics.setColor(1, 0, 0, 1)
-	-- love.graphics.circle("fill", viewport.pos.x, viewport.pos.y, 4)
-	-- love.graphics.setColor(1, 1, 1, 1)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field

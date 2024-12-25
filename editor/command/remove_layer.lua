@@ -10,11 +10,13 @@ function RemoveLayer:init(scene_data, index)
 	self.scene_data = scene_data
 	self.entities = {}
 	self.index = index
+	self.saved = scene_data.saved
 end
 
 function RemoveLayer:execute()
 	self.entities = self.scene_data.scene:get_layer_entities(self.index)
-	self.layer = self.scene_data:remove_layer(self.index)
+	self.layer = self.scene_data.scene:remove_layer(self.index)
+	self.scene_data.saved = false
 end
 
 function RemoveLayer:undo()
@@ -23,6 +25,9 @@ function RemoveLayer:undo()
 	for i, entity in pairs(self.entities) do
 		self.scene_data:add_entity(self.layer, entity, i)
 	end
+
+	self.entities = {}
+	self.scene_data.saved = self.saved
 end
 
 return RemoveLayer
