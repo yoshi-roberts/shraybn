@@ -1,6 +1,6 @@
 local Class = require("libs.class")
 
----@class editor.SceneData : Class
+---@class editor.SceneData: Class
 local SceneData = Class:extend()
 
 ---@param scene engine.Scene

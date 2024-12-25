@@ -2,6 +2,7 @@ local AddEntity = require("editor.command.add_entity")
 local RemoveEntity = require("editor.command.remove_entity")
 local AddLayer = require("editor.command.add_layer")
 local RemoveLayer = require("editor.command.remove_layer")
+local ToggleLayerActive = require("editor.command.toggle_layer_active")
 local Sprite = require("engine.sprite")
 local Layer = require("engine.layer")
 
@@ -84,9 +85,7 @@ local function display()
 		local eye = layer.active and font_icon.ICON_EYE or font_icon.ICON_EYE_SLASH
 
 		if imgui.Button(eye .. "##" .. layer.name) then
-			-- TODO: SceneData should handle this.
-			-- layer.active = not layer.active
-			-- scene_data.saved = false
+			editor.history:add(ToggleLayerActive:new(scene_data, layer))
 		end
 
 		imgui.SameLine()

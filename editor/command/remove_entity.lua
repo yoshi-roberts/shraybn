@@ -1,6 +1,6 @@
 local Command = require("editor.command.command")
 
----@class editor.command.RemoveEntity : editor.Command
+---@class editor.command.RemoveEntity: editor.Command
 ---@field entity engine.Entity
 local RemoveEntity = Command:extend()
 
@@ -22,5 +22,4 @@ function RemoveEntity:undo()
 	self.scene_data.saved = self.saved
 end
 
----@return editor.command.RemoveEntity
 return RemoveEntity
