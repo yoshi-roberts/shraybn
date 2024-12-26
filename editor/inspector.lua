@@ -142,7 +142,7 @@ function inspector.sprite()
 	local sprite = inspector.item
 
 	if sprite.asset_path then
-		inspector.image(assets.get("image", sprite.asset_path))
+		inspector.image(assets.get(sprite.asset_path))
 	end
 
 	inspector.resource(sprite, "asset_path")

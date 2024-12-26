@@ -28,21 +28,19 @@ local filetypes = {
 }
 
 function file_panel.open_file(file)
-	local ext = file:match("^.+%.([^.]+)$")
-
-	if ext == "scd" then
-		if not editor.scenes.open[file] then
-			local scene = Scene.load(file)
-
-			editor.scenes.open[file] = SceneData:new(scene, file)
+	if file.type == "scene" then
+		if not editor.scenes.open[file.path] then
+			local scene = Scene.load(file.path)
+			editor.scenes.open[file.path] = SceneData:new(scene, file.path)
 		end
 
-		editor.scenes.current = editor.scenes.open[file]
-	elseif ext == "png" then
-		inspector.inspect("image", assets.get("image", file))
+		editor.scenes.current = editor.scenes.open[file.path]
+	elseif file.type == "image" then
+		inspector.inspect("image", assets.get(file.path))
 	end
 end
 
+-- TODO: Properly sort directory items in some way.
 function file_panel.create_tree(path, branch)
 	local items = nativefs.getDirectoryItems(path)
 
@@ -60,10 +58,10 @@ function file_panel.create_tree(path, branch)
 			file_panel.create_tree(item_path, branch.dirs[name])
 		elseif info.type == "file" then
 			local ext = name:match("^.+%.([^.]+)$")
-			local type = filetypes[ext]
+			local file_type = filetypes[ext]
 
-			if type and not branch.files[name] then
-				branch.files[name] = item_path
+			if file_type and not branch.files[name] then
+				branch.files[name] = { path = item_path, type = file_type }
 			end
 		end
 

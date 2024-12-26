@@ -73,7 +73,8 @@ function assets.get(name)
 	local asset = assets.data[asset_type][name]
 
 	if not asset.resource then
-		asset.resource = resource_functions[asset_type]
+		local fn = resource_functions[asset_type]
+		asset.resource = fn(asset.data)
 		asset.data = nil
 	end
 

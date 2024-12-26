@@ -19,7 +19,7 @@ function Sprite:draw(position, scale)
 		return
 	end
 
-	local asset = assets.get("image", self.asset_path)
+	local asset = assets.get(self.asset_path)
 
 	if not asset then
 		return

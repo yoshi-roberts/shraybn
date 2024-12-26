@@ -2,6 +2,12 @@ local font_icon = require "editor.font_icons"
 local imgui = require "engine.imgui"
 local editor = require "editor"
 
+local file_icons = {
+	["image"] = font_icon.ICON_FILE_IMAGE_O,
+	["project"] = font_icon.ICON_FILE,
+	["scene"] = font_icon.ICON_FILM .. " ",
+}
+
 ---@param file_panel editor.file_panel
 ---@param branch table
 local function display_tree(file_panel, branch)
@@ -13,11 +19,13 @@ local function display_tree(file_panel, branch)
 	end
 
 	for name, item in pairs(branch.files) do
-		imgui.Selectable_Bool(font_icon.ICON_FILE .. " " .. name, file_panel.selected == item)
+		local icon = file_icons[item.type]
+		imgui.Selectable_Bool(icon .. " " .. name, file_panel.selected == item)
 
 		-- Double click item to open.
 		if imgui.IsItemHovered() and imgui.IsMouseDoubleClicked_Nil(0) then
 			file_panel.selected = item
+			print(file_panel.selected)
 			file_panel.open_file(file_panel.selected)
 		end
 

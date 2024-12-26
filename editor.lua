@@ -15,6 +15,9 @@ editor.drag_payload = nil
 
 editor.history = CommandHistory:new()
 
+-- TODO: SceneData should be stored in the project.
+-- That will be cleaner.
+-- We can also save the sate of opened scenes as part of the proj file.
 editor.scenes = {
 	open = {}, ---@type editor.SceneData[]
 	current = nil, ---@type editor.SceneData
