@@ -7,6 +7,7 @@ local Sprite = require("engine.sprite")
 local Layer = require("engine.layer")
 
 local editor = require("editor")
+local inspector = require("editor.inspector")
 local font_icon = require("editor.font_icons")
 local imgui = require("engine.imgui")
 
@@ -46,8 +47,7 @@ local function layer_list_entities(scene_data, layer)
 
 		if imgui.Selectable_Bool(entity.name) then
 			editor.selected_entity = entity
-			-- TODO: Probably should not directly call this.
-			-- inspector.inspect("entity", entity)
+			inspector.inspect("entity", entity)
 		end
 
 		if imgui.BeginPopupContextItem() then

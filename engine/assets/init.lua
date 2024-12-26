@@ -1,3 +1,5 @@
+-- TODO: zip compress the asset pack?
+-- Will probably create a new branch for this.
 local log = require("libs.log")
 
 ---@class engine.assets
@@ -8,6 +10,22 @@ local assets = {
 	path = "",
 	thread = nil, ---@type love.Thread
 	pack_exists = false,
+}
+
+-- Lookup table for file types.
+---@type {[string]: string}
+local ext_types = {
+	["png"] = "image",
+	["jpg"] = "image",
+	["jpeg"] = "image",
+	["mp3"] = "audio",
+	["wav"] = "audio",
+	["ogg"] = "audio",
+}
+
+---@type {[string]: function}
+local resource_functions = {
+	["image"] = love.graphics.newImage,
 }
 
 ---@param path string
@@ -37,27 +55,25 @@ function assets.loaded()
 	return assets.data ~= nil
 end
 
----@param type string
----| "image"
----| "sound"
 ---@param name string
-function assets.get(type, name)
+function assets.get(name)
 	if not assets:loaded() then
 		log.error("[ASSETS] No asset pack loaded. Can not load asset '" .. name .. "'")
 		return false
 	end
 
-	if not assets.data[type][name] then
+	local ext = name:match("^.+%.(.+)$")
+	local asset_type = ext_types[ext]
+
+	if not assets.data[asset_type][name] then
 		log.error("[ASSETS] Asset '" .. name .. "' does not exist.")
 		return nil
 	end
 
-	local asset = assets.data[type][name]
+	local asset = assets.data[asset_type][name]
 
 	if not asset.resource then
-		if asset.type == "image" then
-			asset.resource = love.graphics.newImage(asset.data)
-		end
+		asset.resource = resource_functions[asset_type]
 		asset.data = nil
 	end
 

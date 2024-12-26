@@ -1,11 +1,11 @@
-local nativefs = require("libs.nativefs")
-local log = require("libs.log")
-local assets = require("engine.assets")
 local inspector = require("editor.inspector")
+local nativefs = require("libs.nativefs")
+local assets = require("engine.assets")
 local editor = require("editor")
+local log = require("libs.log")
 
-local Scene = require "engine.scene"
-local SceneData = require "editor.scene_data"
+local Scene = require("engine.scene")
+local SceneData = require("editor.scene_data")
 
 ---@class editor.file_panel
 local file_panel = {
