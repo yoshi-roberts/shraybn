@@ -1,6 +1,6 @@
 local Command = require("editor.command.command")
 
----@class editor.command.AddEntity : editor.Command
+---@class editor.command.AddEntity: editor.Command
 local AddEntity = Command:extend()
 
 ---@param scene_data editor.SceneData
@@ -22,7 +22,7 @@ function AddEntity:execute()
 end
 
 function AddEntity:undo()
-	self.scene_data:remove_entity(self.index)
+	self.scene_data.scene:remove_entity(self.index)
 	self.scene_data.saved = self.saved
 end
 

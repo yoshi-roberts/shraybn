@@ -6,7 +6,8 @@ local binser = require("libs.binser")
 local Sprite = Entity:extend()
 
 ---@param path string
-function Sprite:init(name, path)
+---@param name string?
+function Sprite:init(path, name)
 	Sprite.super.init(self, name)
 
 	self.asset_path = path

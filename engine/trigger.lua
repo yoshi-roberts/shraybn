@@ -1,13 +1,14 @@
-local Class = require("libs.class")
+local Entity = require("engine.entity")
 local input = require("engine.input")
 local binser = require("libs.binser")
 
----@class engine.Trigger: Class
-local Trigger = Class:extend()
+---@class engine.Trigger: engine.Entity
+local Trigger = Entity:extend()
 
 ---@param verticies table
-function Trigger:new(verticies, name)
-	Trigger.super.new(self, name)
+---@param name string?
+function Trigger:init(verticies, name)
+	Trigger.super.init(self, name)
 
 	self.foccussed = false
 	self.verticies = verticies

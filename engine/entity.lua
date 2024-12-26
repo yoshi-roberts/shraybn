@@ -8,7 +8,8 @@ local Entity = Class:extend()
 
 ---@param position Vec2?
 ---@param rotation number?
-function Entity:init(position, rotation, name)
+---@param name string?
+function Entity:init(name, position, rotation)
 	self.name = name
 	self.depth = 0
 	self.layer = nil

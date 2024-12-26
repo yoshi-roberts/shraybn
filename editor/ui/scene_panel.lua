@@ -4,6 +4,7 @@ local AddLayer = require("editor.command.add_layer")
 local RemoveLayer = require("editor.command.remove_layer")
 local ToggleLayerActive = require("editor.command.toggle_layer_active")
 local Sprite = require("engine.sprite")
+local Trigger = require("engine.trigger")
 local Layer = require("engine.layer")
 
 local editor = require("editor")
@@ -22,8 +23,8 @@ local function layer_context_menu(scene_data, layer, index)
 			end
 
 			if imgui.MenuItem_Bool(font_icon.ICON_MOUSE_POINTER .. " Trigger") then
-				local points = { 0, 0, 64, 0, 64, 64, 0, 64 }
-				-- TODO: Add trigger.
+				local verts = { 0, 0, 64, 0, 64, 64, 0, 64 }
+				editor.history:add(AddEntity:new(scene_data, layer, Trigger:new(verts)))
 			end
 
 			imgui.EndMenu()
@@ -45,7 +46,7 @@ local function layer_list_entities(scene_data, layer)
 			break
 		end
 
-		if imgui.Selectable_Bool(entity.name) then
+		if imgui.Selectable_Bool(font_icon.ICON_CUBE .. " " .. entity.name) then
 			editor.selected_entity = entity
 			inspector.inspect("entity", entity)
 		end

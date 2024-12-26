@@ -25,7 +25,6 @@ local function display_tree(file_panel, branch)
 		-- Double click item to open.
 		if imgui.IsItemHovered() and imgui.IsMouseDoubleClicked_Nil(0) then
 			file_panel.selected = item
-			print(file_panel.selected)
 			file_panel.open_file(file_panel.selected)
 		end
 
