@@ -2,7 +2,6 @@ local Project = require("engine.project")
 local nativefs = require("libs.nativefs")
 local imgui = require("engine.imgui")
 local assets = require("engine.assets")
-local viewport = require("editor.viewport")
 local signal = require("engine.signal")
 local editor = require("editor")
 local ffi = require("ffi")
@@ -10,35 +9,30 @@ local ffi = require("ffi")
 ---@class editor.project_manager
 local project_manager = {
 	projects = nativefs.getDirectoryItems("projects"),
-	open = ffi.new("bool[1]", false),
+	should_open = ffi.new("bool[1]", false),
 	selected = 1,
 	warning = "",
 	create_new = false,
 	name = "New Project",
 	buf = ffi.new("char[?]", 128, "New Project"),
 
-	-- Imgui --
-	win_size = imgui.ImVec2_Float(0.0, 0.0),
 	win_flags = imgui.love.WindowFlags(
 		"NoDocking",
 		"NoCollapse",
 		"NoResize",
 		"NoMove",
-		-- "NoBringToFrontOnFocus",
-		"NoSavedSettings",
+		"NoScrollbar",
 		"AlwaysAutoResize"
-		-- "NoFocusOnAppearing"
 	),
 
 	display = require("editor.ui.project_manager"),
 }
 
-local function project_manager_open()
-	project_manager.open[0] = true
-end
+signal.register("menubar_open_project_manager", function()
+	project_manager.should_open[0] = true
+end)
 
-signal.register("menubar_open_project_manager", project_manager_open)
-
+-- Create a new project.
 ---@param name string
 ---@return boolean
 function project_manager.create(name)
@@ -65,6 +59,7 @@ function project_manager.create(name)
 	return true
 end
 
+-- Load a project.
 ---@param name string
 function project_manager.load(name)
 	local proj = Project.load(name)
@@ -73,7 +68,8 @@ function project_manager.load(name)
 	assets.init(proj.name, true)
 	assets.load()
 
-	viewport.center()
+	-- TODO: Almost certainly should not be called here.
+	-- viewport.center()
 end
 
 return project_manager

@@ -21,26 +21,30 @@ end
 
 ---@param project_manager editor.project_manager
 local function display(project_manager)
-	if project_manager.open[0] == false then
-		project_manager.create_new = false
-		return
+	if project_manager.should_open[0] then
+		imgui.OpenPopup_Str("Project Manager")
+		project_manager.should_open[0] = false
 	end
 
-	if not imgui.Begin("Project Manager", project_manager.open, project_manager.win_flags) then
-		imgui.End()
-	else
-		project_manager.win_size = imgui.GetWindowSize()
-		local screen_w, screen_h = love.graphics.getDimensions()
+	local screen_w, screen_h = love.graphics.getDimensions()
 
-		local pos_x = (screen_w - project_manager.win_size.x) / 2
-		local pos_y = (screen_h - project_manager.win_size.y) / 2
+	local pos_x = screen_w * 0.5
+	local pos_y = screen_h * 0.5
 
-		imgui.SetWindowPos_Vec2(imgui.ImVec2_Float(pos_x, pos_y))
+	imgui.SetNextWindowPos(
+		imgui.ImVec2_Float(pos_x, pos_y),
+		imgui.ImGuiCond_Always,
+		imgui.ImVec2_Float(0.5, 0.5)
+	)
+
+	if imgui.BeginPopupModal("Project Manager", nil, project_manager.win_flags) then
+		project_list(project_manager)
 
 		if imgui.Button("Open") then
 			local name = project_manager.projects[project_manager.selected]
 			project_manager.load(name)
-			project_manager.open[0] = false
+			project_manager.should_open[0] = false
+			imgui.CloseCurrentPopup()
 		end
 
 		imgui.SameLine()
@@ -51,8 +55,6 @@ local function display(project_manager)
 		if imgui.Button("New") then
 			project_manager.create_new = true
 		end
-
-		project_list(project_manager)
 
 		if project_manager.create_new == true then
 			if imgui.InputText("##project_name", project_manager.buf, 128) then
@@ -65,7 +67,7 @@ local function display(project_manager)
 
 			if imgui.Button("Create") then
 				if project_manager.create(project_manager.name) then
-					project_manager.open[0] = false
+					project_manager.should_open[0] = false
 				end
 			end
 
@@ -75,7 +77,7 @@ local function display(project_manager)
 			end
 		end
 
-		imgui.End()
+		imgui.EndPopup()
 	end
 end
 
