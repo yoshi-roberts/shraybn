@@ -18,6 +18,7 @@ local viewport = {
 	dragging = { acitve = false, diffx = 0, diffy = 0 },
 	drag_vert = { acitve = false, diffx = 0, diffy = 0, index = 0 },
 	bg_color = { 0.15, 0.15, 0.15, 1 },
+	dscale = 2 ^ (1 / 6),
 	display = require("editor.ui.viewport"),
 }
 
@@ -45,6 +46,19 @@ function viewport.center()
 	viewport.offset.y = (y / 2)
 end
 
+-- TODO: Not working quite right.
+-- Kind of need to streamline the whole positioning/scaling process of the viewport.
+-- Add a camera system to the engine and utilize that.
+function viewport.zoom(y)
+	local mpos = input.get_mouse_position()
+	local mouse_x = mpos.x - viewport.offset.x
+	local mouse_y = mpos.y - viewport.offset.y
+	local k = viewport.dscale ^ y
+	viewport.scale = viewport.scale * k
+	viewport.offset.x = math.floor(viewport.offset.x + mouse_x * (1 - k))
+	viewport.offset.y = math.floor(viewport.offset.y + mouse_y * (1 - k))
+end
+
 function viewport.update_mouse()
 	local mpos = input.get_mouse_position()
 	local scaled_x = (viewport.pos.x + viewport.offset.x) / viewport.scale
@@ -65,11 +79,11 @@ function viewport.update()
 		end
 
 		if input:wheel_up() then
-			viewport.scale = viewport.scale + 0.1
+			viewport.zoom(1)
 		end
 
 		if input:wheel_down() then
-			viewport.scale = viewport.scale - 0.1
+			viewport.zoom(-1)
 		end
 	end
 
