@@ -2,7 +2,7 @@ local Trigger = require("engine.trigger")
 local editor = require("editor")
 local window = require("engine.window")
 local input = require("engine.input")
-local trigger = require("editor.trigger-edit") --[[@as trigger]]
+local trigger = require("editor.trigger-edit")
 
 ---@class editor.viewport
 local viewport = {
@@ -10,7 +10,7 @@ local viewport = {
 	image = nil,
 	scale = 1,
 	grid_size = 32,
-	mouse_over = false,
+	is_mouse_over = false,
 	mouse_x = 0,
 	mouse_y = 0,
 	pos = { x = 0, y = 0 },
@@ -46,22 +46,31 @@ function viewport.center()
 end
 
 function viewport.update_mouse()
-	local mouse_pos = input.get_mouse_position()
-	viewport.mouse_x = ((mouse_pos.x - (viewport.pos.x + viewport.offset.x)) / viewport.scale)
-	viewport.mouse_y = ((mouse_pos.y - (viewport.pos.y + viewport.offset.y)) / viewport.scale)
+	local mpos = input.get_mouse_position()
+	local scaled_x = (viewport.pos.x + viewport.offset.x) / viewport.scale
+	local scaled_y = (viewport.pos.y + viewport.offset.y) / viewport.scale
+
+	viewport.mouse_x = mpos.x - scaled_x
+	viewport.mouse_y = mpos.y - scaled_y
 end
 
 function viewport.update()
-	if not viewport.mouse_over then
-		return
-	end
-
 	local mpos = input.get_mouse_position()
 
-	if input.button_pressed(input.mouse_button.MIDDLE) then
-		viewport.dragging.acitve = true
-		viewport.dragging.diffx = mpos.x - viewport.offset.x
-		viewport.dragging.diffy = mpos.y - viewport.offset.y
+	if viewport.is_mouse_over then
+		if input.button_pressed(input.mouse_button.MIDDLE) then
+			viewport.dragging.acitve = true
+			viewport.dragging.diffx = mpos.x - viewport.offset.x
+			viewport.dragging.diffy = mpos.y - viewport.offset.y
+		end
+
+		if input:wheel_up() then
+			viewport.scale = viewport.scale + 0.1
+		end
+
+		if input:wheel_down() then
+			viewport.scale = viewport.scale - 0.1
+		end
 	end
 
 	if input.button_released(input.mouse_button.MIDDLE) then
@@ -73,18 +82,10 @@ function viewport.update()
 		viewport.offset.y = mpos.y - viewport.dragging.diffy
 	end
 
-	if input:wheel_up() then
-		viewport.scale = viewport.scale + 0.1
-	end
-
-	if input:wheel_down() then
-		viewport.scale = viewport.scale - 0.1
-	end
-
-	if editor.selected_entity and editor.selected_entity:is(Trigger) then
-		-- TODO: ??
-		-- trigger:update(editor.selected_entity)
-	end
+	-- TODO: ??
+	-- if editor.selected_entity and editor.selected_entity:is(Trigger) then
+	-- trigger:update(editor.selected_entity)
+	-- end
 
 	viewport.update_mouse()
 end

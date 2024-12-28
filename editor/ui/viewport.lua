@@ -107,7 +107,7 @@ local function display(viewport)
 	local size = imgui.ImVec2_Float(viewport.canvas:getDimensions())
 	imgui.Image(viewport.canvas, size)
 
-	viewport.mouse_over = imgui.IsItemHovered()
+	viewport.is_mouse_over = imgui.IsItemHovered()
 
 	imgui.End()
 end

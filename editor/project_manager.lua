@@ -6,6 +6,8 @@ local signal = require("engine.signal")
 local editor = require("editor")
 local ffi = require("ffi")
 
+-- TODO: Turn this into a seperate project manager/launcher application.
+
 ---@class editor.project_manager
 local project_manager = {
 	projects = nativefs.getDirectoryItems("projects"),
