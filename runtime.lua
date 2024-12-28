@@ -3,6 +3,7 @@ local Layer = require("engine.layer")
 local Camera = require("engine.camera")
 local engine = require("engine")
 local window = require("engine.window")
+local input = require("engine.input")
 
 local cam = nil ---@type engine.Camera
 
@@ -22,14 +23,23 @@ end
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.update(dt)
 	engine.update(dt)
-	cam.position.x = cam.position.x + 1
-	cam.position.y = cam.position.y + 1
+	if input.key_down("d") then
+		cam.position.x = cam.position.x + 1
+	end
+
+	if input.key_down("space") then
+		local mpos = input.get_mouse_position()
+		cam:zoom_to(cam:to_world(mpos), 0.1)
+	end
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function love.draw()
 	cam:attach()
-	love.graphics.circle("fill", 0, 0, 32)
+	love.graphics.circle("fill", 32, 32, 32)
+	local mpos = input.get_mouse_position()
+	local spos = cam:to_world(mpos)
+	love.graphics.circle("fill", spos.x, spos.y, 32)
 	cam:detach()
 	engine.draw()
 end

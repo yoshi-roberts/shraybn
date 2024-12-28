@@ -29,13 +29,13 @@ function Canvas:update(width, height)
 end
 
 -- Prepare the canvas to be drawn to.
-function Canvas:start()
+function Canvas:attach()
 	love.graphics.setCanvas(self.target)
 	love.graphics.clear()
 end
 
 -- Finish drawing to the canvas.
-function Canvas:finish()
+function Canvas:detach()
 	love.graphics.setCanvas()
 end
 
