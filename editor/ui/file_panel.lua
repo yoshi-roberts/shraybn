@@ -11,16 +11,16 @@ local file_icons = {
 ---@param file_panel editor.file_panel
 ---@param branch table
 local function display_tree(file_panel, branch)
-	for name, item in pairs(branch.dirs) do
-		if imgui.TreeNode_Str(string.format("%s %s", font_icon.ICON_FOLDER, name)) then
+	for _, item in pairs(branch.dirs) do
+		if imgui.TreeNode_Str(string.format("%s %s", font_icon.ICON_FOLDER, item.name)) then
 			display_tree(file_panel, item)
 			imgui.TreePop()
 		end
 	end
 
-	for name, item in pairs(branch.files) do
+	for _, item in pairs(branch.files) do
 		local icon = file_icons[item.type]
-		imgui.Selectable_Bool(icon .. " " .. name, file_panel.selected == item)
+		imgui.Selectable_Bool(icon .. " " .. item.name, file_panel.selected == item)
 
 		-- Double click item to open.
 		if imgui.IsItemHovered() and imgui.IsMouseDoubleClicked_Nil(0) then
@@ -31,7 +31,7 @@ local function display_tree(file_panel, branch)
 		if imgui.BeginDragDropSource(imgui.ImGuiDragDropFlags_None) then
 			imgui.SetDragDropPayload("DRAG_DROP_FILE", item, #item)
 			editor.drag_payload = item
-			imgui.Text(name)
+			imgui.Text(item.name)
 			imgui.EndDragDropSource()
 		end
 	end

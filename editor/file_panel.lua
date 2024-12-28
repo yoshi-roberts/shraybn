@@ -40,7 +40,6 @@ function file_panel.open_file(file)
 	end
 end
 
--- TODO: Properly sort directory items in some way.
 function file_panel.create_tree(path, branch)
 	local items = nativefs.getDirectoryItems(path)
 
@@ -54,14 +53,16 @@ function file_panel.create_tree(path, branch)
 		local info = nativefs.getInfo(item_path)
 
 		if info.type == "directory" then
-			branch.dirs[name] = { dirs = {}, files = {} }
-			file_panel.create_tree(item_path, branch.dirs[name])
+			table.insert(branch.dirs, { name = name, dirs = {}, files = {} })
+			file_panel.create_tree(item_path, table.back(branch.dirs))
 		elseif info.type == "file" then
+			-- Get the file extension and type.
 			local ext = name:match("^.+%.([^.]+)$")
 			local file_type = filetypes[ext]
 
-			if file_type and not branch.files[name] then
-				branch.files[name] = { path = item_path, type = file_type }
+			if file_type then
+				local data = { name = name, path = item_path, type = file_type }
+				table.insert(branch.files, data)
 			end
 		end
 
