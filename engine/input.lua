@@ -1,5 +1,7 @@
 require "engine.util"
 
+-- TODO: Add a key_any_pressed function.
+
 ---@class engine.input
 local input = {
 

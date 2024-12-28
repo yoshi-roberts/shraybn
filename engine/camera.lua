@@ -1,4 +1,5 @@
 local Class = require("libs.class")
+local input = require("engine.input")
 
 ---@class engine.Camera: Class
 local Camera = Class:extend()
@@ -12,6 +13,11 @@ end
 ---@param coords Vec2
 function Camera:to_world(coords)
 	return (coords + self.position) / self.scale
+end
+
+---@return Vec2
+function Camera:get_mouse_position()
+	return (input.get_mouse_position() + self.position) / self.scale
 end
 
 ---@param pos Vec2
