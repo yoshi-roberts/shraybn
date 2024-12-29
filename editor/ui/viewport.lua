@@ -51,13 +51,15 @@ local function display(viewport)
 	-- viewport.pos.y = win_pos.y + cursor_pos.y
 
 	-- Start rendering to viewport canvas.
+
+	viewport.camera:attach()
 	love.graphics.setCanvas(viewport.canvas)
-	love.graphics.push()
+	-- love.graphics.push()
 
-	love.graphics.clear(viewport.bg_color)
+	-- love.graphics.clear(viewport.bg_color)
 
-	love.graphics.translate(viewport.offset.x, viewport.offset.y)
-	love.graphics.scale(viewport.scale, viewport.scale)
+	-- love.graphics.translate(viewport.offset.x, viewport.offset.y)
+	-- love.graphics.scale(viewport.scale, viewport.scale)
 
 	if editor.loaded_project then
 		love.graphics.setColor(1, 1, 1, 1)
@@ -68,7 +70,17 @@ local function display(viewport)
 		end
 	end
 
-	love.graphics.pop()
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.circle("fill", 0, 0, 32)
+
+	love.graphics.setColor(1, 0, 0, 1)
+	local cpos = viewport.camera.position
+	love.graphics.circle("fill", cpos.x, cpos.y, 24)
+
+	local mpos = viewport.camera:get_mouse_position()
+	love.graphics.circle("fill", mpos.x, mpos.y, 24)
+
+	-- love.graphics.pop()
 
 	-- Grid.
 
@@ -108,6 +120,7 @@ local function display(viewport)
 	-- love.graphics.pop()
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setCanvas()
+	viewport.camera:detach()
 
 	-- local win_pos = imgui.GetWindowPos()
 	local cursor_pos = imgui.GetCursorPos()

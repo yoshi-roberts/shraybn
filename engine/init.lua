@@ -47,6 +47,13 @@ function engine.draw()
 	engine.active_scene:draw()
 end
 
+---@param canvas engine.Canvas
+---@return engine.Canvas
+function engine.add_canvas(canvas)
+	table.insert(engine.canvases, canvas)
+	return table.back(engine.canvases)
+end
+
 ---@param scene engine.Scene
 ---@return engine.Scene
 function engine.add_scene(scene)

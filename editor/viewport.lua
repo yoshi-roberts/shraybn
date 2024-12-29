@@ -65,11 +65,11 @@ function viewport.update()
 	local mpos = input.get_mouse_position()
 
 	if viewport.is_mouse_over then
-		if input.button_pressed(input.mouse_button.MIDDLE) then
-			viewport.dragging.acitve = true
-			viewport.dragging.diffx = mpos.x - viewport.offset.x
-			viewport.dragging.diffy = mpos.y - viewport.offset.y
-		end
+		-- if input.button_pressed(input.mouse_button.MIDDLE) then
+		-- 	viewport.dragging.acitve = true
+		-- 	viewport.dragging.diffx = mpos.x - viewport.offset.x
+		-- 	viewport.dragging.diffy = mpos.y - viewport.offset.y
+		-- end
 
 		if input:wheel_up() then
 		end
@@ -78,14 +78,14 @@ function viewport.update()
 		end
 	end
 
-	if input.button_released(input.mouse_button.MIDDLE) then
-		viewport.dragging.acitve = false
-	end
-
-	if viewport.dragging.acitve then
-		viewport.offset.x = mpos.x - viewport.dragging.diffx
-		viewport.offset.y = mpos.y - viewport.dragging.diffy
-	end
+	-- if input.button_released(input.mouse_button.MIDDLE) then
+	-- 	viewport.dragging.acitve = false
+	-- end
+	--
+	-- if viewport.dragging.acitve then
+	-- 	viewport.offset.x = mpos.x - viewport.dragging.diffx
+	-- 	viewport.offset.y = mpos.y - viewport.dragging.diffy
+	-- end
 
 	-- TODO: ??
 	-- if editor.selected_entity and editor.selected_entity:is(Trigger) then

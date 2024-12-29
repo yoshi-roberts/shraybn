@@ -1,18 +1,22 @@
 local Class = require("libs.class")
 local binser = require("libs.binser")
 
----@class engine.Canvas : Class
+---@class engine.Canvas: Class
 local Canvas = Class:extend()
 
-function Canvas:new(width, height, filter)
+---@param width integer
+---@param height integer
+---@param mode "fit"|"none"
+---@param filter "nearest"|"linear"
+function Canvas:init(width, height, mode, filter)
 	self.width = width
 	self.height = height
+	self.mode = mode
 
 	self.target = love.graphics.newCanvas(width, height)
 	self.target:setFilter(filter or "linear", filter or "linear")
 
-	self.x = 0
-	self.y = 0
+	self.position = Vec2(0, 0)
 	self.scale = 0
 end
 
@@ -20,12 +24,24 @@ end
 ---@param width integer
 ---@param height integer
 function Canvas:update(width, height)
+	if self.mode ~= "fit" then
+		return
+	end
+
 	local sx = (height / self.height)
 	local sy = (width / self.width)
 	self.scale = math.min(sx, sy)
 
-	self.x = (width / 2) - ((self.width * self.scale) / 2)
-	self.y = (height / 2) - ((self.height * self.scale) / 2)
+	self.position.x = (width / 2) - ((self.width * self.scale) / 2)
+	self.position.y = (height / 2) - ((self.height * self.scale) / 2)
+end
+
+---@param coords Vec2
+---@return Vec2
+function Canvas:screen_to_canvas(coords)
+	local x = (coords.x + self.position.x) / self.scale
+	local y = (coords.y - self.position.y) / self.scale
+	return Vec2(x, y)
 end
 
 -- Prepare the canvas to be drawn to.
@@ -41,7 +57,7 @@ end
 
 function Canvas:draw()
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(self.target, self.x, self.y, 0, self.scale, self.scale)
+	love.graphics.draw(self.target, self.position.x, self.position.y, 0, self.scale, self.scale)
 end
 
 binser.register(Canvas, "Canvas")
