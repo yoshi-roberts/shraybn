@@ -1,12 +1,4 @@
-local default_style = require("editor.ui.themes.deep_dark")
-local material_dark = require("editor.ui.themes.material_dark")
 local material_you = require("editor.ui.themes.material_you")
-local bess_dark = require("editor.ui.themes.bess_dark")
-local dark_theme = require("editor.ui.themes.dark_theme")
-local dark = require("editor.ui.themes.dark")
-local unreal = require("editor.ui.themes.unreal")
-local modern = require("editor.ui.themes.modern")
-local fluent = require("editor.ui.themes.fluent")
 
 local imgui = require("engine.imgui")
 local font_icon = require("editor.font_icons")
@@ -56,15 +48,7 @@ function theme.apply()
 	local style = imgui.GetStyle()
 	local colors = style.Colors
 
-	-- default_style(style, colors)
-	-- material_dark(style, colors)
-	-- dark(style, colors)
-	-- unreal(style, colors)
-	-- modern(style, colors)
-	-- fluent(style, colors)
 	material_you(style, colors)
-	-- bess_dark(style, colors)
-	-- dark_theme(style, colors)
 end
 
 return theme

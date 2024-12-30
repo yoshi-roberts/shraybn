@@ -69,7 +69,6 @@ end
 -- Prepare the canvas to be drawn to.
 function Canvas:attach()
 	love.graphics.setCanvas(self.target)
-	love.graphics.clear()
 end
 
 -- Finish drawing to the canvas.

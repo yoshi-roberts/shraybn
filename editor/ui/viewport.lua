@@ -26,8 +26,49 @@ local function controls(viewport)
 	end
 end
 
+-- TODO: This needs to be changed for the new camera system.
 ---@param viewport editor.viewport
-local function grid(viewport) end
+local function grid(viewport)
+	viewport.canvas:attach()
+	love.graphics.push()
+	love.graphics.translate(-viewport.camera.position.x, -viewport.camera.position.y)
+
+	love.graphics.setLineStyle("rough")
+
+	if editor.loaded_project then
+		love.graphics.rectangle(
+			"line",
+			0,
+			0,
+			editor.loaded_project.game_width * viewport.camera.scale,
+			editor.loaded_project.game_height * viewport.camera.scale
+		)
+	end
+
+	-- local gs = viewport.grid_size * viewport.scale
+	--
+	-- local cwidth, cheight = viewport.camera.canvas:get_size()
+	-- local xt = math.ceil((cwidth - viewport.camera.position.x) / gs)
+	-- local yt = math.ceil((cheight - viewport.camera.position.y) / gs)
+	--
+	-- local start_x = math.floor(-viewport.camera.position.x / gs)
+	-- local start_y = math.floor(-viewport.camera.position.x / gs)
+	--
+	-- love.graphics.setColor(1, 1, 1, 0.05)
+	-- for x = start_x, xt, 1 do
+	-- 	for y = start_y, yt, 1 do
+	-- 		local posx = (x * gs)
+	-- 		local posy = (y * gs)
+	-- 		love.graphics.rectangle("line", posx, posy, gs, gs)
+	-- 	end
+	-- end
+
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setLineStyle("smooth")
+
+	love.graphics.pop()
+	viewport.canvas:detach()
+end
 
 ---@param viewport editor.viewport
 local function display(viewport)
@@ -47,19 +88,7 @@ local function display(viewport)
 	end
 	width, height = viewport.canvas:get_size()
 
-	-- viewport.pos.x = (win_pos.x + cursor_pos.x)
-	-- viewport.pos.y = win_pos.y + cursor_pos.y
-
-	-- Start rendering to viewport canvas.
-
 	viewport.camera:attach()
-	-- love.graphics.setCanvas(viewport.canvas)
-	-- love.graphics.push()
-
-	-- love.graphics.clear(viewport.bg_color)
-
-	-- love.graphics.translate(viewport.offset.x, viewport.offset.y)
-	-- love.graphics.scale(viewport.scale, viewport.scale)
 
 	if editor.loaded_project then
 		love.graphics.setColor(1, 1, 1, 1)
@@ -76,54 +105,16 @@ local function display(viewport)
 	love.graphics.circle("fill", cpos.x, cpos.y, 12)
 
 	love.graphics.setColor(1, 0, 0, 1)
-	-- local cpos = viewport.camera.position
-	-- love.graphics.circle("fill", cpos.x, cpos.y, 24)
 
-	-- local mpos = viewport.canvas:screen_to_canvas(input:get_mouse_position())
 	local mpos = viewport.camera:get_mouse_position()
 	love.graphics.circle("fill", mpos.x, mpos.y, 8)
 
-	-- love.graphics.pop()
+	-- grid(viewport)
 
-	-- Grid.
-
-	-- love.graphics.push()
-	-- love.graphics.translate(viewport.offset.x, viewport.offset.y)
-	--
-	-- love.graphics.setLineStyle("rough")
-	--
-	-- if editor.loaded_project then
-	-- 	love.graphics.rectangle(
-	-- 		"line",
-	-- 		0,
-	-- 		0,
-	-- 		editor.loaded_project.game_width * viewport.scale,
-	-- 		editor.loaded_project.game_height * viewport.scale
-	-- 	)
-	-- end
-	--
-	-- local gs = viewport.grid_size * viewport.scale
-	--
-	-- local xt = math.ceil((viewport.canvas:getWidth() - viewport.offset.x) / gs)
-	-- local yt = math.ceil((viewport.canvas:getHeight() - viewport.offset.y) / gs)
-	--
-	-- local start_x = math.floor(-viewport.offset.x / gs)
-	-- local start_y = math.floor(-viewport.offset.y / gs)
-	--
-	-- love.graphics.setColor(1, 1, 1, 0.05)
-	-- for x = start_x, xt, 1 do
-	-- 	for y = start_y, yt, 1 do
-	-- 		local posx = (x * gs)
-	-- 		local posy = (y * gs)
-	-- 		love.graphics.rectangle("line", posx, posy, gs, gs)
-	-- 	end
-	-- end
-	--
-	-- love.graphics.setLineStyle("smooth")
-	-- love.graphics.pop()
 	love.graphics.setColor(1, 1, 1, 1)
-	-- love.graphics.setCanvas()
 	viewport.camera:detach()
+
+	grid(viewport)
 
 	local cursor_pos = imgui.GetCursorPos()
 

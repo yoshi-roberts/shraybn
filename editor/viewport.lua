@@ -15,10 +15,6 @@ local viewport = {
 	scale = 1,
 	grid_size = 32,
 	is_mouse_over = false,
-	mouse_x = 0,
-	mouse_y = 0,
-	pos = { x = 0, y = 0 },
-	offset = { x = 0, y = 0 },
 	dragging = { acitve = false, diffx = 0, diffy = 0 },
 	drag_vert = { acitve = false, diffx = 0, diffy = 0, index = 0 },
 	bg_color = { 0.15, 0.15, 0.15, 1 },
@@ -51,15 +47,6 @@ function viewport.center()
 	local y = (height - (gh * scale))
 	viewport.camera.position.x = (x / 2)
 	viewport.camera.position.y = (y / 2)
-end
-
-function viewport.update_mouse()
-	local mpos = viewport.camera:get_mouse_position()
-	local scaled_x = (viewport.pos.x + viewport.offset.x) / viewport.scale
-	local scaled_y = (viewport.pos.y + viewport.offset.y) / viewport.scale
-
-	viewport.mouse_x = mpos.x - scaled_x
-	viewport.mouse_y = mpos.y - scaled_y
 end
 
 function viewport.update()
@@ -96,8 +83,6 @@ function viewport.update()
 	-- if editor.selected_entity and editor.selected_entity:is(Trigger) then
 	-- trigger:update(editor.selected_entity)
 	-- end
-
-	viewport.update_mouse()
 end
 
 function viewport.draw_scene()
