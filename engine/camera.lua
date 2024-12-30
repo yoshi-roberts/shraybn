@@ -9,6 +9,7 @@ function Camera:init(canvas)
 	self.scale = 1
 	self.canvas = canvas
 	self.position = Vec2(0, 0)
+	self.dscale = 2 ^ 1
 end
 
 ---@param coords Vec2
@@ -47,7 +48,7 @@ function Camera:zoom_to(anchor, y)
 	local pos = self:screen_to_world_unscaled(anchor)
 	local last_scale = self.scale
 
-	self.scale = self.scale + y
+	self.scale = self.scale * (2 ^ y)
 
 	local nx = pos.x * (self.scale / last_scale)
 	local ny = pos.y * (self.scale / last_scale)

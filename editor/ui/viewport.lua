@@ -26,7 +26,6 @@ local function controls(viewport)
 	end
 end
 
--- TODO: This needs to be changed for the new camera system.
 ---@param viewport editor.viewport
 local function grid(viewport)
 	viewport.canvas:attach()
@@ -45,23 +44,25 @@ local function grid(viewport)
 		)
 	end
 
-	-- local gs = viewport.grid_size * viewport.scale
-	--
-	-- local cwidth, cheight = viewport.camera.canvas:get_size()
-	-- local xt = math.ceil((cwidth - viewport.camera.position.x) / gs)
-	-- local yt = math.ceil((cheight - viewport.camera.position.y) / gs)
-	--
-	-- local start_x = math.floor(-viewport.camera.position.x / gs)
-	-- local start_y = math.floor(-viewport.camera.position.x / gs)
-	--
-	-- love.graphics.setColor(1, 1, 1, 0.05)
-	-- for x = start_x, xt, 1 do
-	-- 	for y = start_y, yt, 1 do
-	-- 		local posx = (x * gs)
-	-- 		local posy = (y * gs)
-	-- 		love.graphics.rectangle("line", posx, posy, gs, gs)
-	-- 	end
-	-- end
+	local cpos = viewport.camera.position
+	local gs = viewport.grid_size * viewport.camera.scale
+
+	local cwidth, cheight = viewport.camera.canvas:get_size()
+
+	local xt = math.ceil(cwidth / gs)
+	local yt = math.ceil(cheight / gs)
+
+	local start_x = math.floor(cpos.x / gs) * gs
+	local start_y = math.floor(cpos.y / gs) * gs
+
+	love.graphics.setColor(1, 1, 1, 0.1)
+	for x = 0, xt, 1 do
+		for y = 0, yt, 1 do
+			local posx = start_x + (x * gs)
+			local posy = start_y + (y * gs)
+			love.graphics.rectangle("line", posx, posy, gs, gs)
+		end
+	end
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setLineStyle("smooth")
@@ -98,18 +99,6 @@ local function display(viewport)
 			-- Editor.scenes.current.data:draw()
 		end
 	end
-
-	local cpos = viewport.camera:get_position()
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.circle("fill", 0, 0, 12)
-	love.graphics.circle("fill", cpos.x, cpos.y, 12)
-
-	love.graphics.setColor(1, 0, 0, 1)
-
-	local mpos = viewport.camera:get_mouse_position()
-	love.graphics.circle("fill", mpos.x, mpos.y, 8)
-
-	-- grid(viewport)
 
 	love.graphics.setColor(1, 1, 1, 1)
 	viewport.camera:detach()
