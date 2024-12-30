@@ -1,6 +1,7 @@
-local editor = require "editor"
-local font_icon = require "editor.font_icons"
-local imgui = require "engine.imgui"
+local editor = require("editor")
+local input = require("engine.input")
+local font_icon = require("editor.font_icons")
+local imgui = require("engine.imgui")
 
 ---@param viewport editor.viewport
 local function controls(viewport)
@@ -10,18 +11,18 @@ local function controls(viewport)
 
 	imgui.SameLine()
 	if imgui.Button(font_icon.ICON_MINUS) then
-		viewport.scale = viewport.scale - 0.1
+		viewport.camera.scale = viewport.camera.scale - 0.1
 	end
 
 	imgui.SameLine()
-	local scale_percentage = math.floor(viewport.scale * 100)
+	local scale_percentage = math.floor(viewport.camera.scale * 100)
 	if imgui.Button(scale_percentage .. "%") then
-		viewport.scale = 1
+		viewport.camera.scale = 1
 	end
 
 	imgui.SameLine()
 	if imgui.Button(font_icon.ICON_PLUS) then
-		viewport.scale = viewport.scale + 0.1
+		viewport.camera.scale = viewport.camera.scale + 0.1
 	end
 end
 
@@ -37,15 +38,14 @@ local function display(viewport)
 	local style = imgui.GetStyle()
 	local padding = style.WindowPadding.x
 	local region = imgui.GetContentRegionAvail()
-	local width, height = viewport.canvas:getDimensions()
+	local width, height = viewport.canvas:get_size()
 
 	if region.x ~= width or region.y ~= height then
 		if region.x > 0 and region.y > 0 then
-			viewport.canvas =
-				love.graphics.newCanvas(region.x + padding * 2, region.y + padding)
+			viewport.canvas:resize(region.x + padding * 2, region.y + padding)
 		end
 	end
-	width, height = viewport.canvas:getDimensions()
+	width, height = viewport.canvas:get_size()
 
 	-- viewport.pos.x = (win_pos.x + cursor_pos.x)
 	-- viewport.pos.y = win_pos.y + cursor_pos.y
@@ -53,7 +53,7 @@ local function display(viewport)
 	-- Start rendering to viewport canvas.
 
 	viewport.camera:attach()
-	love.graphics.setCanvas(viewport.canvas)
+	-- love.graphics.setCanvas(viewport.canvas)
 	-- love.graphics.push()
 
 	-- love.graphics.clear(viewport.bg_color)
@@ -70,15 +70,18 @@ local function display(viewport)
 		end
 	end
 
+	local cpos = viewport.camera:get_position()
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.circle("fill", 0, 0, 32)
+	love.graphics.circle("fill", 0, 0, 12)
+	love.graphics.circle("fill", cpos.x, cpos.y, 12)
 
 	love.graphics.setColor(1, 0, 0, 1)
-	local cpos = viewport.camera.position
-	love.graphics.circle("fill", cpos.x, cpos.y, 24)
+	-- local cpos = viewport.camera.position
+	-- love.graphics.circle("fill", cpos.x, cpos.y, 24)
 
+	-- local mpos = viewport.canvas:screen_to_canvas(input:get_mouse_position())
 	local mpos = viewport.camera:get_mouse_position()
-	love.graphics.circle("fill", mpos.x, mpos.y, 24)
+	love.graphics.circle("fill", mpos.x, mpos.y, 8)
 
 	-- love.graphics.pop()
 
@@ -119,15 +122,24 @@ local function display(viewport)
 	-- love.graphics.setLineStyle("smooth")
 	-- love.graphics.pop()
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.setCanvas()
+	-- love.graphics.setCanvas()
 	viewport.camera:detach()
 
-	-- local win_pos = imgui.GetWindowPos()
 	local cursor_pos = imgui.GetCursorPos()
 
-	local size = imgui.ImVec2_Float(viewport.canvas:getDimensions())
+	local size = imgui.ImVec2_Float(viewport.canvas:get_size())
 	imgui.SetCursorPosX(cursor_pos.x - padding)
-	imgui.Image(viewport.canvas, size)
+
+	local win_pos = imgui.GetWindowPos()
+	cursor_pos = imgui.GetCursorPos()
+
+	local cx = win_pos.x + cursor_pos.x
+	local cy = win_pos.y + cursor_pos.y
+	viewport.canvas:set_position(cx, cy)
+
+	love.graphics.circle("fill", cx, cy, 16)
+
+	imgui.Image(viewport.canvas.target, size)
 
 	viewport.is_mouse_over = imgui.IsItemHovered()
 

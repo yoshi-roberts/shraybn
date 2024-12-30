@@ -9,7 +9,6 @@ function Camera:init(canvas)
 	self.scale = 1
 	self.canvas = canvas
 	self.position = Vec2(0, 0)
-	self.dscale = 2 ^ (1 / 6)
 end
 
 ---@param coords Vec2
@@ -19,6 +18,16 @@ function Camera:screen_to_world(coords)
 		return (self.canvas:screen_to_canvas(coords) + self.position) / self.scale
 	else
 		return (coords + self.position) / self.scale
+	end
+end
+
+---@param coords Vec2
+---@return Vec2
+function Camera:screen_to_world_unscaled(coords)
+	if self.canvas then
+		return (self.canvas:screen_to_canvas(coords) + self.position)
+	else
+		return (coords + self.position)
 	end
 end
 
@@ -35,7 +44,7 @@ end
 ---@param anchor Vec2
 ---@param y number
 function Camera:zoom_to(anchor, y)
-	local pos = self:screen_to_world(anchor)
+	local pos = self:screen_to_world_unscaled(anchor)
 	local last_scale = self.scale
 
 	self.scale = self.scale + y

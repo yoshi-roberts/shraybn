@@ -11,13 +11,35 @@ local Canvas = Class:extend()
 function Canvas:init(width, height, mode, filter)
 	self.width = width
 	self.height = height
+	self.filter = filter or "linear"
 	self.mode = mode
 
 	self.target = love.graphics.newCanvas(width, height)
-	self.target:setFilter(filter or "linear", filter or "linear")
+	self.target:setFilter(self.filter, self.filter)
 
 	self.position = Vec2(0, 0)
-	self.scale = 0
+	self.scale = 1
+end
+
+---@param x number
+---@param y number
+function Canvas:set_position(x, y)
+	self.position.x = x
+	self.position.y = y
+end
+
+---@return integer, integer
+function Canvas:get_size()
+	return self.width, self.height
+end
+
+---@param width integer
+---@param height integer
+function Canvas:resize(width, height)
+	self.width = width
+	self.height = height
+	self.target = love.graphics.newCanvas(width, height)
+	self.target:setFilter(self.filter, self.filter)
 end
 
 -- Update the canvas size and position.
@@ -39,7 +61,7 @@ end
 ---@param coords Vec2
 ---@return Vec2
 function Canvas:screen_to_canvas(coords)
-	local x = (coords.x + self.position.x) / self.scale
+	local x = (coords.x - self.position.x) / self.scale
 	local y = (coords.y - self.position.y) / self.scale
 	return Vec2(x, y)
 end

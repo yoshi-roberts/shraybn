@@ -1,4 +1,5 @@
 local Trigger = require("engine.trigger")
+local Canvas = require("engine.canvas")
 local Camera = require("engine.camera")
 local editor = require("editor")
 local window = require("engine.window")
@@ -8,7 +9,7 @@ local imgui = require "engine.imgui"
 
 ---@class editor.viewport
 local viewport = {
-	canvas = nil, ---@type love.Canvas
+	canvas = nil, ---@type engine.Canvas
 	camera = nil, ---@type engine.Camera
 	image = nil,
 	scale = 1,
@@ -28,8 +29,8 @@ local viewport = {
 }
 
 function viewport.init()
-	viewport.canvas = love.graphics.newCanvas(window.width, window.height)
-	viewport.camera = Camera:new()
+	viewport.canvas = Canvas:new(window.width, window.height, "none")
+	viewport.camera = Camera:new(viewport.canvas)
 end
 
 function viewport.center()
@@ -37,23 +38,23 @@ function viewport.center()
 		return
 	end
 
-	local width, height = viewport.canvas:getDimensions()
+	local width, height = viewport.camera.canvas:get_size()
 	local gw = editor.loaded_project.game_width
 	local gh = editor.loaded_project.game_height
 
 	local sx = width / gw
 	local sy = height / gh
 	local scale = math.min(sx, sy)
-	viewport.scale = scale
+	viewport.camera.scale = scale
 
 	local x = (width - (gw * scale))
 	local y = (height - (gh * scale))
-	viewport.offset.x = (x / 2)
-	viewport.offset.y = (y / 2)
+	viewport.camera.position.x = (x / 2)
+	viewport.camera.position.y = (y / 2)
 end
 
 function viewport.update_mouse()
-	local mpos = input.get_mouse_position()
+	local mpos = viewport.camera:get_mouse_position()
 	local scaled_x = (viewport.pos.x + viewport.offset.x) / viewport.scale
 	local scaled_y = (viewport.pos.y + viewport.offset.y) / viewport.scale
 
@@ -62,30 +63,34 @@ function viewport.update_mouse()
 end
 
 function viewport.update()
+	local cam = viewport.camera
+	local cpos = cam:get_position()
 	local mpos = input.get_mouse_position()
 
 	if viewport.is_mouse_over then
-		-- if input.button_pressed(input.mouse_button.MIDDLE) then
-		-- 	viewport.dragging.acitve = true
-		-- 	viewport.dragging.diffx = mpos.x - viewport.offset.x
-		-- 	viewport.dragging.diffy = mpos.y - viewport.offset.y
-		-- end
+		if input.button_pressed(input.mouse_button.MIDDLE) then
+			viewport.dragging.acitve = true
+			viewport.dragging.diffx = mpos.x + cam.position.x
+			viewport.dragging.diffy = mpos.y + cam.position.y
+		end
 
 		if input:wheel_up() then
+			cam:zoom_to(mpos, 0.1)
 		end
 
 		if input:wheel_down() then
+			cam:zoom_to(mpos, -0.1)
 		end
 	end
 
-	-- if input.button_released(input.mouse_button.MIDDLE) then
-	-- 	viewport.dragging.acitve = false
-	-- end
+	if input.button_released(input.mouse_button.MIDDLE) then
+		viewport.dragging.acitve = false
+	end
 	--
-	-- if viewport.dragging.acitve then
-	-- 	viewport.offset.x = mpos.x - viewport.dragging.diffx
-	-- 	viewport.offset.y = mpos.y - viewport.dragging.diffy
-	-- end
+	if viewport.dragging.acitve then
+		cam.position.x = (viewport.dragging.diffx - mpos.x)
+		cam.position.y = (viewport.dragging.diffy - mpos.y)
+	end
 
 	-- TODO: ??
 	-- if editor.selected_entity and editor.selected_entity:is(Trigger) then
