@@ -1,5 +1,5 @@
 local Sprite = require("engine.sprite")
--- local ChangeField = require("editor.command.commands.change_field")
+local ChangeField = require("editor.command.change_field")
 local editor = require("editor")
 local assets = require("engine.assets")
 local imgui = require("engine.imgui")
@@ -15,8 +15,7 @@ local inspector = {
 	viewer_height = 384,
 	viewer_image = nil,
 
-	vec_x = ffi.new("int[1]", 0),
-	vec_y = ffi.new("int[1]", 0),
+	temp_num = ffi.new("int[1]", 0),
 	check_bool = ffi.new("bool[1]", 0),
 
 	viewer_canvas = love.graphics.newCanvas(256, 384),
@@ -25,36 +24,15 @@ local inspector = {
 	display = require("editor.ui.inspector"),
 }
 
----@param type string | "entity" | "image" | "layer"
+---@param type string
+---| "image"
+---| "entity"
+---| "layer"
+---| "project"
 ---@param item any
 function inspector.inspect(type, item)
 	inspector.item = item
 	inspector.type = type
-end
-
----@param label string
----@param target Vec2
-function inspector.vec2(label, target)
-	inspector.vec_x[0] = target.x
-	inspector.vec_y[0] = target.y
-
-	imgui.Text(label .. ":")
-
-	imgui.PushItemWidth(80)
-
-	imgui.DragInt("X##" .. label .. "_VEC_X", inspector.vec_x)
-	if imgui.IsItemActive() then
-		-- editor.history:add(ChangeField:new(target, "x", inspector.vec_x[0]), true)
-	end
-
-	imgui.DragInt("Y##" .. label .. "_VEC_Y", inspector.vec_y)
-	if imgui.IsItemActive() then
-		-- editor.history:add(ChangeField:new(target, "y", inspector.vec_y[0]), true)
-	end
-
-	imgui.PopItemWidth()
-
-	editor.scenes.current.saved = false
 end
 
 function inspector.bool(label, target)
@@ -68,6 +46,33 @@ function inspector.bool(label, target)
 	end
 
 	return target
+end
+
+---@param target table
+---@param field string
+---@param label string
+function inspector.property_int(target, field, label)
+	inspector.temp_num[0] = target[field]
+	local id = string.format("%p", target) .. "_" .. field
+
+	local total_width = imgui.GetContentRegionAvail().x
+	local height = imgui.GetTextLineHeightWithSpacing()
+	local pos = imgui.ImVec2_Float(total_width * 0.5, height)
+
+	imgui.SetNextItemWidth(total_width * 0.5)
+	imgui.BeginChild_Str(id .. "_text_child", pos, false)
+	imgui.Text(label)
+	imgui.EndChild()
+
+	imgui.SameLine()
+
+	local available_width = imgui.GetContentRegionAvail().x
+	imgui.SetNextItemWidth(available_width)
+
+	imgui.DragInt("##" .. id .. "_input", inspector.temp_num)
+	if imgui.IsItemActive() then
+		editor.history:add(ChangeField:new(target, field, inspector.temp_num[0]), false)
+	end
 end
 
 function inspector.resource(target, field)
@@ -159,8 +164,8 @@ function inspector.entity()
 		inspector:sprite()
 	end
 
-	inspector.vec2("Position", entity.position)
-	inspector.vec2("Scale", entity.scale)
+	inspector.property_int(entity.position, "x", "X")
+	inspector.property_int(entity.position, "y", "Y")
 end
 
 function inspector.layer()
@@ -171,6 +176,18 @@ function inspector.layer()
 	imgui.Separator()
 
 	layer.active = inspector.bool("Active", layer.active)
+end
+
+function inspector.project()
+	local project = inspector.item
+	---@cast project engine.Project
+
+	imgui.Text(project.name)
+	imgui.Separator()
+
+	inspector.property_int(project, "window_width", "Window Width")
+	inspector.property_int(project, "window_height", "Window Height")
+	imgui.Separator()
 end
 
 return inspector

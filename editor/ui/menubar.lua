@@ -8,23 +8,30 @@ local imgui = require("engine.imgui")
 
 ---@param menubar editor.menubar
 local function scene_menu(menubar)
-	if imgui.MenuItem_Bool(string.format("%s New", font_icon.ICON_PLUS), nil, nil) then
+	local new_str = string.format("%s New", font_icon.ICON_PLUS)
+	if imgui.MenuItem_Bool(new_str, nil, nil) then
 		menubar.scene.popup = true
 	end
-	if imgui.MenuItem_Bool(string.format("%s Save", font_icon.ICON_FLOPPY_O), nil, nil) then
+
+	local save_str = string.format("%s Save", font_icon.ICON_FLOPPY_O)
+	if imgui.MenuItem_Bool(save_str, nil, nil) then
 		editor:save_scene()
 	end
-	if imgui.MenuItem_Bool(string.format("%s Save All", font_icon.ICON_FLOPPY_O), nil, nil) then
+
+	local save_all_str = string.format("%s Save All", font_icon.ICON_FLOPPY_O)
+	if imgui.MenuItem_Bool(save_all_str, nil, nil) then
 		editor:save_all_scenes()
 	end
 
 	imgui.Separator()
 
-	if imgui.MenuItem_Bool(string.format("%s Undo", font_icon.ICON_UNDO), nil, nil) then
+	local undo_str = string.format("%s Undo", font_icon.ICON_UNDO)
+	if imgui.MenuItem_Bool(undo_str, nil, nil) then
 		editor.history:undo()
 	end
 
-	if imgui.MenuItem_Bool(string.format("%s Redo", font_icon.ICON_REPEAT), nil, nil) then
+	local redo_str = string.format("%s Redo", font_icon.ICON_REPEAT)
+	if imgui.MenuItem_Bool(redo_str, nil, nil) then
 		editor.history:redo()
 	end
 end
@@ -35,7 +42,11 @@ local function project_menu()
 	end
 
 	imgui.MenuItem_Bool(font_icon.ICON_COG .. " Settings", nil, nil)
-	imgui.MenuItem_Bool(font_icon.ICON_PLAY .. " Run", nil, nil)
+	if imgui.MenuItem_Bool(font_icon.ICON_PLAY .. " Run", nil, nil) then
+		if editor.loaded_project then
+			print("Run the game?")
+		end
+	end
 	imgui.MenuItem_Bool(font_icon.ICON_FLOPPY_O .. " Save", nil, nil)
 end
 

@@ -4,7 +4,7 @@ local Command = require("editor.command.command")
 local ChangeField = Command:extend()
 
 function ChangeField:init(target, field, new)
-	ChangeField.super.new(self)
+	ChangeField.super.init(self)
 
 	self.target = target
 	self.field = field

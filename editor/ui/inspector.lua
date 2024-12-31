@@ -11,6 +11,8 @@ local function display(inspector)
 			inspector.entity()
 		elseif inspector.type == "layer" then
 			inspector.layer()
+		elseif inspector.type == "project" then
+			inspector.project()
 		end
 	end
 

@@ -12,7 +12,6 @@ local viewport = {
 	canvas = nil, ---@type engine.Canvas
 	camera = nil, ---@type engine.Camera
 	image = nil,
-	scale = 1,
 	grid_size = 32,
 	is_mouse_over = false,
 	dragging = { acitve = false, diffx = 0, diffy = 0 },
@@ -46,12 +45,11 @@ function viewport.center()
 	local x = (width - (gw * scale))
 	local y = (height - (gh * scale))
 	viewport.camera.position.x = (x / 2)
-	viewport.camera.position.y = (y / 2)
+	viewport.camera.position.y = -(y / 2)
 end
 
 function viewport.update()
 	local cam = viewport.camera
-	local cpos = cam:get_position()
 	local mpos = input.get_mouse_position()
 
 	if viewport.is_mouse_over then
@@ -73,7 +71,7 @@ function viewport.update()
 	if input.button_released(input.mouse_button.MIDDLE) then
 		viewport.dragging.acitve = false
 	end
-	--
+
 	if viewport.dragging.acitve then
 		cam.position.x = (viewport.dragging.diffx - mpos.x)
 		cam.position.y = (viewport.dragging.diffy - mpos.y)

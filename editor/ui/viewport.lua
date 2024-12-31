@@ -1,5 +1,4 @@
 local editor = require("editor")
-local input = require("engine.input")
 local font_icon = require("editor.font_icons")
 local imgui = require("engine.imgui")
 
