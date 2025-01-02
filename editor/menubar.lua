@@ -15,6 +15,7 @@ local menubar = {
 	display = require("editor.ui.menubar"),
 }
 
+-- FIX: This needs to not be done like this.
 function menubar.new_scene()
 	local scene = Scene:new(menubar.scene.name)
 	local path = "scenes/" .. menubar.scene.name .. ".scd"

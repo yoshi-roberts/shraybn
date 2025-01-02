@@ -1,7 +1,7 @@
 require("libs.batteries.tablex")
 local binser = require("libs.binser")
 
-Vec2 = require("libs.vector")
+Vec2 = require("libs.batteries.vec2")
 binser.register(Vec2, "Vec2")
 
 local timer = require("engine.time")

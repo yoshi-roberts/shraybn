@@ -3,7 +3,7 @@ local nativefs = require("libs.nativefs")
 local binser = require("libs.binser")
 local log = require("libs.log")
 
----@class engine.Project : Class
+---@class engine.Project: Class
 local Project = Class:extend()
 
 ---@param name string
