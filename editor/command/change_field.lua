@@ -1,4 +1,5 @@
 local Command = require("editor.command.command")
+-- FIX: Merge and undo is not working properly.
 
 ---@class editor.command.ChangeField: editor.Command
 local ChangeField = Command:extend()

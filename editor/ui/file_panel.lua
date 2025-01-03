@@ -1,6 +1,7 @@
 local font_icon = require "editor.font_icons"
 local imgui = require "engine.imgui"
 local editor = require "editor"
+local signal = require("engine.signal")
 
 local file_icons = {
 	["image"] = font_icon.ICON_FILE_IMAGE_O,
@@ -29,9 +30,9 @@ local function display_tree(file_panel, branch)
 		end
 
 		if imgui.BeginDragDropSource(imgui.ImGuiDragDropFlags_None) then
-			imgui.SetDragDropPayload("DRAG_DROP_FILE", item, #item)
-			editor.drag_payload = item
-			imgui.Text(item.name)
+			imgui.SetDragDropPayload("DRAG_DROP_FILE", nil, 0)
+			signal.emit("editor_file_drag", item)
+			imgui.Text(font_icon.ICON_FILE .. " " .. item.name)
 			imgui.EndDragDropSource()
 		end
 	end

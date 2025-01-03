@@ -2,14 +2,16 @@ local Sprite = require("engine.sprite")
 local ChangeField = require("editor.command.change_field")
 local editor = require("editor")
 local assets = require("engine.assets")
+local signal = require("engine.signal")
 local imgui = require("engine.imgui")
 local ffi = require("ffi")
 
 ---@class editor.inspector
 local inspector = {
 
-	-- item = nil, -- The "item" we are inspecting.
-	type = nil,
+	item = nil,
+	type = nil, ---@type string
+	payload = nil, ---@type table
 
 	viewer_width = 256,
 	viewer_height = 384,
@@ -18,11 +20,16 @@ local inspector = {
 	temp_num = ffi.new("int[1]", 0),
 	check_bool = ffi.new("bool[1]", 0),
 
-	viewer_canvas = love.graphics.newCanvas(256, 384),
 	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
 
 	display = require("editor.ui.inspector"),
 }
+
+signal.register("editor_file_drag", function(payload)
+	if not inspector.payload then
+		inspector.payload = payload
+	end
+end)
 
 ---@param type string
 ---| "image"
@@ -75,6 +82,8 @@ function inspector.property_int(target, field, label)
 	end
 end
 
+---@param target table
+---@param field string
 function inspector.resource(target, field)
 	local text = target[field] or "No Resource"
 	imgui.Text(text)
@@ -82,11 +91,10 @@ function inspector.resource(target, field)
 	if imgui.BeginDragDropTarget() then
 		imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
 
-		if imgui.IsMouseReleased_Nil(0) and editor.drag_payload then
-			-- editor.history:add(ChangeField:new(target, field, editor.drag_payload))
+		if imgui.IsMouseReleased_Nil(0) and inspector.payload then
+			editor.history:add(ChangeField:new(target, field, inspector.payload.path))
 
-			editor.drag_payload = nil
-			editor.scenes.current.saved = false
+			inspector.payload = nil
 		end
 
 		imgui.EndDragDropTarget()
@@ -96,55 +104,54 @@ end
 function inspector.image(image)
 	local win_width = imgui.GetContentRegionAvail().x
 
-	-- TODO: Find a better way to do this.
-	-- Resize the canvas if needed.
-	if inspector.viewer_width ~= win_width then
-		inspector.viewer_width = win_width
-		if inspector.viewer_width > 0 and inspector.viewer_height > 0 then
-			inspector.viewer_canvas =
-				love.graphics.newCanvas(inspector.viewer_width, inspector.viewer_height)
-		end
-	end
-
-	love.graphics.setCanvas(inspector.viewer_canvas)
+	local view_width = win_width
+	local view_height = 384
 
 	local tile_size = 32
-	local x_tiles = math.ceil(inspector.viewer_width / tile_size)
-	local y_tiles = math.ceil(inspector.viewer_height / tile_size)
+	local xtiles = math.floor(view_width / tile_size)
+	local ytiles = math.floor(view_height / tile_size)
 
-	-- Draw grid to canvas.
-	for x = 1, x_tiles, 1 do
-		for y = 1, y_tiles, 1 do
-			local pos_x = (x - 1) * tile_size
-			local pos_y = (y - 1) * tile_size
+	local child_size = imgui.ImVec2_Float(view_width, view_height)
+	local flags = imgui.love.WindowFlags("NoScrollbar", "NoScrollWithMouse")
 
-			love.graphics.draw(inspector.bk_grid, pos_x, pos_y)
+	imgui.BeginChild_Str("inspector_image_view", child_size, false, flags)
+
+	local startx = imgui.GetCursorPosX()
+	local starty = imgui.GetCursorPosY()
+
+	local tex_size = imgui.ImVec2_Float(tile_size, tile_size)
+
+	-- Draw the grid.
+	for x = 0, xtiles do
+		for y = 0, ytiles do
+			local xp = startx + (x * tile_size)
+			local yp = starty + (y * tile_size)
+			imgui.SetCursorPos(imgui.ImVec2_Float(xp, yp))
+			imgui.Image(inspector.bk_grid, tex_size)
 		end
 	end
 
-	if image then
-		local res = image.resource
+	-- Calculate image scaling and position.
+	local img_width = image.resource:getWidth()
+	local img_height = image.resource:getHeight()
+	local sx = view_width / img_width
+	local sy = view_height / img_height
+	local scale = math.min(sx, sy)
+	local image_size = imgui.ImVec2_Float(img_width * scale, img_height * scale)
 
-		local scale_x = inspector.viewer_canvas:getWidth() / res:getWidth()
-		local scale_y = inspector.viewer_canvas:getHeight() / res:getHeight()
-		local scale = math.min(scale_x, scale_y)
+	local xpos = (startx + (view_width / 2)) - ((img_width * scale) / 2)
+	local ypos = (starty + (view_height / 2)) - ((img_height * scale) / 2)
 
-		local width = res:getWidth() * scale
-		local height = res:getHeight() * scale
-		local x = (inspector.viewer_canvas:getWidth() / 2) - (width / 2)
-		local y = (inspector.viewer_canvas:getHeight() / 2) - (height / 2)
+	-- Draw the image.
+	imgui.SetCursorPos(imgui.ImVec2_Float(xpos, ypos))
+	imgui.Image(image.resource, image_size)
 
-		love.graphics.draw(res, x, y, 0, scale)
-	end
-
-	love.graphics.setCanvas()
-
-	local size = imgui.ImVec2_Float(inspector.viewer_canvas:getDimensions())
-	imgui.Image(inspector.viewer_canvas, size)
+	imgui.EndChild()
 end
 
 function inspector.sprite()
 	local sprite = inspector.item
+	---@cast sprite engine.Sprite
 
 	if sprite.asset_path then
 		inspector.image(assets.get(sprite.asset_path))
