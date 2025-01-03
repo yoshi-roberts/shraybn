@@ -7,6 +7,7 @@ local Command = Class:extend()
 ---@param mergeable boolean?
 function Command:init(mergeable)
 	self.mergeable = mergeable or false
+	self.timestamp = love.timer.getTime()
 end
 
 function Command:execute() end

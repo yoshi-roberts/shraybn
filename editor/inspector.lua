@@ -76,9 +76,8 @@ function inspector.property_int(target, field, label)
 	local available_width = imgui.GetContentRegionAvail().x
 	imgui.SetNextItemWidth(available_width)
 
-	imgui.DragInt("##" .. id .. "_input", inspector.temp_num)
-	if imgui.IsItemActive() then
-		editor.history:add(ChangeField:new(target, field, inspector.temp_num[0]), false)
+	if imgui.DragInt("##" .. id .. "_input", inspector.temp_num) then
+		editor.history:add(ChangeField:new(target, field, inspector.temp_num[0], true))
 	end
 end
 

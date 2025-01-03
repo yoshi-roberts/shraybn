@@ -31,8 +31,7 @@ function menubar.new_scene()
 
 	-- Set working directory back to projects/
 	nativefs.setWorkingDirectory("..")
-
-	file_panel.create_tree(editor.loaded_project.name, file_panel.tree)
+	file_panel.reload_needed = true
 end
 
 return menubar

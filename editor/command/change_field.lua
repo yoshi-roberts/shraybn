@@ -1,11 +1,11 @@
 local Command = require("editor.command.command")
--- FIX: Merge and undo is not working properly.
 
 ---@class editor.command.ChangeField: editor.Command
 local ChangeField = Command:extend()
 
-function ChangeField:init(target, field, new)
-	ChangeField.super.init(self)
+---@param mergeable boolean?
+function ChangeField:init(target, field, new, mergeable)
+	ChangeField.super.init(self, mergeable)
 
 	self.target = target
 	self.field = field
@@ -32,7 +32,7 @@ function ChangeField:merge(cmd)
 		return false
 	end
 
-	if string.format("%p", cmd.target) == string.format("%p", self.target) then
+	if cmd.target == self.target then
 		cmd.new = self.new
 		return true
 	end
@@ -40,6 +40,7 @@ function ChangeField:merge(cmd)
 	return false
 end
 
+---@private
 function ChangeField:__tostring()
 	return "ChangeField"
 end
