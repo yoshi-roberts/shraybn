@@ -1,7 +1,3 @@
-require "engine.util"
-
--- TODO: Add a key_any_pressed function.
-
 ---@class engine.input
 local input = {
 
@@ -25,6 +21,7 @@ input.mouse_button = {
 	LEFT = 1,
 	RIGHT = 2,
 	MIDDLE = 3,
+	ANY = 4,
 }
 
 function input.update()
@@ -50,6 +47,7 @@ end
 function input.process_key(data, pressed)
 	if input.keyboard_current[data.key] ~= pressed then
 		input.keyboard_current[data.key] = pressed
+		input.keyboard_current["any"] = pressed
 
 		return true
 	end
@@ -63,6 +61,7 @@ end
 function input.process_button(data, pressed)
 	if input.mouse_current.buttons[data.button] ~= pressed then
 		input.mouse_current.buttons[data.button] = pressed
+		input.mouse_current.buttons[input.mouse_button.ANY] = pressed
 
 		return true
 	end
