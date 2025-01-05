@@ -7,26 +7,18 @@ local inspector = require("editor.inspector")
 local project_manager = require("editor.project_manager")
 
 local imgui = require("engine.imgui")
-local theme = require("editor.ui.theme")
 
 local function ui_attach()
-	imgui.love.Init()
-
-	local io = imgui.GetIO()
-	io.ConfigFlags = bit.bor(io.ConfigFlags, imgui.ImGuiConfigFlags_DockingEnable)
-
-	theme.apply()
-
+	imgui.engine.init(true)
 	viewport.init()
 end
 
 local function ui_detach()
-	imgui.love.Shutdown()
+	imgui.engine.shutdown()
 end
 
 local function ui_update(dt)
-	imgui.love.Update(dt)
-	imgui.NewFrame()
+	imgui.engine.update(dt)
 
 	file_panel.update()
 	viewport.update()
@@ -43,8 +35,7 @@ local function ui_draw()
 	inspector.display(inspector)
 	project_manager.display(project_manager)
 
-	imgui.Render()
-	imgui.love.RenderDrawLists()
+	imgui.engine.draw()
 end
 
 return {

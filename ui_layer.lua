@@ -5,16 +5,15 @@ local imgui = require("engine.imgui")
 local window_flags = imgui.love.WindowFlags("NoMove", "NoResize")
 
 local function ui_attach()
-	imgui.love.Init()
+	imgui.engine.init()
 end
 
 local function ui_detach()
-	imgui.love.Shutdown()
+	imgui.engine.shutdown()
 end
 
 local function ui_update(dt)
-	imgui.love.Update(dt)
-	imgui.NewFrame()
+	imgui.engine.update(dt)
 end
 
 local function ui_draw()
@@ -31,8 +30,7 @@ local function ui_draw()
 
 	imgui.End()
 
-	imgui.Render()
-	imgui.love.RenderDrawLists()
+	imgui.engine.draw()
 end
 
 return {

@@ -20,7 +20,7 @@ engine.canvases = {} ---@type engine.Canvas[]
 engine.scenes = {} ---@type engine.Scene[]
 engine.active_scene = nil ---@type engine.Scene
 
----@type event_callback
+---@type event.callback
 local function update_canvases(code, data)
 	for _, canvas in pairs(engine.canvases) do
 		canvas:update(data.width, data.height)
@@ -36,12 +36,13 @@ function engine._init()
 	if engine.init then
 		engine.init()
 	end
-end
 
-log.info("Engine initialized.")
+	log.info("Engine initialized.")
+end
 
 function engine.shutdown()
 	engine.active_scene:shutdown()
+	log.info("Engine shutdown.")
 end
 
 function engine._update(dt)

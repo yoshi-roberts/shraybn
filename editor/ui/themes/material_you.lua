@@ -1,12 +1,13 @@
-local imgui = require("engine.imgui")
-
 -- Dark blue: 0.18, 0.471, 0.91
 -- Light blue: 0.29, 0.62, 0.91
 
-local primary = imgui.ImVec4_Float(0.29, 0.267, 0.345, 1.0)
-local primary_hover = imgui.ImVec4_Float(0.239, 0.341, 0.439, 1.0)
+return function(imgui)
+	local style = imgui.GetStyle()
+	local colors = style.Colors
 
-return function(style, colors)
+	local primary = imgui.ImVec4_Float(0.29, 0.267, 0.345, 1.0)
+	local primary_hover = imgui.ImVec4_Float(0.239, 0.341, 0.439, 1.0)
+
 	colors[imgui.ImGuiCol_Text] = imgui.ImVec4_Float(0.93, 0.93, 0.94, 1.00)
 	colors[imgui.ImGuiCol_TextDisabled] = imgui.ImVec4_Float(0.50, 0.50, 0.50, 1.00)
 	colors[imgui.ImGuiCol_WindowBg] = imgui.ImVec4_Float(0.12, 0.12, 0.12, 1.00)
