@@ -11,12 +11,11 @@ local editor = {}
 editor.loaded_project = nil ---@type engine.Project
 editor.selected_layer = nil ---@type engine.Layer
 editor.selected_entity = nil ---@type engine.Entity
-editor.drag_payload = nil
 
 editor.history = CommandHistory:new()
 
--- TODO: SceneData should be stored in the project.
--- That will be cleaner.
+-- NOTE: Maybe SceneData should be stored in the project.
+-- That could be cleaner.
 -- We can also save the sate of opened scenes as part of the proj file.
 editor.scenes = {
 	open = {}, ---@type editor.SceneData[]
@@ -35,8 +34,7 @@ function editor.save_all_scenes()
 	end
 end
 
----@diagnostic disable-next-line: duplicate-set-field
-function love.load()
+function engine.init()
 	window.init()
 
 	local editor_scene = engine.add_scene(Scene:new("editor_scene"))
@@ -50,21 +48,6 @@ function love.load()
 		nativefs.createDirectory("projects")
 	end
 	nativefs.setWorkingDirectory("projects")
-end
-
----@diagnostic disable-next-line: duplicate-set-field
-function love.update(dt)
-	engine.update(dt)
-end
-
----@diagnostic disable-next-line: duplicate-set-field
-function love.draw()
-	engine.draw()
-end
-
----@diagnostic disable-next-line: duplicate-set-field
-function love.quit()
-	engine.shutdown()
 end
 
 return editor

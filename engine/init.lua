@@ -11,6 +11,9 @@ local input = require("engine.input")
 local log = require("libs.log")
 
 ---@class engine
+---@field init function
+---@field update function
+---@field draw function
 local engine = {}
 
 engine.canvases = {} ---@type engine.Canvas[]
@@ -26,9 +29,13 @@ local function update_canvases(code, data)
 	return false
 end
 
-function engine.init()
+function engine._init()
 	timer.framerate = 60
 	event.register(event.code.WINDOW_RESIZE, update_canvases)
+
+	if engine.init then
+		engine.init()
+	end
 end
 
 log.info("Engine initialized.")
@@ -37,14 +44,23 @@ function engine.shutdown()
 	engine.active_scene:shutdown()
 end
 
-function engine.update(dt)
+function engine._update(dt)
 	assets.update()
 	engine.active_scene:update(dt)
+
+	if engine.update then
+		engine.update()
+	end
+
 	input.update()
 end
 
-function engine.draw()
+function engine._draw()
 	engine.active_scene:draw()
+
+	if engine.draw then
+		engine.draw()
+	end
 end
 
 ---@param canvas engine.Canvas
@@ -63,6 +79,22 @@ end
 
 function engine.set_scene(name)
 	engine.active_scene = engine.scenes[name]
+end
+
+function love.load()
+	engine._init()
+end
+
+function love.update(dt)
+	engine._update(dt)
+end
+
+function love.draw()
+	engine._draw()
+end
+
+function love.quit()
+	engine.shutdown()
 end
 
 return engine

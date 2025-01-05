@@ -5,9 +5,7 @@ local window = require("engine.window")
 
 local theme = require("editor.ui.theme")
 
----@diagnostic disable-next-line: duplicate-set-field
-function love.load()
-	engine.init()
+function engine.init()
 	window.init(1280, 720)
 
 	local default_scene = engine.add_scene(Scene:new("default_scene"))
@@ -16,19 +14,4 @@ function love.load()
 	engine.set_scene("default_scene")
 
 	theme.apply()
-end
-
----@diagnostic disable-next-line: duplicate-set-field
-function love.update(dt)
-	engine.update(dt)
-end
-
----@diagnostic disable-next-line: duplicate-set-field
-function love.draw()
-	engine.draw()
-end
-
----@diagnostic disable-next-line: duplicate-set-field
-function love.quit()
-	engine.shutdown()
 end
