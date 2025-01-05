@@ -1,4 +1,3 @@
-local event = require("engine.event")
 local menubar = require("editor.menubar")
 local viewport = require("editor.viewport")
 local dockspace = require("editor.dockspace")
@@ -10,10 +9,6 @@ local project_manager = require("editor.project_manager")
 local imgui = require("engine.imgui")
 local theme = require("editor.ui.theme")
 
-local function ui_event(code, data)
-	return ImguiEvent(code, data)
-end
-
 local function ui_attach()
 	imgui.love.Init()
 
@@ -23,8 +18,6 @@ local function ui_attach()
 	theme.apply()
 
 	viewport.init()
-
-	event.register_category(event.category.INPUT, ui_event)
 end
 
 local function ui_detach()
@@ -50,7 +43,6 @@ local function ui_draw()
 	inspector.display(inspector)
 	project_manager.display(project_manager)
 
-	-- code to render imgui
 	imgui.Render()
 	imgui.love.RenderDrawLists()
 end
@@ -60,5 +52,4 @@ return {
 	detach = ui_detach,
 	update = ui_update,
 	draw = ui_draw,
-	event = ui_event,
 }

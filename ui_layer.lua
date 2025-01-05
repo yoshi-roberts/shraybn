@@ -1,16 +1,11 @@
-local event = require("engine.event")
-local input = require("engine.input")
 local window = require("engine.window")
+local input = require("engine.input")
 local imgui = require("engine.imgui")
 
----@type event_callback
-local function ui_event(code, data)
-	return ImguiEvent(code, data)
-end
+local window_flags = imgui.love.WindowFlags("NoMove", "NoResize")
 
 local function ui_attach()
 	imgui.love.Init()
-	event.register_category(event.category.INPUT, ui_event)
 end
 
 local function ui_detach()
@@ -23,12 +18,10 @@ local function ui_update(dt)
 end
 
 local function ui_draw()
-	local window_flags = imgui.love.WindowFlags("NoMove", "NoResize")
-
 	imgui.SetNextWindowPos(imgui.ImVec2_Float(12, 12))
 	imgui.SetNextWindowSize(imgui.ImVec2_Float(128 * 2, 128))
 
-	imgui.Begin("Debug Info", nil, nil)
+	imgui.Begin("Debug Info", nil, window_flags)
 
 	imgui.Text("FPS: " .. love.timer.getFPS())
 	imgui.Text("Window Size: " .. window.width .. "x" .. window.height)
@@ -47,5 +40,4 @@ return {
 	detach = ui_detach,
 	update = ui_update,
 	draw = ui_draw,
-	event = ui_event,
 }

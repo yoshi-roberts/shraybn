@@ -7,7 +7,8 @@ package.cpath = string.format("%s;%s/?.%s", package.cpath, lib_path, extension)
 local event = require("engine.event")
 local imgui = require("libs.cimgui")
 
-function ImguiEvent(code, data)
+---@type event.callback
+local function imgui_event_callback(code, data)
 	local handled = true
 
 	if code == event.code.KEY_PRESS then
@@ -35,5 +36,7 @@ function ImguiEvent(code, data)
 
 	return handled
 end
+
+event.register_category(event.category.INPUT, imgui_event_callback)
 
 return imgui

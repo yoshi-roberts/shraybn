@@ -38,10 +38,10 @@ event.category = {
 
 -- Return true if the event has been handled.
 -- Return false to pass the event on to other callbacks.
----@alias event_callback fun(code: event.code, data: table): boolean
+---@alias event.callback fun(code: event.code, data: table): boolean
 
 ---@param code event.code: The event code.
----@param callback event_callback: The callback to register.
+---@param callback event.callback: The callback to register.
 function event.register(code, callback)
 	if not event.registered[code] then
 		event.registered[code] = {}
@@ -59,7 +59,7 @@ function event.fire(code, data)
 	end
 
 	for _, callback in pairs(event.registered[code]) do
-		---@cast callback event_callback
+		---@cast callback event.callback
 		if callback(code, data) then
 			-- Event handled.
 			return true
@@ -71,7 +71,7 @@ function event.fire(code, data)
 end
 
 ---@param category event.category: The category code.
----@param callback event_callback: The callback to register.
+---@param callback event.callback: The callback to register.
 function event.register_category(category, callback)
 	for _, code in pairs(event.code) do
 		if code >= category[1] and code <= category[2] then
