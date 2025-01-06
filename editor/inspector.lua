@@ -17,7 +17,8 @@ local inspector = {
 	viewer_height = 384,
 	viewer_image = nil,
 
-	temp_num = ffi.new("int[1]", 0),
+	temp_int = ffi.new("int[1]", 0),
+	temp_float = ffi.new("float[1]", 0),
 	check_bool = ffi.new("bool[1]", 0),
 
 	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
@@ -58,8 +59,8 @@ end
 ---@param target table
 ---@param field string
 ---@param label string
-function inspector.property_int(target, field, label)
-	inspector.temp_num[0] = target[field]
+---@param is_int boolean?
+function inspector.property_number(target, field, label, is_int)
 	local id = string.format("%p", target) .. "_" .. field
 
 	local total_width = imgui.GetContentRegionAvail().x
@@ -76,8 +77,18 @@ function inspector.property_int(target, field, label)
 	local available_width = imgui.GetContentRegionAvail().x
 	imgui.SetNextItemWidth(available_width)
 
-	if imgui.DragInt("##" .. id .. "_input", inspector.temp_num) then
-		editor.history:add(ChangeField:new(target, field, inspector.temp_num[0], true))
+	if is_int then
+		inspector.temp_int[0] = target[field]
+		if imgui.DragInt("##" .. id .. "_input", inspector.temp_int) then
+			editor.history:add(ChangeField:new(target, field, inspector.temp_int[0], true))
+		end
+
+		return
+	end
+
+	inspector.temp_float[0] = target[field]
+	if imgui.DragFloat("##" .. id .. "_input", inspector.temp_float, 0.01) then
+		editor.history:add(ChangeField:new(target, field, inspector.temp_float[0], true))
 	end
 end
 
@@ -157,6 +168,7 @@ function inspector.sprite()
 	end
 
 	inspector.resource(sprite, "asset_path")
+	imgui.Separator()
 end
 
 function inspector.entity()
@@ -170,8 +182,17 @@ function inspector.entity()
 		inspector:sprite()
 	end
 
-	inspector.property_int(entity.position, "x", "X")
-	inspector.property_int(entity.position, "y", "Y")
+	inspector.property_number(entity.position, "x", "X", true)
+	inspector.property_number(entity.position, "y", "Y", true)
+
+	imgui.Separator()
+
+	inspector.property_number(entity.scale, "x", "Scale X")
+	inspector.property_number(entity.scale, "y", "Scale Y")
+
+	imgui.Separator()
+
+	inspector.property_number(entity, "rotation", "Rotation")
 end
 
 function inspector.layer()
@@ -191,8 +212,8 @@ function inspector.project()
 	imgui.Text(project.name)
 	imgui.Separator()
 
-	inspector.property_int(project, "window_width", "Window Width")
-	inspector.property_int(project, "window_height", "Window Height")
+	inspector.property_number(project, "window_width", "Window Width")
+	inspector.property_number(project, "window_height", "Window Height")
 	imgui.Separator()
 end
 
