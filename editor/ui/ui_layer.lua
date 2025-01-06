@@ -9,7 +9,7 @@ local project_manager = require("editor.project_manager")
 local imgui = require("engine.imgui")
 
 local function ui_attach()
-	imgui.engine.init(true)
+	imgui.engine.init(true, true)
 	viewport.init()
 end
 

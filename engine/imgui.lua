@@ -13,7 +13,8 @@ local ffi = require("ffi")
 imgui.engine = {}
 
 ---@param docking boolean?
-function imgui.engine.init(docking)
+---@param save_state boolean?
+function imgui.engine.init(docking, save_state)
 	imgui.love.Init()
 
 	local io = imgui.GetIO()
@@ -22,16 +23,22 @@ function imgui.engine.init(docking)
 		io.ConfigFlags = bit.bor(io.ConfigFlags, imgui.ImGuiConfigFlags_DockingEnable)
 	end
 
+	if not save_state then
+		io.IniFilename = nil
+	end
+
 	-- Apply font.
-	local font_size = 16
+	local fnt_size = 16
 	local config = imgui.ImFontConfig()
 
 	config.FontDataOwnedByAtlas = false
 
-	local content, size = love.filesystem.read("editor/resources/Roboto/Roboto-Regular.ttf")
-	local newfont =
-		io.Fonts:AddFontFromMemoryTTF(ffi.cast("void*", content), size, font_size, config)
-	io.FontDefault = newfont
+	local fnt_path = "editor/resources/Roboto/Roboto-Regular.ttf"
+	local content, size = love.filesystem.read(fnt_path)
+	local fnt_data = ffi.cast("void*", content)
+
+	local new_fnt = io.Fonts:AddFontFromMemoryTTF(fnt_data, size, fnt_size, config)
+	io.FontDefault = new_fnt
 
 	-- Apply icons.
 	local icon_size = 18
@@ -44,8 +51,8 @@ function imgui.engine.init(docking)
 	config.PixelSnapH = true
 	config.GlyphMinAdvanceX = icon_font_size
 
-	local icon_font_path = "editor/resources/" .. font_icon.FILE_NAME_FK
-	io.Fonts:AddFontFromFileTTF(icon_font_path, icon_font_size, config, icon_ranges)
+	local icon_fnt_path = "editor/resources/" .. font_icon.FILE_NAME_FK
+	io.Fonts:AddFontFromFileTTF(icon_fnt_path, icon_font_size, config, icon_ranges)
 
 	imgui.love.BuildFontAtlas()
 

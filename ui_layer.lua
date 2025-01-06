@@ -5,7 +5,7 @@ local imgui = require("engine.imgui")
 local window_flags = imgui.love.WindowFlags("NoMove", "NoResize")
 
 local function ui_attach()
-	imgui.engine.init()
+	imgui.engine.init(false, false)
 end
 
 local function ui_detach()
