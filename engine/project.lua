@@ -16,6 +16,7 @@ function Project:init(name, width, height)
 	self.game_width = 1280
 	self.game_height = 720
 	self.main_scene = nil
+	self.file_path = nil
 end
 
 ---@param path string
@@ -24,7 +25,10 @@ function Project.load(path)
 	local contents = nativefs.read(path .. "/" .. "proj.spd")
 	local deserialized = binser.deserialize(contents)
 
-	return deserialized[1]
+	local proj = deserialized[1]
+	proj.file_path = path
+
+	return proj
 end
 
 ---@param path string

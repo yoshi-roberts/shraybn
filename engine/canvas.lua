@@ -6,7 +6,7 @@ local Canvas = Class:extend()
 ---@param width integer
 ---@param height integer
 ---@param mode "fit"|"none"
----@param filter "nearest"|"linear"
+---@param filter "nearest"|"linear"?
 function Canvas:init(width, height, mode, filter)
 	self.width = width
 	self.height = height

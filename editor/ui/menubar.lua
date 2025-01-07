@@ -44,7 +44,8 @@ local function project_menu()
 	imgui.MenuItem_Bool(font_icon.ICON_COG .. " Settings", nil, nil)
 	if imgui.MenuItem_Bool(font_icon.ICON_PLAY .. " Run", nil, nil) then
 		if editor.loaded_project then
-			local cmd = "cd .. && ./love runtime.lua &"
+			local cmd = "cd .. && ./love runtime.lua projects/"
+			cmd = cmd .. editor.loaded_project.name .. " &"
 			local p = assert(io.popen(cmd))
 			p:close()
 		end
