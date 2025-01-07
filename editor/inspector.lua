@@ -94,15 +94,21 @@ end
 
 ---@param target table
 ---@param field string
-function inspector.resource(target, field)
+---@param label string?
+function inspector.resource(target, field, label)
 	local text = target[field] or "No Resource"
+
+	if label then
+		text = label .. ": " .. text
+	end
+
 	imgui.Text(text)
 
 	if imgui.BeginDragDropTarget() then
 		imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
 
 		if imgui.IsMouseReleased_Nil(0) and inspector.payload then
-			editor.history:add(ChangeField:new(target, field, inspector.payload.path))
+			editor.history:add(ChangeField:new(target, field, inspector.payload.asset_name))
 
 			inspector.payload = nil
 		end
@@ -202,7 +208,7 @@ function inspector.layer()
 	imgui.Text("Layer: " .. layer.name)
 	imgui.Separator()
 
-	layer.active = inspector.bool("Active", layer.active)
+	layer.is_active = inspector.bool("Active", layer.is_active)
 end
 
 function inspector.project()
@@ -212,9 +218,17 @@ function inspector.project()
 	imgui.Text(project.name)
 	imgui.Separator()
 
-	inspector.property_number(project, "window_width", "Window Width")
-	inspector.property_number(project, "window_height", "Window Height")
+	inspector.property_number(project, "window_width", "Window Width", true)
+	inspector.property_number(project, "window_height", "Window Height", true)
+
 	imgui.Separator()
+
+	inspector.property_number(project, "game_width", "Game Width", true)
+	inspector.property_number(project, "game_height", "Game Height", true)
+
+	imgui.Separator()
+
+	inspector.resource(project, "main_scene", "Main Scene")
 end
 
 return inspector

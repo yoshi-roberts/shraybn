@@ -27,7 +27,6 @@ local temp_index = {
 
 -- Lookup table for file types.
 ---@type {[string]: table<string, boolean>}
----
 local ext_types = {
 	["image"] = { ["png"] = true, ["jpg"] = true, ["jpeg"] = true },
 	["audio"] = { ["mp3"] = true, ["wav"] = true, ["ogg"] = true },
@@ -116,7 +115,8 @@ local function index_items(path, dest)
 			local valid, type = valid_type(ext)
 
 			if valid then
-				dest[type][item_path] = {
+				local item_key = path:match(".*/([^/]+)/*$") .. "/" .. name
+				dest[type][item_key] = {
 					type = type,
 				}
 			end
@@ -132,7 +132,8 @@ local function load_file_data()
 	for _, items in pairs(assets) do
 		for path, item in pairs(items) do
 			if not item.data then
-				item.data = file_read(path)
+				local full_path = root .. "/assets/" .. path
+				item.data = file_read(full_path)
 			end
 		end
 	end

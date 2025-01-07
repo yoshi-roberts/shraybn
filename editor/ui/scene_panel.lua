@@ -83,10 +83,10 @@ local function display()
 			table.insert(node_flags, "Selected")
 		end
 
-		local eye = layer.active and font_icon.ICON_EYE or font_icon.ICON_EYE_SLASH
+		local eye = layer.is_active and font_icon.ICON_EYE or font_icon.ICON_EYE_SLASH
 
 		if imgui.Button(eye .. "##" .. layer.name) then
-			editor.history:add(ToggleLayerActive:new(scene_data, layer))
+			-- editor.history:add(ToggleLayerActive:new(scene_data, layer))
 		end
 
 		imgui.SameLine()

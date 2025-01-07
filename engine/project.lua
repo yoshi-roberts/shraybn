@@ -15,6 +15,7 @@ function Project:init(name, width, height)
 	self.window_height = height or 720
 	self.game_width = 1280
 	self.game_height = 720
+	self.main_scene = nil
 end
 
 ---@param path string
@@ -26,13 +27,18 @@ function Project.load(path)
 	return deserialized[1]
 end
 
-function Project:save()
+---@param path string
+function Project:save(path)
 	local serialized = binser.serialize(self)
 
-	if not nativefs.write("proj.spd", serialized, #serialized) then
+	if not nativefs.write(path .. "/" .. "proj.spd", serialized, #serialized) then
 		log.error("Project data could not be written.")
 	end
 end
 
-binser.register(Project, "Project")
+---@private
+function Project:__tostring()
+	return "Project"
+end
+
 return Project

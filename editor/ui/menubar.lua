@@ -44,7 +44,9 @@ local function project_menu()
 	imgui.MenuItem_Bool(font_icon.ICON_COG .. " Settings", nil, nil)
 	if imgui.MenuItem_Bool(font_icon.ICON_PLAY .. " Run", nil, nil) then
 		if editor.loaded_project then
-			print("Run the game?")
+			local cmd = "cd .. && ./love runtime.lua &"
+			local p = assert(io.popen(cmd))
+			p:close()
 		end
 	end
 	imgui.MenuItem_Bool(font_icon.ICON_FLOPPY_O .. " Save", nil, nil)

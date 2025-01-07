@@ -85,7 +85,7 @@ end
 
 function viewport.draw_scene()
 	for _, entity in pairs(editor.scenes.current.scene.entities) do
-		if entity.layer.active then
+		if entity.layer.is_active then
 			entity:draw()
 
 			if entity == trigger.selected then
@@ -95,7 +95,7 @@ function viewport.draw_scene()
 	end
 
 	for _, layer in pairs(editor.scenes.current.scene.layers) do
-		if layer.active and layer.draw ~= nil then
+		if layer.is_active and layer.draw ~= nil then
 			layer.draw()
 		end
 	end

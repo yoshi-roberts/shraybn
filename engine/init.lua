@@ -20,6 +20,12 @@ engine.canvases = {} ---@type engine.Canvas[]
 engine.scenes = {} ---@type engine.Scene[]
 engine.active_scene = nil ---@type engine.Scene
 
+local function register_class(name)
+	local class = require("engine." .. name)
+	local type = name:sub(1, 1):upper() .. name:sub(2, #name)
+	binser.register(class, type)
+end
+
 ---@type event.callback
 local function update_canvases(code, data)
 	for _, canvas in pairs(engine.canvases) do
@@ -29,25 +35,41 @@ local function update_canvases(code, data)
 	return false
 end
 
-function engine._init()
+---@param args table
+function engine._init(args)
 	timer.framerate = 60
 	event.register(event.code.WINDOW_RESIZE, update_canvases)
 
+	register_class("camera")
+	register_class("canvas")
+	register_class("entity")
+	register_class("layer")
+	register_class("project")
+	register_class("scene")
+	register_class("sprite")
+	register_class("trigger")
+
 	if engine.init then
-		engine.init()
+		engine.init(args)
 	end
 
 	log.info("Engine initialized.")
 end
 
 function engine.shutdown()
-	engine.active_scene:shutdown()
+	if engine.active_scene then
+		engine.active_scene:shutdown()
+	end
+
 	log.info("Engine shutdown.")
 end
 
 function engine._update(dt)
 	assets.update()
-	engine.active_scene:update(dt)
+
+	if engine.active_scene then
+		engine.active_scene:update(dt)
+	end
 
 	if engine.update then
 		engine.update()
@@ -57,7 +79,9 @@ function engine._update(dt)
 end
 
 function engine._draw()
-	engine.active_scene:draw()
+	if engine.active_scene then
+		engine.active_scene:draw()
+	end
 
 	if engine.draw then
 		engine.draw()
@@ -82,8 +106,8 @@ function engine.set_scene(name)
 	engine.active_scene = engine.scenes[name]
 end
 
-function love.load()
-	engine._init()
+function love.load(args)
+	engine._init(args)
 end
 
 function love.update(dt)

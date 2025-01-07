@@ -1,5 +1,4 @@
 local Class = require("libs.class")
-local binser = require("libs.binser")
 
 ---@class engine.Canvas: Class
 local Canvas = Class:extend()
@@ -81,5 +80,4 @@ function Canvas:draw()
 	love.graphics.draw(self.target, self.position.x, self.position.y, 0, self.scale, self.scale)
 end
 
-binser.register(Canvas, "Canvas")
 return Canvas

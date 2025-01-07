@@ -62,8 +62,19 @@ function file_panel.create_tree(path, branch)
 			local ext = name:match("^.+%.([^.]+)$")
 			local file_type = filetypes[ext]
 
+			local asset_name = name
+			local parent_dir = path:match(".*/([^/]+)/*$")
+			if parent_dir then
+				asset_name = parent_dir .. "/" .. asset_name
+			end
+
 			if file_type then
-				local data = { name = name, path = item_path, type = file_type }
+				local data = {
+					name = name,
+					path = item_path,
+					type = file_type,
+					asset_name = asset_name,
+				}
 				table.insert(branch.files, data)
 			end
 		end

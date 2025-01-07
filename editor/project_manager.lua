@@ -39,23 +39,23 @@ end)
 ---@return boolean
 function project_manager.create(name)
 	local proj_exists = nativefs.getInfo(name)
+
 	if proj_exists then
 		print("Exists!")
 		project_manager.warning = "Project '" .. name .. "' already exists."
 		return false
 	end
 
+	print(nativefs.getWorkingDirectory())
 	nativefs.createDirectory(name)
-	nativefs.setWorkingDirectory(name)
 
-	nativefs.createDirectory("assets")
-	nativefs.createDirectory("scenes")
+	nativefs.createDirectory(name .. "/assets")
+	nativefs.createDirectory(name .. "/scenes")
 
-	local proj = Project:new(name)
-	proj:save()
+	local proj = Project:new(name) ---@type engine.Project
+	proj:save(name)
 
 	-- Update project list.
-	nativefs.setWorkingDirectory("..")
 	project_manager.projects = nativefs.getDirectoryItems("./")
 
 	return true
@@ -67,6 +67,7 @@ function project_manager.load(name)
 	local proj = Project.load(name)
 	editor.loaded_project = proj
 
+	print(proj.name)
 	assets.init(proj.name, true)
 	assets.load()
 

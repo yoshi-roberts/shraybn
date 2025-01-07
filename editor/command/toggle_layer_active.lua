@@ -12,12 +12,12 @@ function ToggleLayerActive:init(scene_data, layer)
 end
 
 function ToggleLayerActive:execute()
-	self.layer.active = not self.layer.active
+	self.layer.is_active = not self.layer.is_active
 	self.scene_data.saved = false
 end
 
 function ToggleLayerActive:undo()
-	self.layer.active = not self.layer.active
+	self.layer.is_active = not self.layer.is_active
 	self.scene_data.saved = self.was_saved
 end
 

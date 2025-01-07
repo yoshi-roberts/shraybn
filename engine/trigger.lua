@@ -1,6 +1,5 @@
 local Entity = require("engine.entity")
 local input = require("engine.input")
-local binser = require("libs.binser")
 
 ---@class engine.Trigger: engine.Entity
 local Trigger = Entity:extend()
@@ -59,5 +58,4 @@ function Trigger:__tostring()
 	return "Trigger"
 end
 
-binser.register(Trigger, "Trigger")
 return Trigger

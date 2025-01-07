@@ -1,5 +1,4 @@
 local Class = require("libs.class")
-local binser = require("libs.binser")
 
 ---@class engine.Layer: Class
 ---@field name string
@@ -9,7 +8,7 @@ local Layer = Class:extend()
 ---@param depth integer?
 function Layer:init(callbacks, depth)
 	self.depth = depth or 0
-	self.active = true
+	self.is_active = true
 
 	if not callbacks then
 		return
@@ -31,5 +30,4 @@ function Layer:__tostring()
 	return "Layer"
 end
 
-binser.register(Layer, "Layer")
 return Layer

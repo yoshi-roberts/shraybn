@@ -15,7 +15,7 @@ end
 
 function Scene:shutdown()
 	for _, layer in pairs(self.layers) do
-		if layer.active and layer.detach ~= nil then
+		if layer.is_active and layer.detach ~= nil then
 			layer.detach()
 		end
 	end
@@ -23,7 +23,7 @@ end
 
 function Scene:update(dt)
 	for _, layer in pairs(self.layers) do
-		if layer.active and layer.update ~= nil then
+		if layer.is_active and layer.update ~= nil then
 			layer.update(dt)
 		end
 	end
@@ -31,13 +31,13 @@ end
 
 function Scene:draw()
 	for _, entity in pairs(self.entities) do
-		if entity.layer.active then
-			entity:draw()
-		end
+		-- if entity.layer.active then
+		entity:draw()
+		-- end
 	end
 
 	for _, layer in pairs(self.layers) do
-		if layer.active and layer.draw ~= nil then
+		if layer.is_active and layer.draw ~= nil then
 			layer.draw()
 		end
 	end
@@ -119,5 +119,9 @@ function Scene:get_layer_entities(index)
 	return entities
 end
 
-binser.register(Scene, "Scene")
+---@private
+function Scene:__tostring()
+	return "Scene"
+end
+
 return Scene

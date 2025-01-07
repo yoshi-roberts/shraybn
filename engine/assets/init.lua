@@ -38,6 +38,7 @@ end
 
 function assets.load()
 	assets.processing = true
+	print(assets.path)
 	assets.thread:start(assets.path, assets.lazy)
 end
 

@@ -1,6 +1,5 @@
 local Entity = require("engine.entity")
 local assets = require("engine.assets")
-local binser = require("libs.binser")
 
 ---@class engine.Sprite: engine.Entity
 local Sprite = Entity:extend()
@@ -43,5 +42,4 @@ function Sprite:__tostring()
 	return "Sprite"
 end
 
-binser.register(Sprite, "Sprite")
 return Sprite
