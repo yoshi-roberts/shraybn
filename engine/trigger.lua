@@ -44,7 +44,7 @@ function Trigger:update()
 end
 
 function Trigger:draw()
-	love.graphics.setColor(1, 0, 0, 0.4)
+	love.graphics.setColor(1, 0, 1, 0.4)
 
 	love.graphics.push()
 	love.graphics.translate(self.position.x, self.position.y)
