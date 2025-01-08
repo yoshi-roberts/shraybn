@@ -11,8 +11,11 @@ local input = require("engine.input")
 local log = require("libs.log")
 
 local Scene = require("engine.scene")
+local Layer = require("engine.layer")
 local Canvas = require("engine.canvas")
 local Camera = require("engine.camera")
+
+-- NOTE: We might just want to require that a project be loaded.
 
 ---@class engine
 ---@field init function
@@ -102,6 +105,10 @@ function engine._draw()
 		engine.camera:detach()
 		engine.camera:draw()
 	end
+
+	if engine.active_scene then
+		engine.active_scene:draw_gui()
+	end
 end
 
 ---@param project engine.Project
@@ -110,6 +117,7 @@ function engine.set_project(project)
 	assets.load()
 
 	local scn = Scene.load("projects/" .. project.main_scene)
+	scn:add_layer(Layer:new(require("ui_layer")))
 	local main_scene = engine.add_scene(scn)
 
 	engine.game_canvas = Canvas:new(project.game_width, project.game_height, "fit")

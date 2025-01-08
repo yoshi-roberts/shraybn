@@ -1,10 +1,10 @@
-local Trigger = require("engine.trigger")
 local Canvas = require("engine.canvas")
+local Trigger = require("engine.trigger")
 local Camera = require("engine.camera")
 local editor = require("editor")
 local window = require("engine.window")
 local input = require("engine.input")
-local trigger = require("editor.trigger-edit")
+local trigger_edit = require("editor.trigger_edit")
 local imgui = require "engine.imgui"
 
 ---@class editor.viewport
@@ -66,6 +66,8 @@ function viewport.update()
 		if input:wheel_down() then
 			cam:zoom_to(mpos, -0.1)
 		end
+
+		trigger_edit.update(cam.scale, cam:get_mouse_position())
 	end
 
 	if input.button_released(input.mouse_button.MIDDLE) then
@@ -78,9 +80,9 @@ function viewport.update()
 	end
 
 	-- TODO: ??
-	-- if editor.selected_entity and editor.selected_entity:is(Trigger) then
-	-- trigger:update(editor.selected_entity)
-	-- end
+	if editor.selected_entity and editor.selected_entity:is(Trigger) then
+		trigger_edit.selected = editor.selected_entity
+	end
 end
 
 function viewport.draw_scene()
@@ -88,9 +90,9 @@ function viewport.draw_scene()
 		if entity.layer.is_active then
 			entity:draw()
 
-			if entity == trigger.selected then
-				trigger:draw()
-			end
+			-- if entity == trigger.selected then
+			-- 	trigger:draw()
+			-- end
 		end
 	end
 

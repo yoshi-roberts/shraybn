@@ -1,6 +1,7 @@
 local editor = require("editor")
 local font_icon = require("editor.font_icons")
 local imgui = require("engine.imgui")
+local trigger_edit = require("editor.trigger_edit")
 
 ---@param viewport editor.viewport
 local function controls(viewport)
@@ -62,6 +63,8 @@ local function grid(viewport)
 			love.graphics.rectangle("line", posx, posy, gs, gs)
 		end
 	end
+
+	trigger_edit.draw(viewport.camera.scale)
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setLineStyle("smooth")

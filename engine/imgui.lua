@@ -4,10 +4,10 @@ local extension = jit.os == "Windows" and "dll"
 	or jit.os == "OSX" and "dylib"
 package.cpath = string.format("%s;%s/?.%s", package.cpath, lib_path, extension)
 
-local theme = require("editor.ui.themes.material_you")
 local font_icon = require("editor.font_icons")
 local event = require("engine.event")
 local imgui = require("libs.cimgui")
+local theme = require("editor.ui.themes.material_you")
 local ffi = require("ffi")
 
 imgui.engine = {}

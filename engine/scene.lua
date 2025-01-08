@@ -43,6 +43,14 @@ function Scene:draw()
 	end
 end
 
+function Scene:draw_gui()
+	for _, layer in pairs(self.layers) do
+		if layer.is_active and layer.draw_gui ~= nil then
+			layer.draw_gui()
+		end
+	end
+end
+
 ---@param layer engine.Layer
 ---@param index ?integer
 ---@return engine.Layer

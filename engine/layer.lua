@@ -19,6 +19,7 @@ function Layer:init(callbacks, depth)
 	self.detach = callbacks.detach or nil
 	self.update = callbacks.update or nil
 	self.draw = callbacks.draw or nil
+	self.draw_gui = callbacks.draw_gui or nil
 
 	if self.attach then
 		self:attach()
