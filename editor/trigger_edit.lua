@@ -1,14 +1,19 @@
 local mlib = require("libs.mlib")
 local input = require("engine.input")
+local editor = require("editor")
+
+local AddVertex = require("editor.command.add_vertex")
+local ChangeVertex = require("editor.command.change_vertex")
 
 -- TODO: This needs a major rework.
 
 ---@alias trigger_edit.vertex {x: integer, y: integer, index: integer}
 ---@alias trigger_edit.segment {first: trigger_edit.vertex, last: trigger_edit.vertex}
----
+
+---@class editor.trigger_edit
 local trigger_edit = {
 	selected = nil, ---@type engine.Trigger
-	selected_vert_index = nil,
+	selected_vert_index = nil, ---@type integer
 	new_vertex = nil, ---@type trigger_edit.vertex
 	dragging = { active = false, diffx = 0, diffy = 0 },
 }
@@ -44,13 +49,6 @@ local function get_segment(t, index)
 	return { first = first_vert, last = last_vert }
 end
 
----@param t engine.Trigger
----@param index integer
-local function set_vertex_pos(t, index, x, y)
-	t.verticies[index] = x - t.position.x
-	t.verticies[index + 1] = y - t.position.y
-end
-
 ---@param x integer
 ---@param y integer
 ---@param segment trigger_edit.segment
@@ -69,10 +67,18 @@ local function get_segment_intersect(x, y, segment)
 end
 
 ---@param t engine.Trigger
+---@param index integer
+local function set_vertex_pos(t, index, x, y)
+	local nx = x - t.position.x
+	local ny = y - t.position.y
+	editor.history:add(ChangeVertex:new(t, index, nx, ny, true))
+end
+
+---@param t engine.Trigger
 local function add_vertex(t, index, x, y)
-	table.insert(t.verticies, index, y - t.position.y)
-	table.insert(t.verticies, index, x - t.position.x)
-	t.tris = love.math.triangulate(t.verticies)
+	local nx = x - t.position.x
+	local ny = y - t.position.y
+	editor.history:add(AddVertex:new(t, index, nx, ny))
 end
 
 ---@param scale number
@@ -111,7 +117,6 @@ function trigger_edit.update(scale, mouse_pos)
 		end
 
 		if input.button_released(input.mouse_button.LEFT) then
-			t.tris = love.math.triangulate(t.verticies)
 			trigger_edit.dragging.acitve = false
 		end
 	end
@@ -143,60 +148,42 @@ function trigger_edit.draw(scale)
 		local vert = get_vertex(t, i)
 		local seg = get_segment(t, i)
 
-		love.graphics.setColor(1, 1, 1, 1)
-
+		love.graphics.setColor(1, 0, 0, 1)
+		love.graphics.setLineWidth(2)
 		love.graphics.line(
 			seg.first.x * scale,
 			seg.first.y * scale,
 			seg.last.x * scale,
 			seg.last.y * scale
 		)
+		love.graphics.setLineWidth(1)
 
 		if trigger_edit.new_vertex and not trigger_edit.selected_vert_index then
 			local new_vert = trigger_edit.new_vertex
-			-- love.graphics.circle("fill", nx * scale, ny * scale, 8, 4)
+			local vx = new_vert.x * scale
+			local vy = new_vert.y * scale
+
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.rectangle(
-				"fill",
-				(new_vert.x * scale) - 2,
-				(new_vert.y * scale) - 6,
-				4,
-				12
-			)
-			love.graphics.rectangle(
-				"fill",
-				(new_vert.x * scale) - 6,
-				(new_vert.y * scale) - 2,
-				12,
-				4
-			)
+			love.graphics.rectangle("fill", vx - 2, vy - 6, 4, 12)
+			love.graphics.rectangle("fill", vx - 6, vy - 2, 12, 4)
 
 			love.graphics.setColor(0, 1, 0, 1)
-			love.graphics.rectangle(
-				"fill",
-				(new_vert.x * scale) - 1,
-				(new_vert.y * scale) - 5,
-				2,
-				10
-			)
-			love.graphics.rectangle(
-				"fill",
-				(new_vert.x * scale) - 5,
-				(new_vert.y * scale) - 1,
-				10,
-				2
-			)
+			love.graphics.rectangle("fill", vx - 1, vy - 5, 2, 10)
+			love.graphics.rectangle("fill", vx - 5, vy - 1, 10, 2)
 		end
 
+		local vx = seg.first.x * scale
+		local vy = seg.first.y * scale
+
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.circle("fill", vert.x * scale, vert.y * scale, 8, 4)
+		love.graphics.circle("fill", vx, vy, 8, 4)
 
 		love.graphics.setColor(1, 1, 1, 1)
 		if i == trigger_edit.selected_vert_index then
 			love.graphics.setColor(0, 1, 0, 1)
 		end
 
-		love.graphics.circle("fill", vert.x * scale, vert.y * scale, 6, 4)
+		love.graphics.circle("fill", vx, vy, 5, 4)
 	end
 end
 
