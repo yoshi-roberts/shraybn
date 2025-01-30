@@ -3,6 +3,7 @@ local input = require("engine.input")
 local editor = require("editor")
 
 local AddVertex = require("editor.command.add_vertex")
+local RemoveVertex = require("editor.command.remove_vertex")
 local ChangeVertex = require("editor.command.change_vertex")
 
 -- TODO: This needs a major rework.
@@ -118,6 +119,10 @@ function trigger_edit.update(scale, mouse_pos)
 
 		if input.button_released(input.mouse_button.LEFT) then
 			trigger_edit.dragging.acitve = false
+		end
+
+		if input.button_pressed(input.mouse_button.RIGHT) then
+			editor.history:add(RemoveVertex:new(t, vert.index))
 		end
 	end
 
