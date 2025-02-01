@@ -78,11 +78,6 @@ function viewport.update()
 		cam.position.x = (viewport.dragging.diffx - mpos.x)
 		cam.position.y = (viewport.dragging.diffy - mpos.y)
 	end
-
-	-- TODO: ??
-	if editor.selected_entity and editor.selected_entity:is(Trigger) then
-		trigger_edit.selected = editor.selected_entity
-	end
 end
 
 function viewport.draw_scene()

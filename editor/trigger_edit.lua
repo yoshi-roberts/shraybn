@@ -2,6 +2,7 @@ local mlib = require("libs.mlib")
 local input = require("engine.input")
 local editor = require("editor")
 
+local Trigger = require("engine.trigger")
 local AddVertex = require("editor.command.add_vertex")
 local RemoveVertex = require("editor.command.remove_vertex")
 local ChangeVertex = require("editor.command.change_vertex")
@@ -85,10 +86,12 @@ end
 ---@param scale number
 ---@param mouse_pos Vec2
 function trigger_edit.update(scale, mouse_pos)
-	local t = trigger_edit.selected
-	if not t then
+	local t = editor.selected_entity
+	if not t or not t:is(Trigger) then
 		return
 	end
+
+	---@cast t engine.Trigger
 
 	-- We don't want a dragged vertex to get unselected.
 	if not trigger_edit.dragging.acitve then
@@ -142,10 +145,12 @@ end
 
 ---@param scale number
 function trigger_edit.draw(scale)
-	local t = trigger_edit.selected
-	if not t then
+	local t = editor.selected_entity
+	if not t or not t:is(Trigger) then
 		return
 	end
+
+	---@cast t engine.Trigger
 
 	love.graphics.setLineStyle("smooth")
 
