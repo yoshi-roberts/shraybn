@@ -1,4 +1,5 @@
 local Sprite = require("engine.sprite")
+local Trigger = require("engine.trigger")
 local ChangeField = require("editor.command.change_field")
 local editor = require("editor")
 local assets = require("engine.assets")
@@ -20,6 +21,7 @@ local inspector = {
 	temp_int = ffi.new("int[1]", 0),
 	temp_float = ffi.new("float[1]", 0),
 	check_bool = ffi.new("bool[1]", 0),
+	current_combo_item = 0,
 
 	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
 
@@ -177,6 +179,32 @@ function inspector.sprite()
 	imgui.Separator()
 end
 
+function inspector.trigger()
+	local trigger = inspector.item
+	---@cast trigger engine.Trigger
+
+	local action_types = {
+		"Change Scene",
+		"Dialogue",
+	}
+
+	if imgui.BeginCombo("Trigger Action", action_types[inspector.current_combo_item]) then
+		for k, v in pairs(action_types) do
+			local is_selected = (inspector.current_combo_item == k)
+
+			if imgui.Selectable_Bool(v, is_selected) then
+				inspector.current_combo_item = k
+			end
+
+			if is_selected then
+				imgui.SetItemDefaultFocus()
+			end
+		end
+
+		imgui.EndCombo()
+	end
+end
+
 function inspector.entity()
 	local entity = inspector.item
 	---@cast entity engine.Entity
@@ -185,7 +213,9 @@ function inspector.entity()
 	imgui.Separator()
 
 	if entity:is(Sprite) then
-		inspector:sprite()
+		inspector.sprite()
+	elseif entity:is(Trigger) then
+		inspector.trigger()
 	end
 
 	inspector.property_number(entity.position, "x", "X", true)
