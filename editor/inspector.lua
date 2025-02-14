@@ -1,6 +1,9 @@
 local Sprite = require("engine.sprite")
 local Trigger = require("engine.trigger")
 local ChangeField = require("editor.command.change_field")
+
+local ChangeScene = require("engine.actions.change_scene")
+
 local editor = require("editor")
 local assets = require("engine.assets")
 local signal = require("engine.signal")
@@ -21,7 +24,7 @@ local inspector = {
 	temp_int = ffi.new("int[1]", 0),
 	temp_float = ffi.new("float[1]", 0),
 	check_bool = ffi.new("bool[1]", 0),
-	current_combo_item = 0,
+	current_combo_item = nil,
 
 	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
 
@@ -183,17 +186,20 @@ function inspector.trigger()
 	local trigger = inspector.item
 	---@cast trigger engine.Trigger
 
+	---@type {[string]: engine.Action}
 	local action_types = {
-		"Change Scene",
-		"Dialogue",
+		["Change Scene"] = ChangeScene,
+		-- ["Dialogue"],
 	}
 
-	if imgui.BeginCombo("Trigger Action", action_types[inspector.current_combo_item]) then
-		for k, v in pairs(action_types) do
+	if imgui.BeginCombo("Trigger Action", inspector.current_combo_item) then
+		for k, action in pairs(action_types) do
+			---@cast action engine.Action
 			local is_selected = (inspector.current_combo_item == k)
 
-			if imgui.Selectable_Bool(v, is_selected) then
+			if imgui.Selectable_Bool(k, is_selected) then
 				inspector.current_combo_item = k
+				trigger.action = action:new()
 			end
 
 			if is_selected then
