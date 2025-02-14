@@ -2,7 +2,11 @@ local Entity = require("engine.entity")
 local input = require("engine.input")
 
 ---@class engine.Trigger: engine.Entity
+---@field action engine.Action
 local Trigger = Entity:extend()
+
+-- TODO: Add action execution.
+-- Probably use some kind of command patter.
 
 ---@param verticies table
 ---@param name string?
