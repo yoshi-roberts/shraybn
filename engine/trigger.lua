@@ -16,6 +16,7 @@ function Trigger:init(verticies, name)
 	self.foccussed = false
 	self.verticies = verticies
 	self.position = Vec2(0, 0)
+	self.action = nil
 
 	if self.verticies then
 		self.tris = love.math.triangulate(self.verticies)
@@ -43,6 +44,12 @@ function Trigger:update()
 		if in_tri(pos.x, pos.y, tri) then
 			self.foccused = true
 			break
+		end
+	end
+
+	if self.foccused and self.action then
+		if input.button_pressed(input.mouse_button.LEFT) then
+			self.action:execute()
 		end
 	end
 end

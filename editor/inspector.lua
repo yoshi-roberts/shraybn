@@ -209,6 +209,12 @@ function inspector.trigger()
 
 		imgui.EndCombo()
 	end
+
+	if trigger.action and trigger.action:is(ChangeScene) then
+		inspector.resource(trigger.action, "scene_name")
+	end
+
+	imgui.Separator()
 end
 
 function inspector.entity()
