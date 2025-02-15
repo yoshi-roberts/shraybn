@@ -22,6 +22,12 @@ function Scene:shutdown()
 end
 
 function Scene:update(dt)
+	for _, entity in pairs(self.entities) do
+		-- if entity.layer.active then
+		entity:update()
+		-- end
+	end
+
 	for _, layer in pairs(self.layers) do
 		if layer.is_active and layer.update ~= nil then
 			layer.update(dt)

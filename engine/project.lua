@@ -3,6 +3,13 @@ local nativefs = require("libs.nativefs")
 local binser = require("libs.binser")
 local log = require("libs.log")
 
+local engine = require("engine")
+local assets = require("engine.assets")
+local Scene = require("engine.scene")
+local Layer = require("engine.layer")
+local Canvas = require("engine.canvas")
+local Camera = require("engine.camera")
+
 ---@class engine.Project: Class
 local Project = Class:extend()
 
@@ -38,6 +45,19 @@ function Project:save(path)
 	if not nativefs.write(path .. "/" .. "proj.spd", serialized, #serialized) then
 		log.error("Project data could not be written.")
 	end
+end
+
+function Project:set()
+	assets.init(self.file_path, true)
+	assets.load()
+
+	-- TODO: Load all scenes into memory.
+	local scene_files = nativefs.getDirectoryItems(self.file_path .. "/scenes")
+
+	engine.game_canvas = Canvas:new(self.game_width, self.game_height, "fit")
+	engine.camera = Camera:new(engine.game_canvas)
+
+	engine.add_canvas(engine.game_canvas)
 end
 
 ---@private

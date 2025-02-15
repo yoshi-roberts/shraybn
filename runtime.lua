@@ -7,6 +7,7 @@ function engine.init(args)
 
 	-- Load the specified project.
 	if args[1] then
-		engine.set_project(Project.load(args[1]))
+		local proj = Project.load(args[1])
+		proj:set()
 	end
 end

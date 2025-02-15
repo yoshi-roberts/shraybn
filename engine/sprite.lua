@@ -12,6 +12,8 @@ function Sprite:init(path, name)
 	self.asset_path = path
 end
 
+function Sprite:update() end
+
 ---@param position Vec2?
 ---@param scale Vec2?
 function Sprite:draw(position, scale)

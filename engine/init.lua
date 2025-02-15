@@ -57,6 +57,8 @@ function engine._init(args)
 	register_class("project")
 	register_class("scene")
 	register_class("sprite")
+	register_class("action")
+	register_class("actions.change_scene")
 	register_class("trigger")
 
 	if engine.init then

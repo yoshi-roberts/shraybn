@@ -47,8 +47,8 @@ function Trigger:update()
 		end
 	end
 
-	if self.foccused and self.action then
-		if input.button_pressed(input.mouse_button.LEFT) then
+	if input.button_pressed(input.mouse_button.LEFT) then
+		if self.action then
 			self.action:execute()
 		end
 	end
