@@ -26,6 +26,7 @@ local engine = {}
 engine.canvases = {} ---@type engine.Canvas[]
 engine.scenes = {} ---@type engine.Scene[]
 engine.active_scene = nil ---@type engine.Scene
+engine.loaded_project = nil ---@type engine.Project
 
 engine.camera = nil ---@type engine.Camera
 engine.game_canvas = nil ---@type engine.Canvas
@@ -111,23 +112,6 @@ function engine._draw()
 	if engine.active_scene then
 		engine.active_scene:draw_gui()
 	end
-end
-
----@param project engine.Project
-function engine.set_project(project)
-	assets.init(project.file_path, true)
-	assets.load()
-
-	local scn = Scene.load("projects/" .. project.main_scene)
-	scn:add_layer(Layer:new(require("ui_layer")))
-	local main_scene = engine.add_scene(scn)
-
-	engine.game_canvas = Canvas:new(project.game_width, project.game_height, "fit")
-	engine.camera = Camera:new(engine.game_canvas)
-
-	engine.add_canvas(engine.game_canvas)
-
-	engine.set_scene(scn.name)
 end
 
 ---@param canvas engine.Canvas

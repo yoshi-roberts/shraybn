@@ -49,6 +49,7 @@ function Trigger:update()
 
 	if input.button_pressed(input.mouse_button.LEFT) then
 		if self.action then
+			print("Action!")
 			self.action:execute()
 		end
 	end
