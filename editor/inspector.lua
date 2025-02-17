@@ -211,7 +211,7 @@ function inspector.trigger()
 	end
 
 	if trigger.action and trigger.action:is(ChangeScene) then
-		inspector.resource(trigger.action, "scene_name")
+		inspector.resource(trigger.action, "scene_path")
 	end
 
 	imgui.Separator()

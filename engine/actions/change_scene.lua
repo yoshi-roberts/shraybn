@@ -11,10 +11,9 @@ function ChangeScene:init(name)
 end
 
 function ChangeScene:execute()
-	local full_path =
-		string.format("projects/%s/%s", engine.loaded_project.name, self.scene_path)
+	local path = "projects/" .. engine.loaded_project.name .. "/" .. self.scene_path
 
-	local scn = engine.add_scene(Scene.load(full_path))
+	local scn = engine.add_scene(Scene.load(path))
 	engine.set_scene(scn.name)
 end
 

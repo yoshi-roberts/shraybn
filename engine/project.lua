@@ -52,14 +52,8 @@ function Project:set()
 	assets.init(self.file_path, true)
 	assets.load()
 
-	-- TODO: Load all scenes into memory.
-	-- local scene_files = nativefs.getDirectoryItems(self.file_path .. "/scenes")
-
-	-- for k, v in pairs(scene_files) do
-	-- 	local scn = Scene.load("projects/" .. project.main_scene)
-	-- end
-	local main_scn_file = Scene.load("projects/" .. self.name .. "/" .. self.main_scene)
-	-- main_scn_file:add_layer(Layer:new(require("ui_layer")))
+	local path = "projects/" .. self.name .. "/" .. self.main_scene
+	local main_scn_file = Scene.load(path)
 	local main_scn = engine.add_scene(main_scn_file)
 
 	engine.game_canvas = Canvas:new(self.game_width, self.game_height, "fit")
