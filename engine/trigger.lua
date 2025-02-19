@@ -1,12 +1,11 @@
 local Entity = require("engine.entity")
+
+local engine = require("engine")
 local input = require("engine.input")
 
 ---@class engine.Trigger: engine.Entity
 ---@field action engine.Action
 local Trigger = Entity:extend()
-
--- TODO: Add action execution.
--- Probably use some kind of command patter.
 
 ---@param verticies table
 ---@param name string?
@@ -37,19 +36,19 @@ local function in_tri(x, y, p)
 end
 
 function Trigger:update()
-	local pos = input.get_mouse_position()
+	self.foccused = false
+	local mpos = engine.camera:get_mouse_position()
 
 	-- Check if mouse coords intersect any of the triangles.
 	for _, tri in pairs(self.tris) do
-		if in_tri(pos.x, pos.y, tri) then
+		if in_tri(mpos.x, mpos.y, tri) then
 			self.foccused = true
 			break
 		end
 	end
 
-	if input.button_pressed(input.mouse_button.LEFT) then
-		if self.action then
-			print("Action!")
+	if self.foccused and self.action then
+		if input.button_pressed(input.mouse_button.LEFT) then
 			self.action:execute()
 		end
 	end

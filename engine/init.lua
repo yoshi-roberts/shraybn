@@ -10,11 +10,6 @@ local assets = require("engine.assets")
 local input = require("engine.input")
 local log = require("libs.log")
 
-local Scene = require("engine.scene")
-local Layer = require("engine.layer")
-local Canvas = require("engine.canvas")
-local Camera = require("engine.camera")
-
 -- NOTE: We might just want to require that a project be loaded.
 
 ---@class engine

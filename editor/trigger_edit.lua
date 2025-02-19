@@ -7,8 +7,6 @@ local AddVertex = require("editor.command.add_vertex")
 local RemoveVertex = require("editor.command.remove_vertex")
 local ChangeVertex = require("editor.command.change_vertex")
 
--- TODO: This needs a major rework.
-
 ---@alias trigger_edit.vertex {x: integer, y: integer, index: integer}
 ---@alias trigger_edit.segment {first: trigger_edit.vertex, last: trigger_edit.vertex}
 

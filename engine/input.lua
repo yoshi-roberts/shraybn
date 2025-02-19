@@ -1,3 +1,5 @@
+local signal = require("engine.signal")
+
 ---@class engine.input
 local input = {
 
