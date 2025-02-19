@@ -2,6 +2,8 @@ local engine = require("engine")
 local Project = require("engine.project")
 local window = require("engine.window")
 
+local Layer = require("engine.layer")
+
 function engine.init(args)
 	window.init(1280, 720)
 
@@ -10,4 +12,6 @@ function engine.init(args)
 		local proj = Project.load(args[1])
 		proj:set()
 	end
+
+	engine.active_scene:add_layer(Layer:new(require("ui_test_layer")))
 end
