@@ -1,7 +1,7 @@
-local Class = require("libs.class")
+local UIElement = require("engine.ui.element")
 
----@class engine.ui.Frame: Class
-local UIFrame = Class:extend()
+---@class engine.ui.Frame: engine.ui.Element
+local UIFrame = UIElement:extend()
 
 ---@param w number
 ---@param h number
