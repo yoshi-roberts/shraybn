@@ -1,18 +1,20 @@
-local window = require("engine.window")
-local input = require("engine.input")
-local engine = require("engine")
-
 local UIFrame = require("engine.ui.frame")
+local UIText = require("engine.ui.text")
 
 local frame = nil ---@type engine.ui.Frame
 
 local function ui_attach()
 	frame = UIFrame:new(128, 128)
+	frame:add(UIText:new("Some text."))
+	frame:add(UIText:new("Some more text."))
+	frame:add(UIText:new("A third line of text."))
 end
 
 local function ui_detach() end
 
-local function ui_update(dt) end
+local function ui_update(dt)
+	frame:update()
+end
 
 local function ui_draw()
 	frame:draw()
