@@ -9,7 +9,7 @@ function UIFrame:init(w, h)
 	self.position = Vec2(0, 0)
 	self.width = w
 	self.height = h
-	self.elements = {}
+	self.elements = {} ---@type engine.ui.Element[]
 end
 
 function UIFrame:add(element)
@@ -29,6 +29,7 @@ function UIFrame:update()
 
 		element.position.x = offx
 		element.position.y = offy
+		element.width = self.width
 
 		element:update()
 

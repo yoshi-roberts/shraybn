@@ -8,6 +8,7 @@ local function ui_attach()
 	frame:add(UIText:new("Some text."))
 	frame:add(UIText:new("Some more text."))
 	frame:add(UIText:new("A third line of text."))
+	frame:add(UIText:new("This is a long line of text that will need to be wrapped."))
 end
 
 local function ui_detach() end

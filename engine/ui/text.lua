@@ -1,14 +1,13 @@
-local Class = require("libs.class")
+local UIElement = require("engine.ui.element")
 
----@class engine.ui.Text: Class
-local UIText = Class:extend()
+---@class engine.ui.Text: engine.ui.Element
+local UIText = UIElement:extend()
 
 ---@param text string
 function UIText:init(text)
+	self.super.init(self)
+
 	self.text = text
-	self.position = Vec2(0, 0)
-	self.width = 128
-	self.height = 0
 end
 
 function UIText:update()
