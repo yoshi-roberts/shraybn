@@ -1,6 +1,7 @@
 local UIElement = require("engine.ui.element")
 
 ---@class engine.ui.Text: engine.ui.Element
+---@field super engine.ui.Element
 local UIText = UIElement:extend()
 
 ---@param text string
@@ -11,7 +12,11 @@ function UIText:init(text, align)
 	self.align = align or self.align
 end
 
-function UIText:update()
+---@param position Vec2
+---@param width number
+function UIText:update(position, width)
+	self.super.update(self, position, width)
+
 	local fnt = love.graphics.getFont()
 	self.height = fnt:getHeight()
 end

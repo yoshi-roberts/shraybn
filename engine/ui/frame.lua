@@ -1,4 +1,5 @@
 local UIElement = require("engine.ui.element")
+local UIRect = require("engine.ui.rect")
 
 ---@class engine.ui.Frame: engine.ui.Element
 local UIFrame = UIElement:extend()
@@ -6,14 +7,20 @@ local UIFrame = UIElement:extend()
 ---@param w number
 ---@param h number
 function UIFrame:init(w, h)
-	self.position = Vec2(0, 0)
+	self.super.init(self)
+
 	self.width = w
 	self.height = h
 	self.elements = {} ---@type engine.ui.Element[]
+
+	self.rect = UIRect:new(w, h) ---@type engine.ui.Rect
 end
 
+---@param element engine.ui.Element
+---@return engine.ui.Element
 function UIFrame:add(element)
 	table.insert(self.elements, element)
+	return table.front(self.elements)
 end
 
 function UIFrame:update()
@@ -27,19 +34,14 @@ function UIFrame:update()
 			offy = offy + last_element.position.y + last_element.height
 		end
 
-		element.position.x = offx
-		element.position.y = offy
-		element.width = self.width
-
-		element:update()
+		element:update(Vec2(offx, offy), self.width)
 
 		last_element = element
 	end
 end
 
 function UIFrame:draw()
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.rectangle("fill", 0, 0, self.width, self.height)
+	self.rect:draw()
 
 	for _, element in pairs(self.elements) do
 		element:draw()

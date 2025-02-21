@@ -12,4 +12,13 @@ function UIElement:init()
 	self.align = "left"
 end
 
+---@param position Vec2
+---@param width number?
+---@param height number?
+function UIElement:update(position, width, height)
+	self.position = position
+	self.width = width or self.width
+	self.height = height or self.height
+end
+
 return UIElement
