@@ -17,20 +17,22 @@ function UIButton:init(text)
 end
 
 ---@param position Vec2
-function UIButton:update(position)
+---@param theme table
+function UIButton:update(theme, position)
 	local fnt = love.graphics.getFont()
 
-	local w = fnt:getWidth(self.text.text)
+	local w = fnt:getWidth(self.text.text) + (theme.padding * 2)
 	local h = fnt:getHeight()
 
 	self.super.update(self, position, w, h)
-	self.rect:update(self.position, self.width, self.height)
-	self.text:update(self.position, self.width)
+	self.rect:update(theme, self.position, self.width, self.height)
+	self.text:update(theme, self.position, self.width)
 end
 
-function UIButton:draw()
-	self.rect:draw()
-	self.text:draw()
+---@param theme table
+function UIButton:draw(theme)
+	self.rect:draw(theme)
+	self.text:draw(theme)
 end
 
 return UIButton

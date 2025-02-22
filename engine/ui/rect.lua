@@ -11,15 +11,17 @@ function UIRect:init(w, h)
 	self.height = h or 0
 end
 
+---@param theme table
 ---@param position Vec2
 ---@param width number
 ---@param height number
-function UIRect:update(position, width, height)
+function UIRect:update(theme, position, width, height)
 	self.super.update(self, position, width, height)
 end
 
-function UIRect:draw()
-	love.graphics.setColor(0, 0, 0, 1)
+---@param theme table
+function UIRect:draw(theme)
+	love.graphics.setColor(theme.border_color)
 	local outline = 2
 	love.graphics.rectangle(
 		"fill",
@@ -29,7 +31,7 @@ function UIRect:draw()
 		self.height + (outline * 2)
 	)
 
-	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setColor(theme.bg_color)
 	love.graphics.rectangle("fill", self.position.x, self.position.y, self.width, self.height)
 end
 
