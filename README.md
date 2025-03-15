@@ -52,5 +52,3 @@ Character: You have reached the end.
 ```
 
 ## Libs
-
-[LUIS](https://github.com/SiENcE/luis)
