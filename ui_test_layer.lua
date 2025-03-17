@@ -24,7 +24,7 @@ local function ui_draw()
 	ui:button("Button")
 	ui:same_line()
 	ui:button("Button")
-	-- ui:button("Button")
+	ui:label("More text.")
 end
 
 return {

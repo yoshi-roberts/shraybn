@@ -16,6 +16,12 @@ local ui = {
 		w = 0,
 		h = 0,
 	},
+	next = {
+		x = 0,
+		y = 0,
+		w = 0,
+		h = 0,
+	},
 	is_same_line = false,
 }
 
@@ -61,15 +67,31 @@ function ui:get_next_pos()
 	local x, y
 
 	if not self.is_same_line then
-		x = self.last.x
-		y = self.last.y + padding
+		x = self.next.x
+		y = self.next.y
 	else
-		x = (self.last.x + self.last.w) + padding
-		y = self.last.y - self.last.h
+		x = self.last.x + self.last.w + padding
+		y = self.last.y
 		self.is_same_line = false
 	end
 
 	return x, y
+end
+
+function ui:same_line()
+	self.is_same_line = true
+end
+
+function ui:set_next_pos(x, y, w, h)
+	local padding = self.theme.padding
+
+	self.last.x = x
+	self.last.y = y
+	self.last.w = w
+	self.last.h = h
+
+	self.next.x = self.frame.x + padding
+	self.next.y = y + h + padding
 end
 
 function ui:get_next_size()
@@ -79,8 +101,11 @@ function ui:get_next_size()
 	return w
 end
 
-function ui:same_line()
-	self.is_same_line = true
+function ui:update_last(x, y, w, h)
+	self.last.x = x
+	self.last.y = y
+	self.last.w = w
+	self.last.h = h
 end
 
 function ui:start(x, y, w, h)
@@ -94,30 +119,32 @@ function ui:start(x, y, w, h)
 	love.graphics.setColor(self.theme.bg_color)
 	love.graphics.rectangle("fill", x, y, w, h)
 
-	self.last.x = x + self.theme.padding
-	self.last.y = y
-	self.last.w = w
-	self.last.h = h
-
+	self.next.x = self.frame.x + self.theme.padding
+	self.next.y = y + self.theme.padding
 	self:draw_debug(x, y, w, h)
 end
 
 function ui:label(text)
+	local padding = self.theme.padding
 	local fnt = love.graphics.getFont()
 
-	local padding = self.theme.padding
 	local x, y = self:get_next_pos()
 	local w = self:get_next_size()
+
+	local text_width, wrapped_text = fnt:getWrap(text, w)
+	local h = fnt:getHeight() * #wrapped_text
 
 	love.graphics.setColor(self.theme.fg_color)
 	love.graphics.printf(text, x, y, w, "left")
 
-	local width, wrapped_text = fnt:getWrap(text, self.last.w)
-	self.last.h = fnt:getHeight() * #wrapped_text
-	self.last.y = y + self.last.h
-	self.last.x = x
+	-- local width, wrapped_text = fnt:getWrap(text, self.last.w)
+	-- self.last.h = fnt:getHeight() * #wrapped_text
+	-- self.last.y = y + self.last.h
+	-- self.last.x = x
 
-	self:draw_debug(x, y, w, self.last.h)
+	-- self:update_last(x, y + self.last.h, w, h)
+	self:set_next_pos(x, y, w, h)
+	self:draw_debug(x, y, w, h)
 end
 
 function ui:button(text)
@@ -135,11 +162,7 @@ function ui:button(text)
 	love.graphics.setColor(self.theme.fg_color)
 	love.graphics.print(text, x, y)
 
-	self.last.x = x
-	self.last.y = y + h
-	self.last.h = h
-	self.last.w = w
-
+	self:set_next_pos(x, y, w, h)
 	self:draw_debug(x, y, w, h)
 end
 
