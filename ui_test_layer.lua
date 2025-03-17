@@ -32,7 +32,7 @@ local function ui_update(dt)
 end
 
 local function ui_draw()
-	ui:start(128, 128, 128, 256)
+	ui:start(0, -32, 128, 256, "center", "bottom")
 	ui:label("Hey there!")
 	ui:label("This is a longer line of text.")
 	ui:label("Hey there!")

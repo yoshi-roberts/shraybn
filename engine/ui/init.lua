@@ -82,13 +82,6 @@ function ui:get_next_size()
 	return w
 end
 
-function ui:update_last(x, y, w, h)
-	self.last.x = x
-	self.last.y = y
-	self.last.w = w
-	self.last.h = h
-end
-
 ---@return boolean
 function ui:mouse_in_rect(x, y, w, h)
 	if self.mouse_x >= x and self.mouse_x <= x + w then
@@ -100,20 +93,43 @@ function ui:mouse_in_rect(x, y, w, h)
 	return false
 end
 
-function ui:start(x, y, w, h)
+function ui:start(x, y, w, h, halign, valign)
+	halign = halign or "left"
+	valign = valign or "top"
+
 	self.frame.x = x
 	self.frame.y = y
 	self.frame.w = w
 	self.frame.h = h
 
+	local gw, gh = engine.game_canvas:get_size()
+
+	if halign == "right" then
+		self.frame.x = (gw - w) + x
+	elseif halign == "center" then
+		self.frame.x = ((gw / 2) - (w / 2)) + x
+	end
+
+	if valign == "bottom" then
+		self.frame.y = (gh - h) + y
+	elseif valign == "center" then
+		self.frame.y = ((gh / 2) - (h / 2)) + y
+	end
+
 	love.graphics.setColor(self.theme.outline_color)
-	love.graphics.rectangle("fill", x - 1, y - 1, w + 2, h + 2)
+	love.graphics.rectangle(
+		"fill",
+		self.frame.x - 1,
+		self.frame.y - 1,
+		self.frame.w + 2,
+		self.frame.h + 2
+	)
 	love.graphics.setColor(self.theme.bg_color)
-	love.graphics.rectangle("fill", x, y, w, h)
+	love.graphics.rectangle("fill", self.frame.x, self.frame.y, self.frame.w, self.frame.h)
 
 	self.next.x = self.frame.x + self.theme.padding
-	self.next.y = y + self.theme.padding
-	self:draw_debug(x, y, w, h)
+	self.next.y = self.frame.y + self.theme.padding
+	self:draw_debug(self.frame.x, self.frame.y, self.frame.w, self.frame.h)
 end
 
 function ui:label(text)
