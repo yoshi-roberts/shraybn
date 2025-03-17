@@ -8,6 +8,7 @@ local timer = require("engine.time")
 local event = require("engine.event")
 local assets = require("engine.assets")
 local input = require("engine.input")
+local ui = require("engine.ui")
 local log = require("libs.log")
 
 -- NOTE: We might just want to require that a project be loaded.
@@ -78,6 +79,10 @@ function engine._update(dt)
 	if engine.active_scene then
 		engine.active_scene:update(dt)
 	end
+
+	local mpos = engine.camera:get_mouse_position()
+	local gw, gh = engine.game_canvas:get_size()
+	ui:update(dt, mpos.x, mpos.y, gw, gh)
 
 	if engine.update then
 		engine.update()

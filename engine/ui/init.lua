@@ -1,6 +1,4 @@
-local event = require("engine.event")
 local input = require("engine.input")
-local engine = require("engine")
 
 ---@alias engine.ui.Element {x: number, y: number, w: number, h: number}
 
@@ -12,6 +10,8 @@ local ui = {
 	next = {}, ---@type engine.ui.Element
 	mouse_x = 0,
 	mouse_y = 0,
+	game_width = 0,
+	game_height = 0,
 	focussed = nil,
 	callback = nil, ---@type function
 	is_same_line = false,
@@ -19,9 +19,11 @@ local ui = {
 
 function ui:init() end
 
-function ui:update(dt, mx, my)
+function ui:update(dt, mx, my, gw, gh)
 	self.mouse_x = mx
 	self.mouse_y = my
+	self.game_width = gw
+	self.game_height = gh
 
 	if self.focussed then
 		if self.callback and input.button_pressed(input.mouse_button.LEFT) then
@@ -102,7 +104,7 @@ function ui:start(x, y, w, h, halign, valign)
 	self.frame.w = w
 	self.frame.h = h
 
-	local gw, gh = engine.game_canvas:get_size()
+	local gw, gh = self.game_width, self.game_height
 
 	if halign == "right" then
 		self.frame.x = (gw - w) + x
