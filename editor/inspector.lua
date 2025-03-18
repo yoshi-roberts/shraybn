@@ -3,6 +3,7 @@ local Trigger = require("engine.trigger")
 local ChangeField = require("editor.command.change_field")
 
 local ChangeScene = require("engine.actions.change_scene")
+local Dialogue = require("engine.actions.dialogue")
 
 local editor = require("editor")
 local assets = require("engine.assets")
@@ -189,7 +190,7 @@ function inspector.trigger()
 	---@type {[string]: engine.Action}
 	local action_types = {
 		["Change Scene"] = ChangeScene,
-		-- ["Dialogue"],
+		["Dialogue"] = Dialogue,
 	}
 
 	if imgui.BeginCombo("Trigger Action", inspector.current_combo_item) then

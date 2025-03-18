@@ -80,9 +80,11 @@ function engine._update(dt)
 		engine.active_scene:update(dt)
 	end
 
-	local mpos = engine.camera:get_mouse_position()
-	local gw, gh = engine.game_canvas:get_size()
-	ui:update(dt, mpos.x, mpos.y, gw, gh)
+	if engine.camera then
+		local mpos = engine.camera:get_mouse_position()
+		local gw, gh = engine.game_canvas:get_size()
+		ui:update(dt, mpos.x, mpos.y, gw, gh)
+	end
 
 	if engine.update then
 		engine.update()

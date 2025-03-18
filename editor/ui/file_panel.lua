@@ -7,6 +7,7 @@ local file_icons = {
 	["image"] = font_icon.ICON_FILE_IMAGE_O,
 	["project"] = font_icon.ICON_FILE,
 	["scene"] = font_icon.ICON_FILM .. " ",
+	["script"] = font_icon.ICON_FILE_TEXT_O,
 }
 
 ---@param file_panel editor.file_panel
