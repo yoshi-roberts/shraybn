@@ -21,6 +21,7 @@ local ext_types = {
 	["mp3"] = "audio",
 	["wav"] = "audio",
 	["ogg"] = "audio",
+	["shr"] = "script",
 }
 
 ---@type {[string]: function}

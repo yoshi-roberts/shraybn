@@ -30,7 +30,7 @@ local temp_index = {
 local ext_types = {
 	["image"] = { ["png"] = true, ["jpg"] = true, ["jpeg"] = true },
 	["audio"] = { ["mp3"] = true, ["wav"] = true, ["ogg"] = true },
-	["script"] = { ["lua"] = true },
+	["script"] = { ["shr"] = true },
 	["shader"] = { ["glsl"] = true },
 }
 
@@ -50,12 +50,19 @@ local processes = {
 		-- return love.image.newImageData(byte_data)
 		return love.image.newImageData(data)
 	end,
+	---@param data string
+	---@return string
+	["script"] = function(data)
+		-- print(data)
+		return data
+	end,
 }
 
 ---@param path string
 ---@return string?
 local function file_read(path)
 	local file = io.open(path, "rb")
+	-- local file, size = nativefs.read(path)
 
 	if not file then
 		log.error("[ASSETS] Could not open file '" .. path .. "'")
