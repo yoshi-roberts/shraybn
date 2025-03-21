@@ -1,0 +1,36 @@
+-- What is needed? --
+
+Lines of dialogue with specified character names.
+Text not spoken by any particular character.
+Syntax for adding effects to text.
+Labels/Segments.
+Choices.
+Branching.
+Variables.
+Modify variables and evaluate expressions.
+Conditions for text and choices.
+Call game commands.
+Comments.
+
+-------------------------------------------------
+
+# Comment.
+$var = false
+
+[Label]
+
+Character: Some line of dialogue.
+Character: Dialogue with {shake}effects!{/shake}
+
+* Choice #1 : Label #2
+* {not $var} Choice #2 : Label #3
+
+[Label #2]
+
+Character: A second label.
+
+[Label #3]
+
+Character: You can only get here if a condition was met.
+$var = true
+{$var} Character: Conditional dialogue.
