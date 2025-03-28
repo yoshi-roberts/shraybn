@@ -3,6 +3,7 @@ local viewport = require("editor.viewport")
 local dockspace = require("editor.dockspace")
 local scene_panel = require("editor.scene_panel")
 local file_panel = require("editor.file_panel")
+local file_browser = require("editor.file_browser")
 local inspector = require("editor.inspector")
 local project_manager = require("editor.project_manager")
 
@@ -34,6 +35,7 @@ local function ui_draw()
 	viewport.display(viewport)
 	inspector.display(inspector)
 	project_manager.display(project_manager)
+	file_browser.display()
 
 	imgui.engine.draw()
 end

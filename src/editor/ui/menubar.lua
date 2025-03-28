@@ -41,6 +41,10 @@ local function project_menu()
 		signal.emit("menubar_open_project_manager")
 	end
 
+	if imgui.MenuItem_Bool(font_icon.ICON_PLUS .. " New", nil, nil) then
+		signal.emit("file_browser_open")
+	end
+
 	imgui.MenuItem_Bool(font_icon.ICON_COG .. " Settings", nil, nil)
 	if imgui.MenuItem_Bool(font_icon.ICON_PLAY .. " Run", nil, nil) then
 		if editor.loaded_project then
