@@ -38,7 +38,8 @@ end
 
 local function project_menu()
 	if imgui.MenuItem_Bool(string.format("%s Open", font_icon.ICON_FILE), nil, nil) then
-		signal.emit("menubar_open_project_manager")
+		-- signal.emit("menubar_open_project_manager")
+		signal.emit("file_browser_open", "open")
 	end
 
 	if imgui.MenuItem_Bool(font_icon.ICON_PLUS .. " New", nil, nil) then

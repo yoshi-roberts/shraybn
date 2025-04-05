@@ -1,5 +1,6 @@
 local font_icon = require "editor.font_icons"
 local nativefs = require("libs.nativefs")
+local project_manager = require("editor.project_manager")
 local signal = require("engine.signal")
 local imgui = require "engine.imgui"
 local ffi = require("ffi")
@@ -7,8 +8,11 @@ local ffi = require("ffi")
 ---@class editor.file_browser
 local file_browser = {
 	should_open = ffi.new("bool[1]", false),
-	selected = nil,
+	selected_index = nil,
+	selected_path = "",
 
+	mode = nil,
+	home_dir = nil,
 	current_dir = nil,
 	previous_dir = nil,
 	next_dir = nil,
@@ -23,9 +27,11 @@ local file_browser = {
 	),
 }
 
-function file_browser.open()
+function file_browser.open(mode)
+	file_browser.mode = mode
 	file_browser.should_open[0] = true
-	file_browser.current_dir = os.getenv("HOME")
+	file_browser.home_dir = os.getenv("HOME")
+	file_browser.current_dir = file_browser.home_dir
 end
 
 function file_browser.close()
@@ -63,12 +69,26 @@ function file_browser.display()
 		if imgui.Button(font_icon.ICON_ARROW_RIGHT) then
 		end
 
+		imgui.SameLine()
+
+		if imgui.Button(font_icon.ICON_ARROW_UP) then
+			local trimmed_path = file_browser.current_dir:match("(.+)/[^/]+$")
+				or file_browser.current_dir
+
+			if #trimmed_path >= #file_browser.home_dir then
+				local exists = nativefs.getInfo(trimmed_path)
+				if exists then
+					file_browser.current_dir = trimmed_path
+				end
+			end
+		end
+
 		local items = nativefs.getDirectoryItems(file_browser.current_dir)
 
 		if imgui.BeginListBox("##Files", nil) then
 			for k, item in pairs(items) do
 				if item:sub(1, 1) ~= "." then
-					local selected = (k == file_browser.selected)
+					local selected = (k == file_browser.selected_index)
 
 					local full_path = file_browser.current_dir .. "/" .. item
 					local info = nativefs.getInfo(full_path)
@@ -80,9 +100,13 @@ function file_browser.display()
 					end
 
 					if imgui.Selectable_Bool(str, selected) then
+						file_browser.selected_index = k
+						file_browser.selected_path = full_path
+					end
+
+					if imgui.IsItemHovered() and imgui.IsMouseDoubleClicked_Nil(0) then
 						file_browser.previous_dir = file_browser.current_dir
 						file_browser.current_dir = full_path
-						file_browser.selected = k
 						break
 					end
 
@@ -96,8 +120,17 @@ function file_browser.display()
 		end
 
 		if imgui.Button("Cancel") then
-			-- file_browser.should_open[0] = false
+			file_browser.should_open[0] = false
 			imgui.CloseCurrentPopup()
+		end
+
+		imgui.SameLine()
+
+		if imgui.Button("Select") then
+			file_browser.should_open[0] = false
+			imgui.CloseCurrentPopup()
+			project_manager.load(file_browser.selected_path)
+			-- signal.emit("file_browser_select", file_browser.selected_path)
 		end
 
 		imgui.EndPopup()
