@@ -17,6 +17,9 @@ local file_browser = {
 	previous_dir = nil,
 	next_dir = nil,
 
+	buf = ffi.new("char[?]", 128, "New Project"),
+	create_name = "",
+
 	win_flags = imgui.love.WindowFlags(
 		"NoDocking",
 		"NoCollapse",
@@ -119,6 +122,12 @@ function file_browser.display()
 			imgui.EndListBox()
 		end
 
+		if file_browser.mode == "create" then
+			if imgui.InputText("##file_name", file_browser.buf, 128) then
+				file_browser.create_name = ffi.string(file_browser.buf)
+			end
+		end
+
 		if imgui.Button("Cancel") then
 			file_browser.should_open[0] = false
 			imgui.CloseCurrentPopup()
@@ -126,10 +135,17 @@ function file_browser.display()
 
 		imgui.SameLine()
 
-		if imgui.Button("Select") then
+		if imgui.Button("Confirm") then
+			if file_browser.mode == "open" then
+				project_manager.load(file_browser.selected_path)
+			elseif file_browser.mode == "create" then
+				local new_path = file_browser.current_dir .. "/" .. file_browser.create_name
+				print(new_path)
+				project_manager.create(file_browser.create_name, new_path)
+			end
+
 			file_browser.should_open[0] = false
 			imgui.CloseCurrentPopup()
-			project_manager.load(file_browser.selected_path)
 			-- signal.emit("file_browser_select", file_browser.selected_path)
 		end
 

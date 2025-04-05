@@ -14,10 +14,12 @@ local Camera = require("engine.camera")
 local Project = Class:extend()
 
 ---@param name string
+---@param path string
 ---@param width integer
 ---@param height integer
-function Project:init(name, width, height)
+function Project:init(name, path, width, height)
 	self.name = name
+	self.path = path
 	self.window_width = width or 1280
 	self.window_height = height or 720
 	self.game_width = 1280

@@ -43,7 +43,7 @@ local function project_menu()
 	end
 
 	if imgui.MenuItem_Bool(font_icon.ICON_PLUS .. " New", nil, nil) then
-		signal.emit("file_browser_open")
+		signal.emit("file_browser_open", "create")
 	end
 
 	imgui.MenuItem_Bool(font_icon.ICON_COG .. " Settings", nil, nil)

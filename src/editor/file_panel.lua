@@ -1,6 +1,7 @@
 local inspector = require("editor.inspector")
 local nativefs = require("libs.nativefs")
 local assets = require("engine.assets")
+local signal = require("engine.signal")
 local editor = require("editor")
 local log = require("libs.log")
 
@@ -84,6 +85,11 @@ function file_panel.create_tree(path, branch)
 	end
 end
 
+signal.register("file_panel_reload", function()
+	log.info("[EDITOR] Rebuilding file tree.")
+	file_panel.reload_needed = true
+end)
+
 function file_panel.update()
 	if not editor.loaded_project or assets.processing then
 		return
@@ -92,7 +98,7 @@ function file_panel.update()
 	if file_panel.reload_needed == true then
 		file_panel.reload_needed = false
 		log.info("[EDITOR] Rebuilding file tree.")
-		file_panel.create_tree(editor.loaded_project.name, file_panel.tree)
+		file_panel.create_tree(editor.loaded_project.path, file_panel.tree)
 	end
 end
 

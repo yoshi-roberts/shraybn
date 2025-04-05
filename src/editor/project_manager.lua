@@ -36,27 +36,28 @@ end)
 
 -- Create a new project.
 ---@param name string
+---@param path string
 ---@return boolean
-function project_manager.create(name)
-	local proj_exists = nativefs.getInfo(name)
+function project_manager.create(name, path)
+	local proj_exists = nativefs.getInfo(path)
 
 	if proj_exists then
 		print("Exists!")
-		project_manager.warning = "Project '" .. name .. "' already exists."
+		project_manager.warning = "Project '" .. path .. "' already exists."
 		return false
 	end
 
 	print(nativefs.getWorkingDirectory())
-	nativefs.createDirectory(name)
+	nativefs.createDirectory(path)
 
-	nativefs.createDirectory(name .. "/assets")
-	nativefs.createDirectory(name .. "/scenes")
+	nativefs.createDirectory(path .. "/assets")
+	nativefs.createDirectory(path .. "/scenes")
 
-	local proj = Project:new(name) ---@type engine.Project
-	proj:save(name)
+	local proj = Project:new(name, path) ---@type engine.Project
+	proj:save(path)
 
 	-- Update project list.
-	project_manager.projects = nativefs.getDirectoryItems("./")
+	-- project_manager.projects = nativefs.getDirectoryItems("./")
 
 	return true
 end
@@ -71,6 +72,7 @@ function project_manager.load(name)
 	assets.init(proj.name, true)
 	assets.load()
 
+	signal.emit("file_panel_reload")
 	-- TODO: Almost certainly should not be called here.
 	-- viewport.center()
 end
