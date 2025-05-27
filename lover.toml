@@ -1,9 +1,0 @@
-[package]
-name = "Shraybn"
-
-[build]
-default = ["win64", "linux"]
-
-[directories]
-source = "src"
-build = "build"

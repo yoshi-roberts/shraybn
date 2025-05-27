@@ -7,7 +7,6 @@ local Layer = require("engine.layer")
 function engine.init(args)
 	window.init(1280, 720)
 
-	print("HEY!", args[2])
 	-- Load the specified project.
 	if args[2] then
 		local proj = Project.load(args[2])
