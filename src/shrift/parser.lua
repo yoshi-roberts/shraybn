@@ -111,7 +111,7 @@ end
 ---@param line shrift.LineData
 ---@return table
 function Parser:parse_label(line)
-	local label_name = string.match(line.str, "^%[(.-)%]$")
+	local label_name = string.match(line.str, "%[(.-)%]")
 
 	if not label_name then
 		self:error(line, "Labels must be enclosed in brackets")
