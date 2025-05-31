@@ -1,6 +1,7 @@
 -- TODO: zip compress the asset pack?
 -- Will probably create a new branch for this.
 local log = require("libs.log")
+local zip = require("libs.love-zip")
 
 ---@class engine.assets
 local assets = {
@@ -9,6 +10,7 @@ local assets = {
 
 	path = "",
 	thread = nil, ---@type love.Thread
+	archive = nil,
 	pack_exists = false,
 }
 
@@ -34,7 +36,7 @@ local resource_functions = {
 function assets.init(path, lazy)
 	assets.path = path
 	assets.lazy = lazy
-	assets.thread = love.thread.newThread("engine/assets/thread.lua")
+	assets.thread = love.thread.newThread("engine/assets/thread-zip.lua")
 end
 
 function assets.load()

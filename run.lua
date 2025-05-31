@@ -16,4 +16,3 @@ end
 print(cmd)
 
 os.execute(cmd)
-require(target)

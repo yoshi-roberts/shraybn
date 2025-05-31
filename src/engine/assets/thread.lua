@@ -3,6 +3,7 @@ require("love.image")
 require("love.filesystem")
 
 local log = require("libs.log")
+local zip = require("libs.love-zip")
 local binser = require("libs.binser")
 local nativefs = require("libs.nativefs")
 
@@ -40,6 +41,8 @@ local asset_types = {
 	["script"] = 3,
 	["shader"] = 4,
 }
+
+-- local zip_writer = zip.newZipWriter("assets.zip")
 
 ---@type {[string]: function}
 local processes = {
@@ -172,7 +175,7 @@ local function process_data()
 end
 
 local function pack_exists()
-	local info = nativefs.getInfo(root .. "/assets.sad")
+	local info = nativefs.getInfo(root .. "/assets.zip")
 	return info ~= nil
 end
 
@@ -218,9 +221,16 @@ local function create_pack()
 	log.info("[ASSETS] Indexing items.")
 	index_items(root .. "/assets", assets)
 
+	local zip_file = nil
+	local zip_writer = nil
+
 	local write = false
 	if not pack_exists() then
 		log.info("[ASSETS] No pack exists.")
+
+		zip_file = nativefs.newFile(root .. "/assets.zip")
+		zip_writer = zip.newZipWriter(zip_file)
+
 		load_file_data()
 		write = true
 	else
