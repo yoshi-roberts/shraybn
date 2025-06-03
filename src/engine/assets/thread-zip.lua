@@ -56,6 +56,15 @@ local function valid_type(ext)
 	return false, nil
 end
 
+---@return boolean
+local function pack_exists()
+	if not nativefs.getInfo(root .. "/assets.sad") then
+		return false
+	end
+
+	return true
+end
+
 ---@param path string
 ---@param archive table
 local function index_items(path, archive)
@@ -74,10 +83,9 @@ local function index_items(path, archive)
 			local valid, type = valid_type(ext)
 
 			if valid then
-				local item_key = path:match(".*/([^/]+)/*$") .. "/" .. name
-				local file_data = nativefs.read(item_path)
+				-- local item_key = path:match(".*/([^/]+)/*$") .. "/" .. name
+				-- local file_data = nativefs.read(item_path)
 
-				print(item_path)
 				archive:add_file(item_path)
 			end
 		elseif item_info.type == "directory" then
@@ -91,12 +99,21 @@ end
 local function create_pack()
 	log.info("[ASSETS] Indexing items.")
 
-	local abs_path = nativefs.getWorkingDirectory() .. "/" .. root
+	local orig_work_dir = nativefs.getWorkingDirectory()
+	local proj_dir = orig_work_dir .. "/" .. root
 
-	-- print(abs_path)
-	local archive = miniz.zip_write_file(root .. "/assets.zip")
+	local archive = miniz.zip_write_file(root .. "/assets.sad")
+	nativefs.setWorkingDirectory(proj_dir .. "/assets")
 
-	index_items(root .. "/assets", archive)
+	print(nativefs.getWorkingDirectory())
+
+	local items = nativefs.getDirectoryItems(nativefs.getWorkingDirectory())
+	for _, name in pairs(items) do
+		local item_info = nativefs.getInfo(name)
+		if item_info.type == "directory" then
+			index_items(name, archive)
+		end
+	end
 
 	local success, err
 	success, err = archive:finalize()
@@ -106,8 +123,7 @@ local function create_pack()
 		log.error("[ASSETS] " .. err)
 	end
 
-	-- local za = assert(miniz.zip_read_file(abs_path .. "/assets.zip"))
-	-- print(#za)
+	nativefs.setWorkingDirectory(orig_work_dir)
 end
 
 create_pack()
