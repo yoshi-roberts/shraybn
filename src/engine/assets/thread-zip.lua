@@ -7,24 +7,10 @@ local binser = require("libs.binser")
 local nativefs = require("libs.nativefs")
 
 local root, lazy = ...
-print(root)
 
 log.info("[ASSETS] Starting process.")
 
----@type {[string]: table}
-local assets = {
-	["image"] = {},
-	["audio"] = {},
-	["script"] = {},
-	["shader"] = {},
-}
-
-local temp_index = {
-	["image"] = {},
-	["audio"] = {},
-	["script"] = {},
-	["shader"] = {},
-}
+local assets = {}
 
 -- Lookup table for file types.
 ---@type {[string]: table<string, boolean>}
@@ -33,13 +19,6 @@ local ext_types = {
 	["audio"] = { ["mp3"] = true, ["wav"] = true, ["ogg"] = true },
 	["script"] = { ["shr"] = true },
 	["shader"] = { ["glsl"] = true },
-}
-
-local asset_types = {
-	["image"] = 1,
-	["audio"] = 2,
-	["script"] = 3,
-	["shader"] = 4,
 }
 
 -- Check if a file extension is one we care about.
@@ -65,9 +44,59 @@ local function pack_exists()
 	return true
 end
 
----@param path string
+---@return table
+local function pack_load()
+	local archive = miniz.zip_read_file(root .. "/assets.sad")
+
+	return archive
+end
+
 ---@param archive table
-local function index_items(path, archive)
+---@return boolean
+local function asset_removed(archive)
+	local removed = false
+	local file_count = archive:get_num_files()
+
+	for i = 1, file_count, 1 do
+		local name = archive:get_filename(i)
+
+		if not assets[name] then
+			log.info("[ASSETS] Removing '" .. name .. "' from pack")
+			removed = true
+		end
+	end
+
+	return removed
+end
+
+---@param archive table
+---@return boolean
+local function asset_modified(archive)
+	local modified = false
+	local file_count = archive:get_num_files()
+
+	for i = 1, file_count, 1 do
+		local name = archive:get_filename(i)
+		local stat = archive:stat(i)
+		local info = nativefs.getInfo(root .. "/assets/" .. name)
+
+		-- The modtimes will sometimes differ by a single digit,
+		-- even when they should be the same.
+		-- So we remove the last digit.
+		local modtime = math.floor(info.modtime / 10)
+		local time = math.floor(stat.time / 10)
+
+		if modtime > time then
+			modified = true
+			log.info("[ASSETS] Asset '" .. name .. "' has been modified")
+		end
+	end
+
+	return modified
+end
+
+---@param path string
+local function index_items(path)
 	local items = nativefs.getDirectoryItems(path)
 
 	for _, name in pairs(items) do
@@ -83,13 +112,10 @@ local function index_items(path, archive)
 			local valid, type = valid_type(ext)
 
 			if valid then
-				-- local item_key = path:match(".*/([^/]+)/*$") .. "/" .. name
-				-- local file_data = nativefs.read(item_path)
-
-				archive:add_file(item_path)
+				assets[item_path] = true
 			end
 		elseif item_info.type == "directory" then
-			index_items(item_path, archive)
+			index_items(item_path)
 		end
 
 		::continue::
@@ -102,32 +128,49 @@ local function create_pack()
 	local orig_work_dir = nativefs.getWorkingDirectory()
 	local proj_dir = orig_work_dir .. "/" .. root
 
-	local archive = miniz.zip_write_file(root .. "/assets.sad")
+	local archive = nil
+	local success, err
+
 	nativefs.setWorkingDirectory(proj_dir .. "/assets")
-
-	print(nativefs.getWorkingDirectory())
-
 	local items = nativefs.getDirectoryItems(nativefs.getWorkingDirectory())
 	for _, name in pairs(items) do
 		local item_info = nativefs.getInfo(name)
 		if item_info.type == "directory" then
-			index_items(name, archive)
+			index_items(name)
 		end
 	end
+	nativefs.setWorkingDirectory(orig_work_dir)
 
-	local success, err
-	success, err = archive:finalize()
+	local should_write = true
+
+	if pack_exists() then
+		should_write = false
+		archive = pack_load()
+		should_write = asset_removed(archive)
+		should_write = asset_modified(archive)
+	end
+
+	if should_write then
+		archive = miniz.zip_write_file(root .. "/assets.sad")
+
+		nativefs.setWorkingDirectory(proj_dir .. "/assets")
+		for asset, _ in pairs(assets) do
+			archive:add_file(asset)
+		end
+		nativefs.setWorkingDirectory(orig_work_dir)
+
+		success, err = archive:finalize()
+	end
+
 	success, err = archive:close()
 
 	if not success then
 		log.error("[ASSETS] " .. err)
 	end
-
-	nativefs.setWorkingDirectory(orig_work_dir)
 end
 
 create_pack()
 
-love.thread.getChannel("asset_data"):push(assets)
+-- love.thread.getChannel("asset_data"):push(assets)
 love.thread.getChannel("assets_processing"):push(false)
 log.info("[ASSETS] Process completed.")

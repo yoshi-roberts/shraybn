@@ -1,12 +1,18 @@
 -- TODO: zip compress the asset pack?
 -- Will probably create a new branch for this.
 local log = require("libs.log")
-local zip = require("libs.love-zip")
+local nativefs = require("libs.nativefs")
 
 ---@class engine.assets
 local assets = {
-	data = nil,
-	processing = false,
+	data = {
+		["image"] = {},
+		["audio"] = {},
+		["script"] = {},
+	},
+
+	processing = true,
+	mounted = false,
 
 	path = "",
 	thread = nil, ---@type love.Thread
@@ -41,47 +47,53 @@ end
 
 function assets.load()
 	assets.processing = true
-	print(assets.path)
 	assets.thread:start(assets.path, assets.lazy)
 end
 
 function assets.update()
-	if not assets.data then
-		assets.data = love.thread.getChannel("asset_data"):pop()
-	end
-	if assets.data and assets.processing then
-		assets.processing = love.thread.getChannel("assets_processing"):pop()
+	assets.processing = love.thread.getChannel("assets_processing"):pop()
+
+	if not assets.processing and not assets.mounted then
+		success = nativefs.mount(assets.path .. "/assets.sad", "assets")
+
+		if success then
+			assets.mounted = success
+			log.info("[ASSETS] Mounted pack")
+		end
 	end
 end
 
 ---@return boolean
 function assets.loaded()
-	return assets.data ~= nil
+	return assets.mounted
 end
 
 ---@param name string
 function assets.get(name)
-	if not assets:loaded() then
-		log.error("[ASSETS] No asset pack loaded. Can not load asset '" .. name .. "'")
+	if not assets.loaded() then
+		log.error("[ASSETS] No asset pack loaded.")
 		return false
 	end
 
 	local ext = name:match("^.+%.(.+)$")
 	local asset_type = ext_types[ext]
 
+	-- if not assets.data[asset_type][name] then
+	-- log.error("[ASSETS] Asset '" .. name .. "' does not exist.")
+	-- return nil
+	-- end
+
+	-- local asset
+
+	-- if not asset.resource then
 	if not assets.data[asset_type][name] then
-		log.error("[ASSETS] Asset '" .. name .. "' does not exist.")
-		return nil
+		local fn = resource_functions[asset_type]
+		assets.data[asset_type][name] = {
+			resource = fn("assets/" .. name),
+		}
 	end
 
 	local asset = assets.data[asset_type][name]
-
-	if not asset.resource then
-		local fn = resource_functions[asset_type]
-		asset.resource = fn(asset.data)
-		asset.data = nil
-	end
-
 	return asset
 end
 
