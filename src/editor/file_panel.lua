@@ -3,6 +3,7 @@ local nativefs = require("libs.nativefs")
 local assets = require("engine.assets")
 local signal = require("engine.signal")
 local editor = require("editor")
+local miniz = require("miniz")
 local log = require("libs.log")
 
 local Scene = require("engine.scene")
@@ -10,7 +11,7 @@ local SceneData = require("editor.scene_data")
 
 ---@class editor.file_panel
 local file_panel = {
-	reload_needed = true,
+	reload_needed = false,
 	selected = 0,
 	tree = {
 		dirs = {},
@@ -44,61 +45,56 @@ function file_panel.open_file(file)
 	end
 end
 
+---@param path string
+---@param branch table
 function file_panel.create_tree(path, branch)
 	local items = nativefs.getDirectoryItems(path)
 
 	for _, name in pairs(items) do
-		-- Skip hidden files.
-		if name:sub(1, 1) == "." then
-			goto continue
-		end
-
-		local item_path = path .. "/" .. name
-		local info = nativefs.getInfo(item_path)
+		local full_path = path .. "/" .. name
+		local info = nativefs.getInfo(full_path)
 
 		if info.type == "directory" then
 			table.insert(branch.dirs, { name = name, dirs = {}, files = {} })
-			file_panel.create_tree(item_path, table.back(branch.dirs))
+			file_panel.create_tree(full_path, branch.dirs[#branch.dirs])
 		elseif info.type == "file" then
-			-- Get the file extension and type.
-			local ext = name:match("^.+%.([^.]+)$")
-			local file_type = filetypes[ext]
+			local ext = name:match("^.+%.([^%.]+)$")
+			local type = filetypes[ext]
 
-			local asset_name = name
-			local parent_dir = path:match(".*/([^/]+)/*$")
-			if parent_dir then
-				asset_name = parent_dir .. "/" .. asset_name
-			end
-
-			if file_type then
-				local data = {
+			if type then
+				table.insert(branch.files, {
 					name = name,
-					path = item_path,
-					type = file_type,
-					asset_name = asset_name,
-				}
-				table.insert(branch.files, data)
+					type = type,
+					path = full_path,
+				})
 			end
 		end
-
-		::continue::
 	end
 end
 
 signal.register("file_panel_reload", function()
-	log.info("[EDITOR] Rebuilding file tree.")
 	file_panel.reload_needed = true
 end)
 
 function file_panel.update()
-	if not editor.loaded_project or assets.processing then
+	if not editor.loaded_project or not assets.loaded() then
 		return
 	end
 
-	if file_panel.reload_needed == true then
-		file_panel.reload_needed = false
+	if file_panel.reload_needed then
 		log.info("[EDITOR] Rebuilding file tree.")
-		file_panel.create_tree(editor.loaded_project.path, file_panel.tree)
+
+		print(nativefs.getWorkingDirectory())
+		local root = editor.loaded_project.name
+		local archive = miniz.zip_read_file(root .. "/assets.sad")
+
+		if not archive then
+			log.error("[EDITOR] Could not open asset pack '" .. root .. "/assets.sad'")
+			return
+		end
+
+		file_panel.create_tree(editor.loaded_project.name, file_panel.tree)
+		file_panel.reload_needed = false
 	end
 end
 

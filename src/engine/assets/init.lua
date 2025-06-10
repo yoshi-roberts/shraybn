@@ -51,10 +51,13 @@ function assets.load()
 end
 
 function assets.update()
-	assets.processing = love.thread.getChannel("assets_processing"):pop()
+	if assets.processing then
+		assets.processing = love.thread.getChannel("assets_processing"):pop()
+		return
+	end
 
-	if not assets.processing and not assets.mounted then
-		success = nativefs.mount(assets.path .. "/assets.sad", "assets")
+	if not assets.mounted then
+		local success = nativefs.mount(assets.path .. "/assets.sad", "assets")
 
 		if success then
 			assets.mounted = success
@@ -78,14 +81,6 @@ function assets.get(name)
 	local ext = name:match("^.+%.(.+)$")
 	local asset_type = ext_types[ext]
 
-	-- if not assets.data[asset_type][name] then
-	-- log.error("[ASSETS] Asset '" .. name .. "' does not exist.")
-	-- return nil
-	-- end
-
-	-- local asset
-
-	-- if not asset.resource then
 	if not assets.data[asset_type][name] then
 		local fn = resource_functions[asset_type]
 		assets.data[asset_type][name] = {

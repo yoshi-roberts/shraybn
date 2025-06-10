@@ -68,7 +68,6 @@ function project_manager.load(name)
 	local proj = Project.load(name)
 	editor.loaded_project = proj
 
-	print(proj.name)
 	assets.init(proj.name, true)
 	assets.load()
 
