@@ -3,7 +3,6 @@ require("love.filesystem")
 
 local log = require("libs.log")
 local miniz = require("miniz")
-local binser = require("libs.binser")
 local nativefs = require("libs.nativefs")
 
 local root, lazy = ...
@@ -37,7 +36,7 @@ end
 
 ---@return boolean
 local function pack_exists()
-	if not nativefs.getInfo(root .. "/assets.sad") then
+	if not nativefs.getInfo("assets.sad") then
 		return false
 	end
 
@@ -46,8 +45,7 @@ end
 
 ---@return table
 local function pack_load()
-	local archive = miniz.zip_read_file(root .. "/assets.sad")
-
+	local archive = miniz.zip_read_file("assets.sad")
 	return archive
 end
 
@@ -78,7 +76,7 @@ local function asset_modified(archive)
 	for i = 1, file_count, 1 do
 		local name = archive:get_filename(i)
 		local stat = archive:stat(i)
-		local info = nativefs.getInfo(root .. "/assets/" .. name)
+		local info = nativefs.getInfo(name)
 
 		-- The modtimes will sometimes differ by a single digit,
 		-- even when they should be the same.
@@ -125,21 +123,10 @@ end
 local function create_pack()
 	log.info("[ASSETS] Indexing items.")
 
-	local orig_work_dir = nativefs.getWorkingDirectory()
-	local proj_dir = orig_work_dir .. "/" .. root
-
 	local archive = nil
 	local success, err
 
-	nativefs.setWorkingDirectory(proj_dir .. "/assets")
-	local items = nativefs.getDirectoryItems(nativefs.getWorkingDirectory())
-	for _, name in pairs(items) do
-		local item_info = nativefs.getInfo(name)
-		if item_info.type == "directory" then
-			index_items(name)
-		end
-	end
-	nativefs.setWorkingDirectory(orig_work_dir)
+	index_items("assets")
 
 	local should_write = true
 
@@ -151,13 +138,11 @@ local function create_pack()
 	end
 
 	if should_write then
-		archive = miniz.zip_write_file(root .. "/assets.sad")
+		archive = miniz.zip_write_file("assets.sad")
 
-		nativefs.setWorkingDirectory(proj_dir .. "/assets")
 		for asset, _ in pairs(assets) do
 			archive:add_file(asset)
 		end
-		nativefs.setWorkingDirectory(orig_work_dir)
 
 		success, err = archive:finalize()
 	end
@@ -167,10 +152,9 @@ local function create_pack()
 	if not success then
 		log.error("[ASSETS] " .. err)
 	end
+
+	love.thread.getChannel("assets_processing"):push(false)
+	log.info("[ASSETS] Process completed.")
 end
 
 create_pack()
-
--- love.thread.getChannel("asset_data"):push(assets)
-love.thread.getChannel("assets_processing"):push(false)
-log.info("[ASSETS] Process completed.")

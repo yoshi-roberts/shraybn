@@ -37,6 +37,8 @@ function Project.load(path)
 	local proj = deserialized[1]
 	proj.file_path = path
 
+	nativefs.setWorkingDirectory(proj.file_path)
+
 	return proj
 end
 

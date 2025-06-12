@@ -57,7 +57,7 @@ function assets.update()
 	end
 
 	if not assets.mounted then
-		local success = nativefs.mount(assets.path .. "/assets.sad", "assets")
+		local success = nativefs.mount("assets.sad", "assets")
 
 		if success then
 			assets.mounted = success

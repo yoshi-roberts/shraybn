@@ -3,7 +3,6 @@ local nativefs = require("libs.nativefs")
 local assets = require("engine.assets")
 local signal = require("engine.signal")
 local editor = require("editor")
-local miniz = require("miniz")
 local log = require("libs.log")
 
 local Scene = require("engine.scene")
@@ -65,7 +64,7 @@ function file_panel.create_tree(path, branch)
 				table.insert(branch.files, {
 					name = name,
 					type = type,
-					path = full_path,
+					path = full_path:sub(3, #full_path),
 				})
 			end
 		end
@@ -84,16 +83,7 @@ function file_panel.update()
 	if file_panel.reload_needed then
 		log.info("[EDITOR] Rebuilding file tree.")
 
-		print(nativefs.getWorkingDirectory())
-		local root = editor.loaded_project.name
-		local archive = miniz.zip_read_file(root .. "/assets.sad")
-
-		if not archive then
-			log.error("[EDITOR] Could not open asset pack '" .. root .. "/assets.sad'")
-			return
-		end
-
-		file_panel.create_tree(editor.loaded_project.name, file_panel.tree)
+		file_panel.create_tree(".", file_panel.tree)
 		file_panel.reload_needed = false
 	end
 end
