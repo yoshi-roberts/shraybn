@@ -83,6 +83,11 @@ function file_panel.update()
 	if file_panel.reload_needed then
 		log.info("[EDITOR] Rebuilding file tree.")
 
+		file_panel.tree = {
+			dirs = {},
+			files = {},
+		}
+
 		file_panel.create_tree(".", file_panel.tree)
 		file_panel.reload_needed = false
 	end

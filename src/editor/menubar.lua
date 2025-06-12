@@ -20,7 +20,6 @@ function menubar.new_scene()
 	local scene = Scene:new(menubar.scene.name)
 	local path = "scenes/" .. menubar.scene.name .. ".scd"
 
-	nativefs.setWorkingDirectory(editor.loaded_project.name)
 	local exists = nativefs.getInfo(path)
 
 	if exists ~= nil then
@@ -29,8 +28,6 @@ function menubar.new_scene()
 
 	scene:save(path)
 
-	-- Set working directory back to projects/
-	nativefs.setWorkingDirectory("..")
 	file_panel.reload_needed = true
 end
 
