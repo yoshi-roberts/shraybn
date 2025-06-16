@@ -3,18 +3,20 @@ local Scene = require("engine.scene")
 local engine = require("engine")
 
 ---@class editor.action.ChangeScene: engine.Action
-local ChangeScene = Action:extend()
+local ChangeSceneAction = Action:extend()
 
 ---@param name string
-function ChangeScene:init(name)
+function ChangeSceneAction:init(name)
 	self.scene_path = name
 end
 
-function ChangeScene:execute()
-	local path = "projects/" .. engine.loaded_project.name .. "/" .. self.scene_path
-
-	local scn = engine.add_scene(Scene.load(path))
+function ChangeSceneAction:execute()
+	local scn = engine.add_scene(Scene.load(self.scene_path))
 	engine.set_scene(scn.name)
 end
 
-return ChangeScene
+function ChangeSceneAction:__tostring()
+	return "ChangeSceneAction"
+end
+
+return ChangeSceneAction

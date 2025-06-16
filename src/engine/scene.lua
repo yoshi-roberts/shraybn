@@ -102,6 +102,14 @@ end
 ---@return engine.Scene
 function Scene.load(path)
 	-- .scd are scene data files.
+
+	local exists = nativefs.getInfo(path)
+
+	if not exists then
+		log.error("[SCENE] Could not load scene '" .. path .. "'")
+		return Scene:new("scene_load_error")
+	end
+
 	local contents = nativefs.read(path)
 	local deserialized = binser.deserialize(contents)
 

@@ -3,18 +3,22 @@ local Scene = require("engine.scene")
 local engine = require("engine")
 
 ---@class editor.action.Dialogue: engine.Action
-local Dialogue = Action:extend()
+local DialogueAction = Action:extend()
 
 ---@param name string
-function Dialogue:init(name)
+function DialogueAction:init(name)
 	self.script_path = name
 end
 
-function Dialogue:execute()
+function DialogueAction:execute()
 	-- local path = "projects/" .. engine.loaded_project.name .. "/" .. self.scene_path
 	--
 	-- local scn = engine.add_scene(Scene.load(path))
 	-- engine.set_scene(scn.name)
 end
 
-return Dialogue
+function DialogueAction:__tostring()
+	return "DialogueAction"
+end
+
+return DialogueAction

@@ -2,7 +2,7 @@ local Sprite = require("engine.sprite")
 local Trigger = require("engine.trigger")
 local ChangeField = require("editor.command.change_field")
 
-local ChangeScene = require("engine.actions.change_scene")
+local ChangeSceneAction = require("engine.actions.change_scene")
 local Dialogue = require("engine.actions.dialogue")
 
 local editor = require("editor")
@@ -114,7 +114,7 @@ function inspector.resource(target, field, label)
 		imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
 
 		if imgui.IsMouseReleased_Nil(0) and inspector.payload then
-			editor.history:add(ChangeField:new(target, field, inspector.payload.asset_name))
+			editor.history:add(ChangeField:new(target, field, inspector.payload.path))
 
 			inspector.payload = nil
 		end
@@ -189,16 +189,23 @@ function inspector.trigger()
 
 	---@type {[string]: engine.Action}
 	local action_types = {
-		["Change Scene"] = ChangeScene,
-		["Dialogue"] = Dialogue,
+		["ChangeSceneAction"] = ChangeSceneAction,
+		["DialogueAction"] = Dialogue,
 	}
+
+	local current = tostring(trigger.action)
+
+	if trigger.action and not inspector.current_combo_item then
+		inspector.current_combo_item = current
+	end
 
 	if imgui.BeginCombo("Trigger Action", inspector.current_combo_item) then
 		for k, action in pairs(action_types) do
 			---@cast action engine.Action
+
 			local is_selected = (inspector.current_combo_item == k)
 
-			if imgui.Selectable_Bool(k, is_selected) then
+			if imgui.Selectable_Bool(k, is_selected) and current ~= k then
 				inspector.current_combo_item = k
 				trigger.action = action:new()
 			end
@@ -211,7 +218,7 @@ function inspector.trigger()
 		imgui.EndCombo()
 	end
 
-	if trigger.action and trigger.action:is(ChangeScene) then
+	if trigger.action and trigger.action:is(ChangeSceneAction) then
 		inspector.resource(trigger.action, "scene_path")
 	end
 

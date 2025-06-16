@@ -24,7 +24,7 @@ editor.scenes = {
 }
 
 function editor.save_scene()
-	local proj_path = nativefs.getWorkingDirectory() .. "/" .. editor.loaded_project.name
+	local proj_path = nativefs.getWorkingDirectory()
 	editor.loaded_project:save(proj_path)
 	if not editor.scenes.current then
 		return
