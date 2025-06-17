@@ -3,6 +3,16 @@ local evaluator = {}
 
 ---@param line shrift.LineData
 ---@param env table
+function evaluator.eval_line(line, env)
+	if line.type == "DIALOGUE" or line.type == "CHOICE" then
+		return evaluator.eval_condition(line, env)
+	elseif line.type == "ASSIGN" then
+		return evaluator.eval_value(line, env)
+	end
+end
+
+---@param line shrift.LineData
+---@param env table
 ---@return any
 function evaluator.eval_value(line, env)
 	local expression = line.data.value:gsub("%$", "vars.")
