@@ -15,6 +15,7 @@ local ui = {
 	focussed = nil,
 	callback = nil, ---@type function
 	is_same_line = false,
+	debug = false,
 }
 
 function ui:init() end
@@ -41,6 +42,10 @@ function ui:set_theme(theme)
 end
 
 function ui:draw_debug(x, y, w, h)
+	if not self.debug then
+		return
+	end
+
 	love.graphics.setColor(1, 0, 0, 1)
 	love.graphics.rectangle("line", x, y, w, h)
 end
@@ -181,6 +186,17 @@ function ui:button(text, callback)
 
 	self:set_next_pos(x, y, w, h)
 	self:draw_debug(x, y, w, h)
+end
+
+function ui:separator()
+	local x, y = self:get_next_pos()
+	local w = self:get_next_size()
+	local h = 1
+
+	love.graphics.setColor(self.theme.outline_color)
+	love.graphics.line(x, y, x + w, y)
+
+	self:set_next_pos(x, y, w, h)
 end
 
 function ui:finish() end
