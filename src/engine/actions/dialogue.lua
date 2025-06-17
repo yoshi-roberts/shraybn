@@ -1,6 +1,7 @@
+local Parser = require("shrift.parser") --[[@as shrift.Parser]]
 local Action = require("engine.action")
-local Scene = require("engine.scene")
-local engine = require("engine")
+local assets = require("engine.assets")
+-- local engine = require("engine")
 
 ---@class editor.action.Dialogue: engine.Action
 local DialogueAction = Action:extend()
@@ -11,10 +12,12 @@ function DialogueAction:init(name)
 end
 
 function DialogueAction:execute()
-	-- local path = "projects/" .. engine.loaded_project.name .. "/" .. self.scene_path
-	--
-	-- local scn = engine.add_scene(Scene.load(path))
-	-- engine.set_scene(scn.name)
+	local script = assets.get(self.script_path).resource
+	local parser = Parser:new(script)
+
+	for _, line in pairs(parser.lines) do
+		print(line)
+	end
 end
 
 function DialogueAction:__tostring()

@@ -35,6 +35,7 @@ local ext_types = {
 ---@type {[string]: function}
 local resource_functions = {
 	["image"] = love.graphics.newImage,
+	["script"] = love.filesystem.read,
 }
 
 ---@param path string

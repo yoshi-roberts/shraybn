@@ -26,7 +26,7 @@ end
 ---@param env table
 ---@return boolean
 function evaluator.eval_condition(line, env)
-	local expression = line.data.value:gsub("%$", "vars.")
+	local expression = line.data.condition:gsub("%$", "vars.")
 
 	local template = "return " .. expression
 	local fn = load(template, nil, nil, env)
