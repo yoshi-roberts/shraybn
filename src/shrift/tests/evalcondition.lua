@@ -10,11 +10,12 @@ local input = [[
 	$var = 2
 	{$var == 2} Character: Conditional dialogue.
 	{$var == 1} Character: Conditional dialogue.
+	* {not $var} Choice 2 : Label 3
 ]]
 
 it("Shrift eval condition", function()
 	local parser = Parser:new(input)
-	expect(#parser.lines).to.equal(5)
+	expect(#parser.lines).to.equal(6)
 
 	local result = evaluator.eval_condition(parser.lines[1], parser.env)
 	expect(result).to.equal(true)
@@ -27,5 +28,8 @@ it("Shrift eval condition", function()
 	expect(result).to.equal(true)
 
 	result = evaluator.eval_condition(parser.lines[5], parser.env)
+	expect(result).to.equal(false)
+
+	result = evaluator.eval_condition(parser.lines[6], parser.env)
 	expect(result).to.equal(false)
 end)
