@@ -18,6 +18,12 @@ function dialogue_box.show(title, text)
 	dialogue_box.visible = true
 end
 
+function dialogue_box.hide()
+	dialogue_box.title = ""
+	dialogue_box.text = ""
+	dialogue_box.visible = false
+end
+
 function dialogue_box.update(dt)
 	if not dialogue_box.visible then
 		return

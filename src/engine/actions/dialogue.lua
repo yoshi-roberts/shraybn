@@ -3,6 +3,7 @@ local Action = require("engine.action")
 local assets = require("engine.assets")
 local pprint = require("libs.pprint")
 local signal = require("engine.signal")
+local dialogue_manager = require("engine.dialogue_manager")
 -- local engine = require("engine")
 
 ---@class editor.action.Dialogue: engine.Action
@@ -15,11 +16,7 @@ end
 
 function DialogueAction:execute()
 	local script = assets.get(self.script_path).resource
-	local parser = Parser:new(script)
-
-	for _, line in pairs(parser.lines) do
-		signal.emit("dialogue_manager_queue", line)
-	end
+	dialogue_manager.run(Parser:new(script))
 end
 
 function DialogueAction:__tostring()

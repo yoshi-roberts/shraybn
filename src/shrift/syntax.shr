@@ -4,7 +4,7 @@ $var = false
 [Label]
 
 Character: Some line of dialogue.
-Character: Dialogue with {shake}effects!{/shake}
+{not $var} Character: Dialogue... Wow.
 
 * Choice 1 : Label 2
 * {not $var} Choice 2 : Label 3

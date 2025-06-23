@@ -21,7 +21,6 @@ function Parser:init(input)
 	self.lines = {}
 	self.line_count = 0
 	self.label_ids = {}
-	self.env = { vars = {} }
 	self.errors = {}
 
 	self:split_lines()
@@ -171,6 +170,7 @@ function Parser:parse_dialogue(line)
 		character = parts[1],
 		text = parts[2],
 		condition = condition,
+		result = nil,
 	}
 end
 
@@ -207,6 +207,7 @@ function Parser:parse_choice(line)
 		text = text,
 		destination = destination,
 		condition = condition,
+		result = nil,
 	}
 
 	return data

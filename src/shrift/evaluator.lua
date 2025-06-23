@@ -36,6 +36,10 @@ end
 ---@param env table
 ---@return boolean
 function evaluator.eval_condition(line, env)
+	if line.data.condition == nil or line.data.result then
+		return true
+	end
+
 	local expression = line.data.condition:gsub("%$", "vars.")
 
 	local template = "return " .. expression
@@ -45,6 +49,7 @@ function evaluator.eval_condition(line, env)
 		local success, result = pcall(fn)
 
 		if success then
+			line.data.result = result
 			return result
 		end
 	end
