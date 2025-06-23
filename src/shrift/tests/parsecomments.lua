@@ -11,7 +11,7 @@ local input = [[
 it("Shrift parse comments", function()
 	local parser = Parser:new(input)
 
-	expect(#parser.lines).to.equal(2)
+	expect(parser.line_count).to.equal(2)
 
 	expect(parser.lines[1].data.character).to.equal("Character")
 	expect(parser.lines[1].data.text).to.equal("Some dialogue.")

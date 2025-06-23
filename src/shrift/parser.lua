@@ -1,7 +1,7 @@
 local Class = require("libs.class") --[[@as Class]]
 local utils = require("shrift.utils") --[[@as shrift.utils]]
 local line_data = require("shrift.line") --[[@as shrift.line_data]]
-local pprint = require("libs.pprint")
+local inspect = require("libs.inspect")
 
 ---@class shrift.Parser : Class
 local Parser = Class:extend()
@@ -19,6 +19,8 @@ LINE_TYPE = {
 function Parser:init(input)
 	self.input = input
 	self.lines = {}
+	self.line_count = 0
+	self.label_ids = {}
 	self.env = { vars = {} }
 	self.errors = {}
 
@@ -36,7 +38,8 @@ function Parser:parse_file(path)
 end
 
 function Parser:inspect()
-	pprint(self.lines)
+	print("label_ids = " .. inspect(self.label_ids))
+	print("lines = " .. inspect(self.lines))
 end
 
 local err_template = [[
@@ -53,21 +56,26 @@ end
 
 function Parser:split_lines()
 	local i = 1
+	local id = 1
 
 	for str in self.input:gmatch("([^\n]*)\n?") do
 		local stripped = utils.strip_trailing_whitespace(str)
 		stripped = stripped:match("^(.-)#") or stripped
 		stripped = utils.strip_trailing_whitespace(stripped)
 
+		-- Check line is not a comment or empty.
 		if stripped:sub(1, 1) ~= "#" and stripped ~= "" then
 			local type = self:get_line_type(stripped)
-			local line = line_data.new(i, type, stripped)
+			local line = line_data.new(i, id, type, stripped)
 
 			if type == "ILLEGAL" then
 				self:error(line, "Invalid line type")
 			end
 
-			table.insert(self.lines, line)
+			-- table.insert(self.lines, line)
+			self.lines[id] = line
+			id = id + 1
+			self.line_count = self.line_count + 1
 		end
 
 		i = i + 1
@@ -117,6 +125,9 @@ function Parser:parse_label(line)
 		self:error(line, "Labels must be enclosed in brackets")
 	end
 
+	-- TODO: Check if label name already exists.
+
+	self.label_ids[label_name] = line.id
 	return { name = label_name }
 end
 

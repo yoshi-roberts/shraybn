@@ -9,12 +9,14 @@ local line_data = {}
 local line = {}
 
 ---@param num integer
+---@param id integer
 ---@param type string
 ---@param content string
 ---@return shrift.LineData
-function line_data.new(num, type, content)
+function line_data.new(num, id, type, content)
 	return {
 		num = num,
+		id = id,
 		type = type,
 		str = content,
 		data = {},

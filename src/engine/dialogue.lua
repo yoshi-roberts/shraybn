@@ -1,57 +1,47 @@
 local Class = require("libs.class")
 local Layer = require("engine.layer")
 local input = require("engine.input")
+local signal = require("engine.signal")
 local ui = require("engine.ui")
 
----@class engine.DialogueBox: Class
-local DialogueBox = Class:extend()
+---@class engine.dialogue_box: Class
+local dialogue_box = {}
 
-function DialogueBox:init()
-	self.visible = false
-	self.title = ""
-	self.messages = {}
-	self.current_message = nil
+dialogue_box.visible = false
+dialogue_box.title = ""
+dialogue_box.text = ""
+dialogue_box.messages = {}
+
+function dialogue_box.show(title, text)
+	dialogue_box.title = title
+	dialogue_box.text = text
+	dialogue_box.visible = true
 end
 
-function DialogueBox:queue(title, text)
-	table.insert(self.messages, {
-		title = title,
-		text = text,
-	})
-
-	if not self.current_message then
-		self.current_message = 1
-	end
-
-	self.visible = true
-end
-
-function DialogueBox:update(dt)
-	if not self.visible or not self.current_message then
+function dialogue_box.update(dt)
+	if not dialogue_box.visible then
 		return
 	end
 
-	if input.button_pressed(input.mouse_button.LEFT) then
-		if self.current_message < #self.messages then
-			self.current_message = self.current_message + 1
-		else
-			self.visible = false
-			self.current_message = nil
-		end
-	end
+	-- if input.button_pressed(input.mouse_button.LEFT) then
+	-- 	table.remove(dialogue_box.messages, 1)
+	--
+	-- 	if #dialogue_box.messages <= 0 then
+	-- 		dialogue_box.visible = false
+	-- 	end
+	-- end
 end
 
-function DialogueBox:draw()
-	if not self.visible then
+function dialogue_box.draw()
+	if not dialogue_box.visible then
 		return
 	end
-
-	local msg = self.messages[self.current_message]
 
 	ui:start(0, -32, 256 * 2, 128, "center", "bottom")
-	ui:label(msg.title)
+
+	ui:label(dialogue_box.title)
 	ui:separator()
-	ui:label(msg.text)
+	ui:label(dialogue_box.text)
 end
 
-return DialogueBox
+return dialogue_box

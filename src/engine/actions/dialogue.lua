@@ -1,6 +1,8 @@
 local Parser = require("shrift.parser") --[[@as shrift.Parser]]
 local Action = require("engine.action")
 local assets = require("engine.assets")
+local pprint = require("libs.pprint")
+local signal = require("engine.signal")
 -- local engine = require("engine")
 
 ---@class editor.action.Dialogue: engine.Action
@@ -16,7 +18,7 @@ function DialogueAction:execute()
 	local parser = Parser:new(script)
 
 	for _, line in pairs(parser.lines) do
-		print(line)
+		signal.emit("dialogue_manager_queue", line)
 	end
 end
 
