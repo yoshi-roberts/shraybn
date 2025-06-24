@@ -1,6 +1,6 @@
 local input = require("engine.input")
 local evaluator = require("shrift.evaluator")
-local dialogue_box = require("engine.dialogue")
+local dialogue_box = require("engine.dialogue_box")
 local signal = require("engine.signal")
 
 ---@class engine.dialogue_manager: Class
@@ -8,6 +8,7 @@ local dialogue_manager = {}
 
 dialogue_manager.env = { vars = {} }
 dialogue_manager.active = false
+dialogue_manager.blocked = false
 dialogue_manager.parser = nil ---@type shrift.Parser
 dialogue_manager.current_line = 1
 
@@ -35,6 +36,24 @@ local handlers = {
 			return true
 		end
 
+		return false
+	end,
+
+	["CHOICE"] = function(line)
+		local condition_met = evaluator.eval_line(line, dialogue_manager.env)
+
+		if condition_met and not dialogue_manager.blocked then
+			dialogue_box.add_choice(line.data.text, line.data.destination)
+		end
+
+		local parser = dialogue_manager.parser
+		local next_line = parser.lines[dialogue_manager.current_line + 1]
+
+		if next_line.type == "CHOICE" then
+			return true
+		end
+
+		dialogue_manager.blocked = true
 		return false
 	end,
 }
@@ -67,5 +86,15 @@ function dialogue_manager.update()
 		end
 	end
 end
+
+function dialogue_manager.goto_label(label)
+	local parser = dialogue_manager.parser
+	local id = parser.label_ids[label]
+
+	dialogue_manager.current_line = id
+	dialogue_manager.blocked = false
+end
+
+signal.register("dialogue_manager_goto_label", dialogue_manager.goto_label)
 
 return dialogue_manager

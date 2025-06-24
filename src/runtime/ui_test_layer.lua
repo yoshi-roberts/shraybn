@@ -1,6 +1,6 @@
 local ui = require("engine.ui")
 local dialogue_manager = require("engine.dialogue_manager")
-local dialogue_box = require("engine.dialogue")
+local dialogue_box = require("engine.dialogue_box")
 
 local function ui_attach()
 	ui:set_theme(require("engine.ui.default_theme"))

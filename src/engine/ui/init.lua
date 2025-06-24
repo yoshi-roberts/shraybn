@@ -100,28 +100,33 @@ function ui:mouse_in_rect(x, y, w, h)
 	return false
 end
 
-function ui:start(x, y, w, h, halign, valign)
-	halign = halign or "left"
-	valign = valign or "top"
+function ui:anchor(halign, valign, w, h)
+	local x, y
 
+	if halign == "left" then
+		x = 0
+	elseif halign == "center" then
+		x = (self.game_width / 2) - (w / 2)
+	elseif halign == "right" then
+		x = self.game_width - w
+	end
+
+	if valign == "top" then
+		y = 0
+	elseif valign == "center" then
+		y = (self.game_height / 2) - (h / 2)
+	elseif valign == "bottom" then
+		y = self.game_height - h
+	end
+
+	return x, y, w, h
+end
+
+function ui:start(x, y, w, h)
 	self.frame.x = x
 	self.frame.y = y
 	self.frame.w = w
 	self.frame.h = h
-
-	local gw, gh = self.game_width, self.game_height
-
-	if halign == "right" then
-		self.frame.x = (gw - w) + x
-	elseif halign == "center" then
-		self.frame.x = ((gw / 2) - (w / 2)) + x
-	end
-
-	if valign == "bottom" then
-		self.frame.y = (gh - h) + y
-	elseif valign == "center" then
-		self.frame.y = ((gh / 2) - (h / 2)) + y
-	end
 
 	love.graphics.setColor(self.theme.outline_color)
 	love.graphics.rectangle(
@@ -165,10 +170,6 @@ function ui:button(text, callback)
 	local x, y = self:get_next_pos()
 	local w = fnt:getWidth(text)
 	local h = fnt:getHeight()
-
-	if input.button_pressed(input.mouse_button.ANY) then
-		print("Hey!")
-	end
 
 	if self:mouse_in_rect(x, y, w, h) then
 		theme = self.theme.button.focussed
