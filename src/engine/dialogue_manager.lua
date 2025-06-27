@@ -18,6 +18,14 @@ function dialogue_manager.run(parser)
 	dialogue_manager.active = true
 end
 
+local function handle_choice(line)
+	local condition_met = evaluator.eval_line(line, dialogue_manager.env)
+
+	if condition_met and not dialogue_manager.blocked then
+		dialogue_box.add_choice(line.data.text, line.data.destination)
+	end
+end
+
 local handlers = {
 	["ASSIGN"] = function(line)
 		local result = evaluator.eval_line(line, dialogue_manager.env)
@@ -40,17 +48,24 @@ local handlers = {
 	end,
 
 	["CHOICE"] = function(line)
-		local condition_met = evaluator.eval_line(line, dialogue_manager.env)
-
-		if condition_met and not dialogue_manager.blocked then
-			dialogue_box.add_choice(line.data.text, line.data.destination)
+		if dialogue_manager.blocked then
+			return
 		end
 
-		local parser = dialogue_manager.parser
-		local next_line = parser.lines[dialogue_manager.current_line + 1]
+		handle_choice(line)
 
-		if next_line.type == "CHOICE" then
-			return true
+		local parser = dialogue_manager.parser
+		local next_id = dialogue_manager.current_line + 1
+
+		while next_id < parser.line_count do
+			local next_line = parser.lines[next_id]
+
+			if next_line.type == "CHOICE" then
+				handle_choice(next_line)
+				next_id = next_id + 1
+			else
+				break
+			end
 		end
 
 		dialogue_manager.blocked = true
