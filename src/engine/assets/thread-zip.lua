@@ -93,8 +93,31 @@ local function asset_modified(archive)
 	return modified
 end
 
+---@param archive table
+---@return boolean
+local function asset_added(archive)
+	local added = false
+	local file_count = archive:get_num_files()
+
+	local existing = {}
+
+	for i = 1, file_count, 1 do
+		local name = archive:get_filename(i)
+		existing[name] = true
+	end
+
+	for name, _ in pairs(assets) do
+		if not existing[name] then
+			added = true
+		end
+	end
+
+	return added
+end
+
 ---@param path string
-local function index_items(path)
+---@param target table
+local function index_items(path, target)
 	local items = nativefs.getDirectoryItems(path)
 
 	for _, name in pairs(items) do
@@ -110,10 +133,10 @@ local function index_items(path)
 			local valid, type = valid_type(ext)
 
 			if valid then
-				assets[item_path] = true
+				target[item_path] = true
 			end
 		elseif item_info.type == "directory" then
-			index_items(item_path)
+			index_items(item_path, target)
 		end
 
 		::continue::
@@ -126,7 +149,7 @@ local function create_pack()
 	local archive = nil
 	local success, err
 
-	index_items("assets")
+	index_items("assets", assets)
 
 	local should_write = true
 
@@ -135,6 +158,7 @@ local function create_pack()
 		archive = pack_load()
 		should_write = asset_removed(archive)
 		should_write = asset_modified(archive)
+		should_write = asset_added(archive)
 	end
 
 	if should_write then

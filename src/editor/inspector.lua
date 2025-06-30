@@ -42,6 +42,7 @@ end)
 ---| "image"
 ---| "entity"
 ---| "layer"
+---| "character"
 ---| "project"
 ---@param item any
 function inspector.inspect(type, item)
@@ -263,6 +264,22 @@ function inspector.layer()
 	imgui.Separator()
 
 	layer.is_active = inspector.bool("Active", layer.is_active)
+end
+
+function inspector.character()
+	local character = inspector.item
+	---@cast character engine.Character
+
+	imgui.Text("Character: " .. character.name)
+	imgui.Separator()
+
+	for k, portrait in pairs(character.portraits) do
+		local title = portrait.name:sub(1, 1):upper()
+			.. portrait.name:sub(2, #portrait.name):lower()
+		imgui.Text(title)
+		imgui.SameLine()
+		inspector.resource(character.portraits[k], "asset_path")
+	end
 end
 
 function inspector.project()

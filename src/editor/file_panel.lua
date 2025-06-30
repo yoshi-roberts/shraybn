@@ -7,6 +7,7 @@ local log = require("libs.log")
 
 local Scene = require("engine.scene")
 local SceneData = require("editor.scene_data")
+local Character = require("engine.character")
 
 ---@class editor.file_panel
 local file_panel = {
@@ -40,6 +41,9 @@ function file_panel.open_file(file)
 		editor.scenes.current = editor.scenes.open[file.path]
 	elseif file.type == "image" then
 		inspector.inspect("image", assets.get(file.path))
+	elseif file.type == "character" then
+		local character = Character.load(file.path)
+		inspector.inspect("character", character)
 	elseif file.type == "project" then
 		inspector.inspect("project", editor.loaded_project)
 	end
