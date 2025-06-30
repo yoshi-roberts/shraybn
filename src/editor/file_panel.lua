@@ -23,6 +23,7 @@ local file_panel = {
 local filetypes = {
 	["spd"] = "project",
 	["scd"] = "scene",
+	["chd"] = "character",
 	["shr"] = "script",
 	["png"] = "image",
 	["jpg"] = "image",

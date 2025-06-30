@@ -3,6 +3,7 @@ local line_data = {}
 
 ---@class shrift.LineData
 ---@field num integer
+---@field id integer
 ---@field type string
 ---@field str string
 ---@field data table

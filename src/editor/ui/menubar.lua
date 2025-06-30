@@ -10,7 +10,8 @@ local imgui = require("engine.imgui")
 local function scene_menu(menubar)
 	local new_str = string.format("%s New", font_icon.ICON_PLUS)
 	if imgui.MenuItem_Bool(new_str, nil, nil) then
-		menubar.scene.popup = true
+		menubar.popup.open = true
+		menubar.popup.type = "scene"
 	end
 
 	local save_str = string.format("%s Save", font_icon.ICON_FLOPPY_O)
@@ -33,6 +34,14 @@ local function scene_menu(menubar)
 	local redo_str = string.format("%s Redo", font_icon.ICON_REPEAT)
 	if imgui.MenuItem_Bool(redo_str, nil, nil) then
 		editor.history:redo()
+	end
+end
+
+local function character_menu(menubar)
+	local new_str = string.format("%s New", font_icon.ICON_PLUS)
+	if imgui.MenuItem_Bool(new_str, nil, nil) then
+		menubar.popup.open = true
+		menubar.popup.type = "character"
 	end
 end
 
@@ -88,6 +97,11 @@ local function display(menubar)
 			imgui.EndMenu()
 		end
 
+		if imgui.BeginMenu("Character") then
+			character_menu(menubar)
+			imgui.EndMenu()
+		end
+
 		imgui.EndDisabled(no_proj)
 
 		if imgui.BeginMenu("Project") then
@@ -103,19 +117,23 @@ local function display(menubar)
 		imgui.EndMenuBar()
 	end
 
-	if menubar.scene.popup then
-		imgui.OpenPopup_Str("new_scene")
-		menubar.scene.popup = false
+	if menubar.popup.open then
+		imgui.OpenPopup_Str("new_popup")
+		menubar.popup.open = false
 	end
 
-	if imgui.BeginPopup("new_scene") then
-		imgui.Text("Scene Name")
-		if imgui.InputText("##scene_field", menubar.buf, 128) then
-			menubar.scene.name = ffi.string(menubar.buf)
+	if imgui.BeginPopup("new_popup") then
+		imgui.Text("Name")
+		if imgui.InputText("##popup_name_field", menubar.buf, 128) then
+			menubar.popup.name = ffi.string(menubar.buf)
 		end
 
 		if imgui.Button("Create") then
-			menubar.new_scene()
+			if menubar.popup.type == "scene" then
+				menubar.new_scene()
+			else
+				menubar.new_character()
+			end
 			imgui.CloseCurrentPopup()
 		end
 

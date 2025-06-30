@@ -52,6 +52,7 @@ function project_manager.create(name, path)
 
 	nativefs.createDirectory(path .. "/assets")
 	nativefs.createDirectory(path .. "/scenes")
+	nativefs.createDirectory(path .. "/characters")
 
 	local proj = Project:new(name, path) ---@type engine.Project
 	proj:save(path)
