@@ -7,6 +7,7 @@ local Dialogue = require("engine.actions.dialogue")
 
 local editor = require("editor")
 local assets = require("engine.assets")
+local character = require("engine.character")
 local signal = require("engine.signal")
 local imgui = require("engine.imgui")
 local ffi = require("ffi")
@@ -42,7 +43,7 @@ end)
 ---| "image"
 ---| "entity"
 ---| "layer"
----| "character"
+---| "characters"
 ---| "project"
 ---@param item any
 function inspector.inspect(type, item)
@@ -266,19 +267,25 @@ function inspector.layer()
 	layer.is_active = inspector.bool("Active", layer.is_active)
 end
 
-function inspector.character()
-	local character = inspector.item
-	---@cast character engine.Character
+function inspector.characters()
+	local characters = inspector.item ---@type engine.character.Character[]
 
-	imgui.Text("Character: " .. character.name)
-	imgui.Separator()
+	if imgui.Button("New") then
+		character.add("Test")
+	end
 
-	for k, portrait in pairs(character.portraits) do
-		local title = portrait.name:sub(1, 1):upper()
-			.. portrait.name:sub(2, #portrait.name):lower()
-		imgui.Text(title)
-		imgui.SameLine()
-		inspector.resource(character.portraits[k], "asset_path")
+	for k, char in pairs(characters) do
+		imgui.Text("Character: " .. char.name)
+		imgui.Separator()
+
+		for k, portrait in pairs(char.portraits) do
+			---@cast portrait engine.character.Portrait
+			local title = portrait.mood:sub(1, 1):upper()
+				.. portrait.mood:sub(2, #portrait.mood):lower()
+			imgui.Text(title)
+			imgui.SameLine()
+			inspector.resource(char.portraits[k], "asset_path")
+		end
 	end
 end
 

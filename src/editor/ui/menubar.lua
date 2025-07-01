@@ -64,6 +64,7 @@ local function project_menu()
 			p:close()
 		end
 	end
+
 	imgui.MenuItem_Bool(font_icon.ICON_FLOPPY_O .. " Save", nil, nil)
 end
 

@@ -7,7 +7,7 @@ local file_icons = {
 	["image"] = font_icon.ICON_FILE_IMAGE_O,
 	["project"] = font_icon.ICON_FILE,
 	["scene"] = font_icon.ICON_FILM .. " ",
-	["character"] = font_icon.ICON_USER,
+	["characters"] = font_icon.ICON_USER,
 	["script"] = font_icon.ICON_FILE_TEXT_O,
 }
 

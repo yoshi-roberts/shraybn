@@ -2,6 +2,7 @@ local Project = require("engine.project")
 local nativefs = require("libs.nativefs")
 local imgui = require("engine.imgui")
 local assets = require("engine.assets")
+local character = require("engine.character")
 local signal = require("engine.signal")
 local editor = require("editor")
 local ffi = require("ffi")
@@ -71,6 +72,9 @@ function project_manager.load(name)
 
 	assets.init(proj.name, true)
 	assets.load()
+
+	print(nativefs.getWorkingDirectory(), proj.name)
+	character.load(".")
 
 	signal.emit("file_panel_reload")
 	-- TODO: Almost certainly should not be called here.

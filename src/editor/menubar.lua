@@ -1,5 +1,5 @@
 local Scene = require("engine.scene")
-local Character = require("engine.character")
+local Character = require("src.engine.character")
 local nativefs = require("libs.nativefs")
 local file_panel = require("editor.file_panel")
 local editor = require("editor")

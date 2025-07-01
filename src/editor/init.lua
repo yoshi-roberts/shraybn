@@ -23,6 +23,10 @@ editor.scenes = {
 	current = nil, ---@type editor.SceneData
 }
 
+editor.characters = {
+	open = {},
+}
+
 function editor.save_scene()
 	local proj_path = nativefs.getWorkingDirectory()
 	editor.loaded_project:save(proj_path)
@@ -38,6 +42,12 @@ function editor.save_all_scenes()
 	for _, scene in pairs(editor.scenes.open) do
 		scene.scene:save(scene.path)
 		scene.saved = true
+	end
+end
+
+function editor.save_all_characters()
+	for _, character in pairs(editor.characters.open) do
+		character:save()
 	end
 end
 

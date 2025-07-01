@@ -46,7 +46,7 @@ end
 function Project:save(path)
 	local serialized = binser.serialize(self)
 
-	if not nativefs.write(path .. "/" .. "proj.spd", serialized, #serialized) then
+	if not nativefs.write(path .. "/proj.spd", serialized, #serialized) then
 		log.error("Project data could not be written.")
 	end
 end

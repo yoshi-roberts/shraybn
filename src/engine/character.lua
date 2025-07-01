@@ -1,62 +1,78 @@
-local Class = require("libs.class")
 local binser = require("libs.binser")
 local nativefs = require("libs.nativefs")
 local log = require("libs.log")
 
----@alias CharacterPortrait {name: string, asset_path: string}
+---@alias engine.character.Portrait {mood: string, asset_path: string}
+---@alias engine.character.Character {id: integer, name: string, mood: string, portraits: engine.character.Portrait[]}
 
----@class engine.Character: Class
-local Character = Class:extend()
+---@class engine.character
+local character = {}
 
-function Character:init(name)
-	self.name = name ---@type string
-	self.portraits = {} ---@type engine.Sprite[]
+character.characters = {} ---@type engine.character.Character[]
+character.ids = {}
 
-	self:add_portrait("neutral")
-	self:add_portrait("happy")
-	self:add_portrait("sad")
-	self:add_portrait("angry")
-	self:add_portrait("confused")
+function character.add(name)
+	local id = #character.characters + 1
+
+	table.insert(character.characters, {
+		id = id,
+		name = name,
+		mood = "neutral",
+		portraits = {},
+	})
+
+	character.ids[name] = id
+
+	character.add_portrait(name, "neutral")
+	character.add_portrait(name, "happy")
+	character.add_portrait(name, "sad")
+	character.add_portrait(name, "angry")
 end
 
-function Character:update() end
-
-function Character:draw() end
-
 ---@param name string
+---@param mood string
 ---@param asset_path string?
-function Character:add_portrait(name, asset_path)
-	table.insert(self.portraits, {
-		name = name,
+function character.add_portrait(name, mood, asset_path)
+	local id = character.ids[name]
+	local char = character.characters[id]
+	table.insert(char.portraits, {
+		mood = mood,
 		asset_path = asset_path,
 	})
 end
 
 ---@param path string
----@return engine.Character
-function Character.load(path)
-	-- .chd are character data files.
+function character.load(path)
+	-- .chd is character data file.
 
+	path = path .. "/characters.chd"
 	local exists = nativefs.getInfo(path)
 
 	if not exists then
-		log.error("[CHARACTER] Could not load character '" .. path .. "'")
-		return Character:new("character_load_error")
+		log.error("[CHARACTER] Could not load character data '" .. path .. "'")
+		return
 	end
 
 	local contents = nativefs.read(path)
 	local deserialized = binser.deserialize(contents)
 
-	return deserialized[1]
+	character.characters = deserialized
+
+	for _, char in pairs(character.characters) do
+		---@cast char engine.character.Character
+		character.ids[char.name] = char.id
+	end
+
+	log.info("[CHARACTER] Loaded character data")
 end
 
 ---@param path string
-function Character:save(path)
-	local serialized = binser.serialize(self)
+function character:save(path)
+	local serialized = binser.serialize(character.characters)
 
-	if not nativefs.write(path, serialized, #serialized) then
+	if not nativefs.write(path .. "/characters.chd", serialized, #serialized) then
 		log.error("Character data could not be written.")
 	end
 end
 
-return Character
+return character
