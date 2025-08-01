@@ -2,6 +2,8 @@ local editor = require("editor")
 local font_icon = require("editor.font_icons")
 local imgui = require("engine.imgui")
 
+local current_tab = nil
+
 local function tab_bar()
 	if imgui.BeginTabBar("##scene_tabs", imgui.ImGuiTabBarFlags_AutoSelectNewTabs) then
 		if not editor.scenes.current and not editor.characters.current then
@@ -18,8 +20,11 @@ local function tab_bar()
 			end
 
 			if imgui.BeginTabItem(text) then
+				if current_tab ~= name then
+					current_tab = name
+					imgui.SetWindowFocus_Str("Viewport")
+				end
 				editor.scenes.current = scene
-				imgui.SetWindowFocus_Str("Viewport")
 				imgui.EndTabItem()
 			end
 		end
@@ -32,8 +37,11 @@ local function tab_bar()
 			end
 
 			if imgui.BeginTabItem(text) then
+				if current_tab ~= name then
+					current_tab = name
+					imgui.SetWindowFocus_Str("Character")
+				end
 				editor.characters.current = character
-				imgui.SetWindowFocus_Str("Character")
 				imgui.EndTabItem()
 			end
 		end
