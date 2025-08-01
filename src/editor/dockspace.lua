@@ -1,4 +1,4 @@
-local scene_tabs = require "editor.scene_tabs"
+local tab_bar = require "editor.tab_bar"
 local imgui = require "engine.imgui"
 local ffi = require "ffi"
 
@@ -24,6 +24,7 @@ dockspace.layouts = {
 		imgui.DockBuilderDockWindow("Files", id.left_bottom[0])
 		imgui.DockBuilderDockWindow("Inspector", id.right[0])
 		imgui.DockBuilderDockWindow("Viewport", id.center[0])
+		imgui.DockBuilderDockWindow("Character", id.center[0])
 	end,
 
 	left = function(id)
@@ -99,7 +100,7 @@ function dockspace.display()
 	imgui.PopStyleVar()
 	imgui.PopStyleVar(2)
 
-	scene_tabs()
+	tab_bar()
 
 	dockspace.id = imgui.GetID_Str("Dockspace")
 	imgui.DockSpace(
