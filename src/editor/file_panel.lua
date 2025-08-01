@@ -3,12 +3,12 @@ local nativefs = require("libs.nativefs")
 local assets = require("engine.assets")
 local signal = require("engine.signal")
 local editor = require("editor")
-local character = require("engine.character")
 local log = require("libs.log")
 
 local Scene = require("engine.scene")
 local SceneData = require("editor.scene_data")
-local Character = require("src.engine.character")
+local Character = require("engine.character")
+local CharacterData = require("editor.character_data")
 
 ---@class editor.file_panel
 local file_panel = {
@@ -25,7 +25,7 @@ local file_panel = {
 local filetypes = {
 	["spd"] = "project",
 	["scd"] = "scene",
-	["chd"] = "characters",
+	["chd"] = "character",
 	["shr"] = "script",
 	["png"] = "image",
 	["jpg"] = "image",
@@ -40,10 +40,15 @@ function file_panel.open_file(file)
 		end
 
 		editor.scenes.current = editor.scenes.open[file.path]
+	elseif file.type == "character" then
+		if not editor.characters.open[file.path] then
+			local character = Character.load(file.path)
+			editor.characters.open[file.path] = CharacterData:new(character, file.path)
+		end
+
+		editor.characters.current = editor.characters.open[file.path]
 	elseif file.type == "image" then
 		inspector.inspect("image", assets.get(file.path))
-	elseif file.type == "characters" then
-		inspector.inspect("characters", character.characters)
 	elseif file.type == "project" then
 		inspector.inspect("project", editor.loaded_project)
 	end

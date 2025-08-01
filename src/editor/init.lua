@@ -1,6 +1,7 @@
 -- require("editor")
 local CommandHistory = require("editor.command.command_history")
 local Scene = require("engine.scene")
+local Character = require("engine.character")
 local Layer = require("engine.layer")
 local nativefs = require("libs.nativefs")
 local window = require("engine.window")
@@ -24,7 +25,8 @@ editor.scenes = {
 }
 
 editor.characters = {
-	open = {},
+	open = {}, ---@type editor.CharacterData[]
+	current = nil, ---@type editor.CharacterData
 }
 
 function editor.save_scene()

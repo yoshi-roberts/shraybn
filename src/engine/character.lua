@@ -1,51 +1,51 @@
+local Class = require("libs.class")
 local binser = require("libs.binser")
 local nativefs = require("libs.nativefs")
 local log = require("libs.log")
 
----@alias engine.character.Portrait {mood: string, asset_path: string}
----@alias engine.character.Character {id: integer, name: string, mood: string, portraits: engine.character.Portrait[]}
+---@alias engine.Portrait {mood: string, asset_path: string}
 
----@class engine.character
-local character = {}
+---@class engine.Character: Class
+local Character = Class:extend()
 
-character.characters = {} ---@type engine.character.Character[]
-character.ids = {}
+function Character:init(name)
+	-- local id = #Character.characters + 1
 
-function character.add(name)
-	local id = #character.characters + 1
+	-- table.insert(Character.characters, {
+	-- 	id = id,
+	-- 	name = name,
+	-- 	mood = "neutral",
+	-- 	portraits = {},
+	-- })
 
-	table.insert(character.characters, {
-		id = id,
-		name = name,
-		mood = "neutral",
-		portraits = {},
-	})
+	self.name = name
+	self.mood = "neutral"
+	self.portraits = {} ---@type engine.Portrait[]
+	self.portrait_ids = {}
 
-	character.ids[name] = id
-
-	character.add_portrait(name, "neutral")
-	character.add_portrait(name, "happy")
-	character.add_portrait(name, "sad")
-	character.add_portrait(name, "angry")
+	self:add_portrait(name, "neutral")
+	self:add_portrait(name, "happy")
+	self:add_portrait(name, "sad")
+	self:add_portrait(name, "angry")
 end
 
----@param name string
 ---@param mood string
 ---@param asset_path string?
-function character.add_portrait(name, mood, asset_path)
-	local id = character.ids[name]
-	local char = character.characters[id]
-	table.insert(char.portraits, {
+function Character:add_portrait(mood, asset_path)
+	local id = #self.portraits + 1
+
+	table.insert(self.portraits, {
 		mood = mood,
 		asset_path = asset_path,
 	})
+	self.portrait_ids[mood] = id
 end
 
 ---@param path string
-function character.load(path)
+---@return engine.Character?
+function Character.load(path)
 	-- .chd is character data file.
 
-	path = path .. "/characters.chd"
 	local exists = nativefs.getInfo(path)
 
 	if not exists then
@@ -56,23 +56,17 @@ function character.load(path)
 	local contents = nativefs.read(path)
 	local deserialized = binser.deserialize(contents)
 
-	character.characters = deserialized
-
-	for _, char in pairs(character.characters) do
-		---@cast char engine.character.Character
-		character.ids[char.name] = char.id
-	end
-
 	log.info("[CHARACTER] Loaded character data")
+	return deserialized[1]
 end
 
 ---@param path string
-function character:save(path)
-	local serialized = binser.serialize(character.characters)
+function Character:save(path)
+	local serialized = binser.serialize(self)
 
-	if not nativefs.write(path .. "/characters.chd", serialized, #serialized) then
+	if not nativefs.write(path, serialized, #serialized) then
 		log.error("Character data could not be written.")
 	end
 end
 
-return character
+return Character

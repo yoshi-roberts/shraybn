@@ -1,5 +1,6 @@
 local Sprite = require("engine.sprite")
 local Trigger = require("engine.trigger")
+local Character = require("engine.character")
 local ChangeField = require("editor.command.change_field")
 
 local ChangeSceneAction = require("engine.actions.change_scene")
@@ -7,7 +8,6 @@ local Dialogue = require("engine.actions.dialogue")
 
 local editor = require("editor")
 local assets = require("engine.assets")
-local character = require("engine.character")
 local signal = require("engine.signal")
 local imgui = require("engine.imgui")
 local ffi = require("ffi")
@@ -257,6 +257,14 @@ function inspector.entity()
 	inspector.property_number(entity, "rotation", "Rotation")
 end
 
+function inspector.character()
+	local char = inspector.item
+	---@cast char engine.Character
+	---
+	imgui.Text("Character: " .. char.name)
+	imgui.Separator()
+end
+
 function inspector.layer()
 	local layer = inspector.item
 	---@cast layer engine.Layer
@@ -265,28 +273,6 @@ function inspector.layer()
 	imgui.Separator()
 
 	layer.is_active = inspector.bool("Active", layer.is_active)
-end
-
-function inspector.characters()
-	local characters = inspector.item ---@type engine.character.Character[]
-
-	if imgui.Button("New") then
-		character.add("Test")
-	end
-
-	for k, char in pairs(characters) do
-		imgui.Text("Character: " .. char.name)
-		imgui.Separator()
-
-		for k, portrait in pairs(char.portraits) do
-			---@cast portrait engine.character.Portrait
-			local title = portrait.mood:sub(1, 1):upper()
-				.. portrait.mood:sub(2, #portrait.mood):lower()
-			imgui.Text(title)
-			imgui.SameLine()
-			inspector.resource(char.portraits[k], "asset_path")
-		end
-	end
 end
 
 function inspector.project()
