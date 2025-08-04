@@ -9,24 +9,15 @@ local log = require("libs.log")
 local Character = Class:extend()
 
 function Character:init(name)
-	-- local id = #Character.characters + 1
-
-	-- table.insert(Character.characters, {
-	-- 	id = id,
-	-- 	name = name,
-	-- 	mood = "neutral",
-	-- 	portraits = {},
-	-- })
-
 	self.name = name
 	self.mood = "neutral"
 	self.portraits = {} ---@type engine.Portrait[]
 	self.portrait_ids = {}
 
-	self:add_portrait(name, "neutral")
-	self:add_portrait(name, "happy")
-	self:add_portrait(name, "sad")
-	self:add_portrait(name, "angry")
+	self:add_portrait("neutral")
+	self:add_portrait("happy")
+	self:add_portrait("sad")
+	self:add_portrait("angry")
 end
 
 ---@param mood string

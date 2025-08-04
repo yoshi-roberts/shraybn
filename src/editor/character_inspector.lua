@@ -1,4 +1,5 @@
-local character = require("engine.character")
+-- local character = require("engine.character")
+local editor = require("editor")
 local font_icon = require("editor.font_icons")
 local imgui = require("engine.imgui")
 local ffi = require("ffi")
@@ -7,13 +8,28 @@ local ffi = require("ffi")
 local character_inspector = {
 	-- win_flags = imgui.love.WindowFlags(),
 	buf = ffi.new("char[?]", 128, ""),
-	selected_character = nil,
+	selected_character = nil, ---@type editor.CharacterData
 	renaming_node = -1,
 }
 
----@param inspector editor.inspector
-function character_inspector.display(inspector)
+function character_inspector.display()
+	local character_data = editor.characters.current
+
 	imgui.Begin("Character", nil, nil)
+
+	if not character_data then
+		imgui.End()
+		return
+	end
+
+	imgui.Text("Name: " .. character_data.character.name)
+	imgui.Separator()
+
+	for id, portrait in pairs(character_data.character.portraits) do
+		---@cast portrait engine.Portrait
+
+		imgui.Text(portrait.mood)
+	end
 
 	imgui.End()
 end

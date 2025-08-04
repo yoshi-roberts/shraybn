@@ -39,6 +39,8 @@ function Project.load(path)
 
 	nativefs.setWorkingDirectory(proj.file_path)
 
+	log.info("[PROJECT] Loaded project data")
+
 	return proj
 end
 
