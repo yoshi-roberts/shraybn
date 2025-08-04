@@ -10,6 +10,7 @@ local editor = require("editor")
 local assets = require("engine.assets")
 local signal = require("engine.signal")
 local imgui = require("engine.imgui")
+local widgets = require("editor.widgets")
 local ffi = require("ffi")
 
 ---@class editor.inspector
@@ -51,137 +52,15 @@ function inspector.inspect(type, item)
 	inspector.type = type
 end
 
-function inspector.bool(label, target)
-	inspector.check_bool[0] = target
-
-	local tag = label .. "##" .. label .. "_CHECKBOX_BOOL"
-
-	if imgui.Checkbox(tag, inspector.check_bool) then
-		editor.scenes.current.saved = false
-		return inspector.check_bool[0]
-	end
-
-	return target
-end
-
----@param target table
----@param field string
----@param label string
----@param is_int boolean?
-function inspector.property_number(target, field, label, is_int)
-	local id = string.format("%p", target) .. "_" .. field
-
-	local total_width = imgui.GetContentRegionAvail().x
-	local height = imgui.GetTextLineHeightWithSpacing()
-	local pos = imgui.ImVec2_Float(total_width * 0.5, height)
-
-	imgui.SetNextItemWidth(total_width * 0.5)
-	imgui.BeginChild_Str(id .. "_text_child", pos, false)
-	imgui.Text(label)
-	imgui.EndChild()
-
-	imgui.SameLine()
-
-	local available_width = imgui.GetContentRegionAvail().x
-	imgui.SetNextItemWidth(available_width)
-
-	if is_int then
-		inspector.temp_int[0] = target[field]
-		if imgui.DragInt("##" .. id .. "_input", inspector.temp_int) then
-			editor.history:add(ChangeField:new(target, field, inspector.temp_int[0], true))
-		end
-
-		return
-	end
-
-	inspector.temp_float[0] = target[field]
-	if imgui.DragFloat("##" .. id .. "_input", inspector.temp_float, 0.01) then
-		editor.history:add(ChangeField:new(target, field, inspector.temp_float[0], true))
-	end
-end
-
----@param target table
----@param field string
----@param label string?
-function inspector.resource(target, field, label)
-	local text = target[field] or "No Resource"
-
-	if label then
-		text = label .. ": " .. text
-	end
-
-	imgui.Text(text)
-
-	if imgui.BeginDragDropTarget() then
-		imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
-
-		if imgui.IsMouseReleased_Nil(0) and inspector.payload then
-			editor.history:add(ChangeField:new(target, field, inspector.payload.path))
-
-			inspector.payload = nil
-		end
-
-		imgui.EndDragDropTarget()
-	end
-end
-
-function inspector.image(image)
-	local win_width = imgui.GetContentRegionAvail().x
-
-	local view_width = win_width
-	local view_height = 384
-
-	local tile_size = 32
-	local xtiles = math.floor(view_width / tile_size)
-	local ytiles = math.floor(view_height / tile_size)
-
-	local child_size = imgui.ImVec2_Float(view_width, view_height)
-	local flags = imgui.love.WindowFlags("NoScrollbar", "NoScrollWithMouse")
-
-	imgui.BeginChild_Str("inspector_image_view", child_size, false, flags)
-
-	local startx = imgui.GetCursorPosX()
-	local starty = imgui.GetCursorPosY()
-
-	local tex_size = imgui.ImVec2_Float(tile_size, tile_size)
-
-	-- Draw the grid.
-	for x = 0, xtiles do
-		for y = 0, ytiles do
-			local xp = startx + (x * tile_size)
-			local yp = starty + (y * tile_size)
-			imgui.SetCursorPos(imgui.ImVec2_Float(xp, yp))
-			imgui.Image(inspector.bk_grid, tex_size)
-		end
-	end
-
-	-- Calculate image scaling and position.
-	local img_width = image.resource:getWidth()
-	local img_height = image.resource:getHeight()
-	local sx = view_width / img_width
-	local sy = view_height / img_height
-	local scale = math.min(sx, sy)
-	local image_size = imgui.ImVec2_Float(img_width * scale, img_height * scale)
-
-	local xpos = (startx + (view_width / 2)) - ((img_width * scale) / 2)
-	local ypos = (starty + (view_height / 2)) - ((img_height * scale) / 2)
-
-	-- Draw the image.
-	imgui.SetCursorPos(imgui.ImVec2_Float(xpos, ypos))
-	imgui.Image(image.resource, image_size)
-
-	imgui.EndChild()
-end
-
 function inspector.sprite()
 	local sprite = inspector.item
 	---@cast sprite engine.Sprite
 
 	if sprite.asset_path then
-		inspector.image(assets.get(sprite.asset_path))
+		widgets.image(assets.get(sprite.asset_path), inspector.viewer_height)
 	end
 
-	inspector.resource(sprite, "asset_path")
+	widgets.resource(sprite, "asset_path")
 	imgui.Separator()
 end
 
@@ -221,11 +100,11 @@ function inspector.trigger()
 	end
 
 	if trigger.action and trigger.action:is(ChangeSceneAction) then
-		inspector.resource(trigger.action, "scene_path")
+		widgets.resource(trigger.action, "scene_path")
 	end
 
 	if trigger.action and trigger.action:is(Dialogue) then
-		inspector.resource(trigger.action, "script_path")
+		widgets.resource(trigger.action, "script_path")
 	end
 
 	imgui.Separator()
@@ -244,25 +123,17 @@ function inspector.entity()
 		inspector.trigger()
 	end
 
-	inspector.property_number(entity.position, "x", "X", true)
-	inspector.property_number(entity.position, "y", "Y", true)
+	widgets.property_number(entity.position, "x", "X", true)
+	widgets.property_number(entity.position, "y", "Y", true)
 
 	imgui.Separator()
 
-	inspector.property_number(entity.scale, "x", "Scale X")
-	inspector.property_number(entity.scale, "y", "Scale Y")
+	widgets.property_number(entity.scale, "x", "Scale X")
+	widgets.property_number(entity.scale, "y", "Scale Y")
 
 	imgui.Separator()
 
-	inspector.property_number(entity, "rotation", "Rotation")
-end
-
-function inspector.character()
-	local char = inspector.item
-	---@cast char engine.Character
-	---
-	imgui.Text("Character: " .. char.name)
-	imgui.Separator()
+	widgets.property_number(entity, "rotation", "Rotation")
 end
 
 function inspector.layer()
@@ -272,7 +143,7 @@ function inspector.layer()
 	imgui.Text("Layer: " .. layer.name)
 	imgui.Separator()
 
-	layer.is_active = inspector.bool("Active", layer.is_active)
+	-- layer.is_active = inspector.bool("Active", layer.is_active)
 end
 
 function inspector.project()
@@ -282,17 +153,17 @@ function inspector.project()
 	imgui.Text(project.name)
 	imgui.Separator()
 
-	inspector.property_number(project, "window_width", "Window Width", true)
-	inspector.property_number(project, "window_height", "Window Height", true)
+	widgets.property_number(project, "window_width", "Window Width", true)
+	widgets.property_number(project, "window_height", "Window Height", true)
 
 	imgui.Separator()
 
-	inspector.property_number(project, "game_width", "Game Width", true)
-	inspector.property_number(project, "game_height", "Game Height", true)
+	widgets.property_number(project, "game_width", "Game Width", true)
+	widgets.property_number(project, "game_height", "Game Height", true)
 
 	imgui.Separator()
 
-	inspector.resource(project, "main_scene", "Main Scene")
+	widgets.resource(project, "main_scene", "Main Scene")
 end
 
 return inspector
