@@ -86,7 +86,7 @@ signal.register("file_panel_reload", function()
 end)
 
 function file_panel.update()
-	if not editor.loaded_project then --or not assets.loaded() then
+	if not editor.loaded_project or not assets.loaded() then
 		return
 	end
 

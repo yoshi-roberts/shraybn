@@ -1,6 +1,7 @@
 -- local character = require("engine.character")
 local editor = require("editor")
 local font_icon = require("editor.font_icons")
+local widgets = require("editor.widgets")
 local imgui = require("engine.imgui")
 local ffi = require("ffi")
 
@@ -28,7 +29,7 @@ function character_inspector.display()
 	for id, portrait in pairs(character_data.character.portraits) do
 		---@cast portrait engine.Portrait
 
-		imgui.Text(portrait.mood)
+		widgets.resource(portrait, "asset_path", portrait.mood)
 	end
 
 	imgui.End()
