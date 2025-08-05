@@ -93,12 +93,12 @@ function widgets.resource(target, field, label)
 	end
 end
 
----@param view_width number
 ---@param view_height number
 function widgets.image(image, view_height)
 	local win_width = imgui.GetContentRegionAvail().x
 
 	local view_width = win_width
+	view_height = view_height or 384
 
 	local tile_size = 32
 	local xtiles = math.floor(view_width / tile_size)

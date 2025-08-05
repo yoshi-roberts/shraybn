@@ -5,11 +5,9 @@ local nativefs = require("libs.nativefs")
 
 ---@class engine.assets
 local assets = {
-	data = {
-		["image"] = {},
-		["audio"] = {},
-		["script"] = {},
-	},
+	data = {},
+
+	resource_data = nil,
 
 	processing = true,
 	mounted = false,
@@ -43,7 +41,7 @@ local resource_functions = {
 function assets.init(path, lazy)
 	assets.path = path
 	assets.lazy = lazy
-	assets.thread = love.thread.newThread("engine/assets/thread-zip.lua")
+	assets.thread = love.thread.newThread("engine/assets/thread-simple.lua")
 end
 
 function assets.load()
@@ -54,42 +52,39 @@ end
 function assets.update()
 	if assets.processing then
 		assets.processing = love.thread.getChannel("assets_processing"):pop()
-		return
 	end
 
-	if not assets.mounted then
-		local success = nativefs.mount("assets.sad", "assets")
-
-		if success then
-			assets.mounted = success
-			log.info("[ASSETS] Mounted pack")
-		end
+	if not assets.processing and not assets.resource_data then
+		assets.data = love.thread.getChannel("assets_data"):pop()
+		assets.resource_data = love.thread.getChannel("assets_resource_data"):pop()
 	end
 end
 
 ---@return boolean
 function assets.loaded()
-	return assets.mounted
+	if assets.resource_data then
+		return true
+	end
+
+	return false
 end
 
 ---@param name string
 function assets.get(name)
 	if not assets.loaded() then
-		log.error("[ASSETS] No asset pack loaded.")
+		log.error("[ASSETS] Assets not loaded.")
 		return false
 	end
 
 	local ext = name:match("^.+%.(.+)$")
 	local asset_type = ext_types[ext]
 
-	if not assets.data[asset_type][name] then
+	if not assets.data[name].resource then
 		local fn = resource_functions[asset_type]
-		assets.data[asset_type][name] = {
-			resource = fn("assets/" .. name),
-		}
+		assets.data[name].resource = fn(assets.data[name].data)
 	end
 
-	local asset = assets.data[asset_type][name]
+	local asset = assets.data[name]
 	return asset
 end
 

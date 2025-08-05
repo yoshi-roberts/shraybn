@@ -1,4 +1,5 @@
 local imgui = require("engine.imgui")
+local widgets = require("editor.widgets")
 
 ---@param inspector editor.inspector
 local function display(inspector)
@@ -6,7 +7,7 @@ local function display(inspector)
 
 	if inspector.item then
 		if inspector.type == "image" then
-			inspector.image(inspector.item)
+			widgets.image(inspector.item)
 		elseif inspector.type == "entity" then
 			inspector.entity()
 		elseif inspector.type == "layer" then
