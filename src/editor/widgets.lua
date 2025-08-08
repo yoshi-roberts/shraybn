@@ -1,5 +1,6 @@
 local imgui = require("engine.imgui")
 local editor = require("editor")
+local signal = require("engine.signal")
 local ffi = require("ffi")
 
 local ChangeField = require("editor.command.change_field")
@@ -20,6 +21,12 @@ local widgets = {
 
 	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
 }
+
+signal.register("editor_file_drag", function(payload)
+	if not widgets.payload then
+		widgets.payload = payload
+	end
+end)
 
 function widgets.bool(label, target)
 	widgets.check_bool[0] = target
