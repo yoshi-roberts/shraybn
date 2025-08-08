@@ -12,6 +12,8 @@ local widgets = {
 	temp_int = ffi.new("int[1]", 0),
 	temp_float = ffi.new("float[1]", 0),
 
+	current_combo_item = nil,
+
 	viewer_width = 256,
 	viewer_height = 384,
 	viewer_image = nil,
@@ -30,6 +32,24 @@ function widgets.bool(label, target)
 	end
 
 	return target
+end
+
+---@param label string
+function widgets.combo(label, target, items)
+	if imgui.BeginCombo(label, widgets.current_combo_item) then
+		for k, item in pairs(items) do
+			local is_selected = (widgets.current_combo_item == k)
+
+			if imgui.Selectable_Bool(k, is_selected) then
+				inspector.current_combo_item = k
+				trigger.action = action:new()
+			end
+
+			if is_selected then
+				imgui.SetItemDefaultFocus()
+			end
+		end
+	end
 end
 
 ---@param target table

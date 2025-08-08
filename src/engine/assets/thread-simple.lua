@@ -9,6 +9,7 @@ local inspect = require("libs.inspect")
 local root, lazy = ...
 
 local assets = {}
+local should_write = true
 
 -- Lookup table for file types.
 ---@type {[string]: table<string, boolean>}
@@ -39,92 +40,44 @@ local function valid_type(ext)
 	return false, nil
 end
 
+---@param path string
 ---@return boolean
-local function resource_data_exists()
-	if not nativefs.getInfo("resources.srd") then
+local function resource_data_exists(path)
+	if not nativefs.getInfo(path .. ".srd") then
 		return false
 	end
 
 	return true
 end
 
----@return table
-local function resource_data_load()
-	local serialized = nativefs.read("resources.srd")
-	local resource_data = binser.deserialize(serialized)[1]
+---@param resources table
+---@param path string
+local function resource_data_load(resources, path)
+	local serialized = nativefs.read(path .. ".srd")
+	local res_data = binser.deserialize(serialized)[1]
 
-	return resource_data
+	resources[path] = res_data
+
+	log.info("[ASSETS] Loaded resource data for '" .. path .. "'")
 end
 
----@param resource_data table
----@return boolean
-local function resource_removed(resource_data)
-	local removed = false
-
-	for path, _ in pairs(resource_data) do
+---@param resources table
+local function asset_removed(resources)
+	for path, _ in pairs(resources) do
 		if not assets[path] then
 			log.info("[ASSETS] Removing '" .. path .. "' from resource data")
-			removed = true
+			resources[path] = nil
+			nativefs.remove(path .. ".srd")
 		end
 	end
-
-	return removed
 end
 
----@param archive table
----@return boolean
-local function asset_modified(archive)
-	local modified = false
-	local file_count = archive:get_num_files()
-
-	for i = 1, file_count, 1 do
-		local name = archive:get_filename(i)
-		local stat = archive:stat(i)
-		local info = nativefs.getInfo(name)
-
-		-- The modtimes will sometimes differ by a single digit,
-		-- even when they should be the same.
-		-- So we remove the last digit.
-		local modtime = math.floor(info.modtime / 10)
-		local time = math.floor(stat.time / 10)
-
-		if modtime > time then
-			modified = true
-			log.info("[ASSETS] Asset '" .. name .. "' has been modified")
-		end
-	end
-
-	return modified
-end
-
----@param archive table
----@return boolean
-local function asset_added(archive)
-	local added = false
-	local file_count = archive:get_num_files()
-
-	local existing = {}
-
-	for i = 1, file_count, 1 do
-		local name = archive:get_filename(i)
-		existing[name] = true
-	end
-
-	for name, _ in pairs(assets) do
-		if not existing[name] then
-			added = true
-		end
-	end
-
-	return added
-end
-
----@param resource_data table
+---@param resources table
 ---@param path string
 ---@param type string
-local function add_resource_data(resource_data, path, type)
-	resource_data[path] = {}
-	local data = resource_data[path]
+local function add_resource_data(resources, path, type)
+	resources[path] = {}
+	local data = resources[path]
 
 	data.type = type
 
@@ -133,9 +86,16 @@ local function add_resource_data(resource_data, path, type)
 	end
 
 	log.info("[ASSETS] Adding resource data for asset '" .. path .. "'")
+
+	local serialized = binser.serialize(data)
+	if not nativefs.write(path .. ".srd", serialized, #serialized) then
+		log.error("[ASSETS] Failed to write to '" .. path .. ".srd'")
+	else
+		log.info("[ASSETS] Wrote to '" .. path .. ".srd'")
+	end
 end
 
-local function add_asset(path, target, resource_data)
+local function add_asset(path, target, resources)
 	local ext = path:match("^.+%.(.+)$")
 	local valid, type = valid_type(ext)
 
@@ -154,15 +114,17 @@ local function add_asset(path, target, resource_data)
 
 	log.info("[ASSETS] loading asset '" .. path .. "'")
 
-	if not resource_data[path] then
-		add_resource_data(resource_data, path, type)
+	if not resource_data_exists(path) then
+		add_resource_data(resources, path, type)
+	else
+		resource_data_load(resources, path)
 	end
 end
 
 ---@param path string
 ---@param target table
----@param resource_data table
-local function index_items(path, target, resource_data)
+---@param resources table
+local function index_items(path, target, resources)
 	local items = nativefs.getDirectoryItems(path)
 
 	for _, name in pairs(items) do
@@ -174,9 +136,9 @@ local function index_items(path, target, resource_data)
 		local item_info = nativefs.getInfo(item_path)
 
 		if item_info.type == "file" then
-			add_asset(item_path, target, resource_data)
+			add_asset(item_path, target, resources)
 		elseif item_info.type == "directory" then
-			index_items(item_path, target, resource_data)
+			index_items(item_path, target, resources)
 		end
 
 		::continue::
@@ -188,28 +150,13 @@ local function create_pack()
 	log.info("[ASSETS] Indexing items.")
 
 	local should_write = true
-	local resource_data = {}
+	local resources = {}
 
-	if resource_data_exists() then
-		should_write = false
-		resource_data = resource_data_load()
-	end
-
-	index_items("assets", assets, resource_data)
-
-	should_write = resource_removed(resource_data)
-
-	if should_write then
-		local serialized = binser.serialize(resource_data)
-		if not nativefs.write("resources.srd", serialized, #serialized) then
-			log.error("[ASSETS] Failed to write to resources.srd")
-		else
-			log.info("[ASSETS] Wrote to resources.srd")
-		end
-	end
+	index_items("assets", assets, resources)
+	asset_removed(resources)
 
 	love.thread.getChannel("assets_data"):push(assets)
-	love.thread.getChannel("assets_resource_data"):push(resource_data)
+	love.thread.getChannel("assets_resource_data"):push(resources)
 	love.thread.getChannel("assets_processing"):push(false)
 	log.info("[ASSETS] Process completed.")
 end

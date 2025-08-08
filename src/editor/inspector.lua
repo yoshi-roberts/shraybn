@@ -166,4 +166,12 @@ function inspector.project()
 	widgets.resource(project, "main_scene", "Main Scene")
 end
 
+function inspector.asset_image()
+	local asset = inspector.item[1]
+	local resource_data = inspector.item[2]
+
+	widgets.image(asset, inspector.viewer_height)
+	imgui.Text(resource_data.filter)
+end
+
 return inspector

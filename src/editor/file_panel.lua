@@ -48,7 +48,10 @@ function file_panel.open_file(file)
 
 		editor.characters.current = editor.characters.open[file.path]
 	elseif file.type == "image" then
-		inspector.inspect("image", assets.get(file.path))
+		inspector.inspect(
+			"image",
+			{ assets.get(file.path), assets.get_resource_data(file.path) }
+		)
 	elseif file.type == "project" then
 		inspector.inspect("project", editor.loaded_project)
 	end

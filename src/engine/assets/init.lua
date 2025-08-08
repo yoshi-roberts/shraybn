@@ -88,4 +88,21 @@ function assets.get(name)
 	return asset
 end
 
+---@param name string
+function assets.get_resource_data(name)
+	if not assets.loaded() then
+		log.error("[ASSETS] Assets not loaded.")
+		return false
+	end
+
+	local data = assets.resource_data[name]
+
+	if not data then
+		log.error("[ASSETS] Resource data for '" .. name .. "' does not exist")
+		return false
+	end
+
+	return data
+end
+
 return assets
