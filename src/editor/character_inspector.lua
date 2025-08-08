@@ -1,6 +1,7 @@
 -- local character = require("engine.character")
 local editor = require("editor")
 local font_icon = require("editor.font_icons")
+local assets = require("engine.assets")
 local widgets = require("editor.widgets")
 local imgui = require("engine.imgui")
 local ffi = require("ffi")
@@ -11,6 +12,9 @@ local character_inspector = {
 	buf = ffi.new("char[?]", 128, ""),
 	selected_character = nil, ---@type editor.CharacterData
 	renaming_node = -1,
+
+	viewer_width = 256,
+	viewer_height = 384,
 }
 
 function character_inspector.display()
@@ -29,7 +33,13 @@ function character_inspector.display()
 	for id, portrait in pairs(character_data.character.portraits) do
 		---@cast portrait engine.Portrait
 
-		widgets.resource(portrait, "asset_path", portrait.mood)
+		imgui.Text("Mood: " .. portrait.mood)
+		if portrait.asset_path then
+			widgets.image(assets.get(portrait.asset_path), character_inspector.viewer_height)
+		end
+
+		widgets.resource(portrait, "asset_path")
+		imgui.Separator()
 	end
 
 	imgui.End()

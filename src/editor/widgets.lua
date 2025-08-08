@@ -134,7 +134,7 @@ function widgets.image(image, view_height)
 	local child_size = imgui.ImVec2_Float(view_width, view_height)
 	local flags = imgui.love.WindowFlags("NoScrollbar", "NoScrollWithMouse")
 
-	imgui.BeginChild_Str("inspector_image_view", child_size, false, flags)
+	imgui.BeginChild_Str("inspector_image_view_" .. tostring(image), child_size, false, flags)
 
 	local startx = imgui.GetCursorPosX()
 	local starty = imgui.GetCursorPosY()

@@ -34,12 +34,6 @@ local inspector = {
 	display = require("editor.ui.inspector"),
 }
 
-signal.register("editor_file_drag", function(payload)
-	if not inspector.payload then
-		inspector.payload = payload
-	end
-end)
-
 ---@param type string
 ---| "image"
 ---| "entity"
