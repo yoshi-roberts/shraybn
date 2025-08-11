@@ -3,9 +3,11 @@
 local log = require("libs.log")
 local nativefs = require("libs.nativefs")
 
+---@alias engine.asset {type: string, data: love.ByteData, resource: any}
+
 ---@class engine.assets
 local assets = {
-	data = {},
+	data = {}, ---@type engine.asset[]
 
 	resource_data = nil,
 
@@ -70,6 +72,7 @@ function assets.loaded()
 end
 
 ---@param name string
+---@return engine.asset
 function assets.get(name)
 	if not assets.loaded() then
 		log.error("[ASSETS] Assets not loaded.")

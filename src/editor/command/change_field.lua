@@ -4,8 +4,8 @@ local Command = require("editor.command.command")
 local ChangeField = Command:extend()
 
 ---@param mergeable boolean?
-function ChangeField:init(target, field, new, mergeable)
-	ChangeField.super.init(self, mergeable)
+function ChangeField:init(target, field, new, mergeable, save_source)
+	ChangeField.super.init(self, mergeable, save_source)
 
 	self.target = target
 	self.field = field
@@ -14,10 +14,14 @@ function ChangeField:init(target, field, new, mergeable)
 end
 
 function ChangeField:execute()
+	ChangeField.super.execute(self)
+
 	self.target[self.field] = self.new
 end
 
 function ChangeField:undo()
+	ChangeField.super.undo(self)
+
 	self.target[self.field] = self.old
 end
 

@@ -13,6 +13,7 @@ function Character:init(name)
 	self.mood = "neutral"
 	self.portraits = {} ---@type engine.Portrait[]
 	self.portrait_ids = {}
+	self.path = nil
 
 	self:add_portrait("neutral")
 	self:add_portrait("happy")

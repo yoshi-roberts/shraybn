@@ -63,7 +63,7 @@ end
 ---@param field string
 ---@param label string
 ---@param is_int boolean?
-function widgets.property_number(target, field, label, is_int)
+function widgets.property_number(target, field, label, is_int, save_source)
 	local id = string.format("%p", target) .. "_" .. field
 
 	local total_width = imgui.GetContentRegionAvail().x
@@ -83,7 +83,9 @@ function widgets.property_number(target, field, label, is_int)
 	if is_int then
 		widgets.temp_int[0] = target[field]
 		if imgui.DragInt("##" .. id .. "_input", widgets.temp_int) then
-			editor.history:add(ChangeField:new(target, field, widgets.temp_int[0], true))
+			editor.history:add(
+				ChangeField:new(target, field, widgets.temp_int[0], true, save_source)
+			)
 		end
 
 		return
@@ -91,14 +93,16 @@ function widgets.property_number(target, field, label, is_int)
 
 	widgets.temp_float[0] = target[field]
 	if imgui.DragFloat("##" .. id .. "_input", widgets.temp_float, 0.01) then
-		editor.history:add(ChangeField:new(target, field, widgets.temp_float[0], true))
+		editor.history:add(
+			ChangeField:new(target, field, widgets.temp_float[0], true, save_source)
+		)
 	end
 end
 
 ---@param target table
 ---@param field string
 ---@param label string?
-function widgets.resource(target, field, label)
+function widgets.resource(target, field, label, save_source)
 	local text = target[field] or "No Resource"
 
 	if label then
@@ -111,7 +115,9 @@ function widgets.resource(target, field, label)
 		imgui.AcceptDragDropPayload("DRAG_DROP_FILE")
 
 		if imgui.IsMouseReleased_Nil(0) and widgets.payload then
-			editor.history:add(ChangeField:new(target, field, widgets.payload.path))
+			editor.history:add(
+				ChangeField:new(target, field, widgets.payload.path, false, save_source)
+			)
 
 			widgets.payload = nil
 		end

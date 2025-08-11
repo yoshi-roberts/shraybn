@@ -16,6 +16,8 @@ editor.selected_entity = nil ---@type engine.Entity
 
 editor.history = CommandHistory:new()
 
+editor.save_state = {}
+
 -- NOTE: Maybe SceneData should be stored in the project.
 -- That could be cleaner.
 -- We can also save the sate of opened scenes as part of the proj file.

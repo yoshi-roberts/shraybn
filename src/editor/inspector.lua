@@ -54,7 +54,7 @@ function inspector.sprite()
 		widgets.image(assets.get(sprite.asset_path), inspector.viewer_height)
 	end
 
-	widgets.resource(sprite, "asset_path")
+	widgets.resource(sprite, "asset_path", nil, editor.scenes.current)
 	imgui.Separator()
 end
 
@@ -94,11 +94,11 @@ function inspector.trigger()
 	end
 
 	if trigger.action and trigger.action:is(ChangeSceneAction) then
-		widgets.resource(trigger.action, "scene_path")
+		widgets.resource(trigger.action, "scene_path", editor.scenes.current)
 	end
 
 	if trigger.action and trigger.action:is(Dialogue) then
-		widgets.resource(trigger.action, "script_path")
+		widgets.resource(trigger.action, "script_path", editor.scenes.current)
 	end
 
 	imgui.Separator()
@@ -117,17 +117,17 @@ function inspector.entity()
 		inspector.trigger()
 	end
 
-	widgets.property_number(entity.position, "x", "X", true)
-	widgets.property_number(entity.position, "y", "Y", true)
+	widgets.property_number(entity.position, "x", "X", true, editor.scenes.current)
+	widgets.property_number(entity.position, "y", "Y", true, editor.scenes.current)
 
 	imgui.Separator()
 
-	widgets.property_number(entity.scale, "x", "Scale X")
-	widgets.property_number(entity.scale, "y", "Scale Y")
+	widgets.property_number(entity.scale, "x", "Scale X", false, editor.scenes.current)
+	widgets.property_number(entity.scale, "y", "Scale Y", false, editor.scenes.current)
 
 	imgui.Separator()
 
-	widgets.property_number(entity, "rotation", "Rotation")
+	widgets.property_number(entity, "rotation", "Rotation", false, editor.scenes.current)
 end
 
 function inspector.layer()
