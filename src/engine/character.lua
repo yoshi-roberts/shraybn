@@ -1,6 +1,6 @@
-local Class = require("libs.class")
-local binser = require("libs.binser")
 local nativefs = require("libs.nativefs")
+local binser = require("libs.binser")
+local Class = require("libs.class")
 local log = require("libs.log")
 
 ---@alias engine.Portrait {mood: string, asset_path: string}
@@ -34,6 +34,15 @@ function Character:add_portrait(mood, asset_path)
 end
 
 ---@param path string
+function Character:save(path)
+	local serialized = binser.serialize(self)
+
+	if not nativefs.write(path, serialized, #serialized) then
+		log.error("Character data could not be written.")
+	end
+end
+
+---@param path string
 ---@return engine.Character?
 function Character.load(path)
 	-- .chd is character data file.
@@ -52,13 +61,9 @@ function Character.load(path)
 	return deserialized[1]
 end
 
----@param path string
-function Character:save(path)
-	local serialized = binser.serialize(self)
-
-	if not nativefs.write(path, serialized, #serialized) then
-		log.error("Character data could not be written.")
-	end
+---@private
+function Character:__tostring()
+	return "Character"
 end
 
 return Character

@@ -51,7 +51,8 @@ end
 
 function editor.save_all_characters()
 	for _, character in pairs(editor.characters.open) do
-		character:save()
+		character.character:save(character.path)
+		character.saved = true
 	end
 end
 

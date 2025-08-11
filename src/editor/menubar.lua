@@ -1,5 +1,5 @@
 local Scene = require("engine.scene")
-local Character = require("src.engine.character")
+local Character = require("engine.character")
 local nativefs = require("libs.nativefs")
 local file_panel = require("editor.file_panel")
 local editor = require("editor")
@@ -43,6 +43,7 @@ function menubar.new_character()
 		return false, nil
 	end
 
+	print("New Character: " .. path)
 	character:save(path)
 
 	file_panel.reload_needed = true

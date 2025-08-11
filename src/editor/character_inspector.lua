@@ -1,4 +1,3 @@
--- local character = require("engine.character")
 local editor = require("editor")
 local font_icon = require("editor.font_icons")
 local assets = require("engine.assets")
@@ -27,7 +26,13 @@ function character_inspector.display()
 		return
 	end
 
-	imgui.Text("Name: " .. character_data.character.name)
+	local name_label = "Name: " .. character_data.character.name
+
+	if not character_data.saved then
+		name_label = "*" .. name_label
+	end
+
+	imgui.Text(name_label)
 	imgui.Separator()
 
 	for id, portrait in pairs(character_data.character.portraits) do
@@ -38,7 +43,7 @@ function character_inspector.display()
 			widgets.image(assets.get(portrait.asset_path), character_inspector.viewer_height)
 		end
 
-		widgets.resource(portrait, "asset_path")
+		widgets.resource(portrait, "asset_path", nil, character_data)
 		imgui.Separator()
 	end
 
