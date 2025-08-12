@@ -58,14 +58,16 @@ local function resource_data_load(resources, path)
 
 	resources[path] = res_data
 
-	log.info("[ASSETS] Loaded resource data for '" .. path .. "'")
+	log.info(" [ASSETS] Loaded resource data for '" .. path .. "'")
 end
 
 ---@param resources table
 local function asset_removed(resources)
+	log.info("[ASSETS] Checking for removed assets")
+
 	for path, _ in pairs(resources) do
 		if not assets[path] then
-			log.info("[ASSETS] Removing '" .. path .. "' from resource data")
+			log.info(" !!! [ASSETS] Removing '" .. path .. "' from resource data")
 			resources[path] = nil
 			nativefs.remove(path .. ".srd")
 		end
@@ -80,6 +82,7 @@ local function add_resource_data(resources, path, type)
 	local data = resources[path]
 
 	data.type = type
+	data.path = path
 
 	if type == "image" then
 		data.filter = "linear"
@@ -110,9 +113,10 @@ local function add_asset(path, target, resources)
 	target[path] = {
 		type = type,
 		data = asset_data,
+		path = path,
 	}
 
-	log.info("[ASSETS] loading asset '" .. path .. "'")
+	log.info("[ASSETS] Loading asset '" .. path .. "'")
 
 	if not resource_data_exists(path) then
 		add_resource_data(resources, path, type)
@@ -153,6 +157,7 @@ local function create_pack()
 	local resources = {}
 
 	index_items("assets", assets, resources)
+
 	asset_removed(resources)
 
 	love.thread.getChannel("assets_data"):push(assets)

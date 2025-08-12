@@ -8,6 +8,9 @@ local Dialogue = require("engine.actions.dialogue")
 
 local editor = require("editor")
 local assets = require("engine.assets")
+local nativefs = require("libs.nativefs")
+local binser = require("libs.binser")
+local log = require("libs.log")
 local signal = require("engine.signal")
 local imgui = require("engine.imgui")
 local widgets = require("editor.widgets")
@@ -164,8 +167,27 @@ function inspector.asset_image()
 	local asset = inspector.item[1]
 	local resource_data = inspector.item[2]
 
+	imgui.Text(asset.path)
+
+	if imgui.Button("Reimport") then
+		local serialized = binser.serialize(assets.resource_data[asset.path])
+
+		local res_path = asset.path .. ".srd"
+
+		if not nativefs.write(res_path, serialized, #serialized) then
+			log.error("[EDITOR] Failed to reimport resource '" .. res_path .. "'")
+		else
+			log.error("[EDITOR] Reimported resource '" .. res_path .. "'")
+		end
+	end
+
 	widgets.image(asset, inspector.viewer_height)
-	imgui.Text(resource_data.filter)
+
+	local filters = {
+		["linear"] = "linear",
+		["nearest"] = "nearest",
+	}
+	widgets.combo(resource_data, "filter", filters, "Filter")
 end
 
 return inspector

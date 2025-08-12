@@ -41,21 +41,26 @@ function widgets.bool(label, target)
 	return target
 end
 
----@param label string
-function widgets.combo(label, target, items)
-	if imgui.BeginCombo(label, widgets.current_combo_item) then
-		for k, item in pairs(items) do
-			local is_selected = (widgets.current_combo_item == k)
+---@param label string?
+function widgets.combo(target, field, items, label)
+	widgets.current_combo_item = target[field]
+	local current = target[field]
 
-			if imgui.Selectable_Bool(k, is_selected) then
-				inspector.current_combo_item = k
-				trigger.action = action:new()
+	if imgui.BeginCombo(label, target[field]) then
+		for k, item in pairs(items) do
+			local is_selected = (target[field] == k)
+
+			if imgui.Selectable_Bool(k, is_selected) and current ~= k then
+				-- target[field] = k
+				editor.history:add(ChangeField:new(target, field, item, false))
 			end
 
 			if is_selected then
 				imgui.SetItemDefaultFocus()
 			end
 		end
+
+		imgui.EndCombo()
 	end
 end
 

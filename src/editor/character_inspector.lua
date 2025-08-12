@@ -26,13 +26,15 @@ function character_inspector.display()
 		return
 	end
 
-	local name_label = "Name: " .. character_data.character.name
+	local name_label = "Name: "
 
 	if not character_data.saved then
-		name_label = "*" .. name_label
+		name_label = "Name: *"
 	end
 
-	imgui.Text(name_label)
+	local name = name_label .. character_data.character.name
+
+	imgui.Text(name)
 	imgui.Separator()
 
 	for id, portrait in pairs(character_data.character.portraits) do
