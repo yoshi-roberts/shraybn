@@ -33,9 +33,17 @@ local ext_types = {
 }
 
 ---@type {[string]: function}
-local resource_functions = {
+local data_functions = {
 	["image"] = love.graphics.newImage,
 	["script"] = love.filesystem.read,
+}
+
+---@type {[string]: function}
+local resource_functions = {
+	---@param data love.Image
+	["image"] = function(data, resource)
+		data:setFilter(resource.filter)
+	end,
 }
 
 ---@param path string
@@ -72,29 +80,9 @@ function assets.loaded()
 end
 
 ---@param name string
----@return engine.asset
-function assets.get(name)
-	if not assets.loaded() then
-		log.error("[ASSETS] Assets not loaded.")
-		return false
-	end
-
-	local ext = name:match("^.+%.(.+)$")
-	local asset_type = ext_types[ext]
-
-	if not assets.data[name].resource then
-		local fn = resource_functions[asset_type]
-		assets.data[name].resource = fn(assets.data[name].data)
-	end
-
-	local asset = assets.data[name]
-	return asset
-end
-
----@param name string
 function assets.get_resource_data(name)
 	if not assets.loaded() then
-		log.error("[ASSETS] Assets not loaded.")
+		log.error("[ASSETS] Assets not loaded")
 		return false
 	end
 
@@ -106,6 +94,52 @@ function assets.get_resource_data(name)
 	end
 
 	return data
+end
+
+---@param name string
+function assets.import(name)
+	if not assets.loaded() then
+		log.error("[ASSETS] Assets not loaded")
+		return false
+	end
+
+	local asset = assets.data[name]
+
+	if not asset then
+		log.error("[ASSETS] No asset '" .. name .. "'")
+		return false
+	end
+
+	local res_data = assets.get_resource_data(name)
+	local resource_function = resource_functions[asset.type]
+	resource_function(asset.resource, res_data)
+end
+
+---@param name string
+---@return engine.asset
+function assets.get(name)
+	if not assets.loaded() then
+		log.error("[ASSETS] Assets not loaded")
+		return false
+	end
+
+	local asset = assets.data[name]
+
+	if not asset then
+		log.error("[ASSETS] No asset '" .. name .. "'")
+		return false
+	end
+
+	if not assets.data[name].resource then
+		-- local ext = name:match("^.+%.(.+)$")
+		-- local asset_type = ext_types[ext]
+
+		local data_function = data_functions[asset.type]
+		asset.resource = data_function(asset.data)
+		assets.import(name)
+	end
+
+	return asset
 end
 
 return assets

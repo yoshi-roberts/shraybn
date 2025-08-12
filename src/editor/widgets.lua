@@ -43,15 +43,13 @@ end
 
 ---@param label string?
 function widgets.combo(target, field, items, label)
-	widgets.current_combo_item = target[field]
 	local current = target[field]
 
-	if imgui.BeginCombo(label, target[field]) then
+	if imgui.BeginCombo(label, current) then
 		for k, item in pairs(items) do
-			local is_selected = (target[field] == k)
+			local is_selected = (target[field] == item)
 
-			if imgui.Selectable_Bool(k, is_selected) and current ~= k then
-				-- target[field] = k
+			if imgui.Selectable_Bool(k, is_selected) and current ~= item then
 				editor.history:add(ChangeField:new(target, field, item, false))
 			end
 

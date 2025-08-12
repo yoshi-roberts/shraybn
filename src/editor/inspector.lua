@@ -177,8 +177,10 @@ function inspector.asset_image()
 		if not nativefs.write(res_path, serialized, #serialized) then
 			log.error("[EDITOR] Failed to reimport resource '" .. res_path .. "'")
 		else
-			log.error("[EDITOR] Reimported resource '" .. res_path .. "'")
+			log.info("[EDITOR] Reimported resource '" .. res_path .. "'")
 		end
+
+		assets.import(asset.path)
 	end
 
 	widgets.image(asset, inspector.viewer_height)
