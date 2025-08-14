@@ -17,19 +17,21 @@ it("Shrift eval condition", function()
 	local parser = Parser:new(input)
 	expect(#parser.lines).to.equal(6)
 
-	local result = evaluator.eval_line(parser.lines[1], parser.env)
+	local env = { vars = {} }
+
+	local result = evaluator.eval_line(parser.lines[1], env)
 	expect(result).to.equal(true)
 
-	result = evaluator.eval_line(parser.lines[2], parser.env)
+	result = evaluator.eval_line(parser.lines[2], env)
 	expect(result).to.equal(false)
 
-	evaluator.eval_line(parser.lines[3], parser.env)
-	result = evaluator.eval_line(parser.lines[4], parser.env)
+	evaluator.eval_line(parser.lines[3], env)
+	result = evaluator.eval_line(parser.lines[4], env)
 	expect(result).to.equal(true)
 
-	result = evaluator.eval_line(parser.lines[5], parser.env)
+	result = evaluator.eval_line(parser.lines[5], env)
 	expect(result).to.equal(false)
 
-	result = evaluator.eval_line(parser.lines[6], parser.env)
+	result = evaluator.eval_line(parser.lines[6], env)
 	expect(result).to.equal(false)
 end)

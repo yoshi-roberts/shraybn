@@ -24,4 +24,14 @@ function utils.split_str(input, delimiter)
 	}
 end
 
+---@param str string
+---@return string[]
+function utils.split_by_whitespace(str)
+	local result = {}
+	for word in string.gmatch(str, "%S+") do
+		table.insert(result, word)
+	end
+	return result
+end
+
 return utils

@@ -7,11 +7,12 @@ local inspect = require("libs.inspect")
 local Parser = Class:extend()
 
 ---@enum ShriftLineType
-LINE_TYPE = {
+local LINE_TYPE = {
 	["ASSIGN"] = "%$",
 	["LABEL"] = "%[",
 	["CHOICE"] = "%*",
 	["DIALOGUE"] = "^[%a{]",
+	["COMMAND"] = "%@",
 	["ILLEGAL"] = "ILLEGAL",
 }
 
@@ -108,6 +109,8 @@ function Parser:parse_lines()
 			data = self:parse_label(line)
 		elseif line.type == "ASSIGN" then
 			data = self:parse_assign(line)
+		elseif line.type == "COMMAND" then
+			data = self:parse_command(line)
 		end
 
 		---@cast data table
@@ -244,6 +247,82 @@ function Parser:parse_assign(line)
 	local data = {
 		name = parts[1],
 		value = parts[2],
+	}
+
+	return data
+end
+
+local commands = {
+	["show"] = { "string", "string" },
+}
+
+local function validate_type(str)
+	-- bool
+	if str == "true" or str == "false" then
+		return "boolean"
+	end
+
+	-- number
+	local num = tonumber(str)
+	if num ~= nil then
+		return "number"
+	end
+
+	-- string
+	return "string"
+end
+
+---@param line shrift.LineData
+---@return table
+function Parser:parse_command(line)
+	local line_content = line.str:sub(2, #line.str)
+	line_content = utils.strip_trailing_whitespace(line_content)
+
+	local parts = utils.split_by_whitespace(line_content)
+	local command = parts[1]
+
+	if not commands[command] then
+		self:error(line, "'" .. command .. "' is not a valid command.")
+		return {}
+	end
+
+	local expected_types = commands[command]
+
+	local expected_count = #expected_types
+	local count = (#parts - 1)
+
+	-- Check that we got the right amount of args
+	if count ~= expected_count then
+		self:error(line, "Expected " .. expected_count .. " arguments but received " .. count)
+		return {}
+	end
+
+	local args = {}
+
+	-- Check that the args are the right types
+	for i = 2, #parts, 1 do
+		local arg = parts[i]
+		local type = validate_type(arg)
+		local expected_type = expected_types[i - 1]
+
+		if type ~= expected_type then
+			self:error(
+				line,
+				"Expected argument of type '"
+					.. expected_type
+					.. "' but got type '"
+					.. type
+					.. "'"
+			)
+			return {}
+		end
+
+		table.insert(args, arg)
+	end
+
+	local data = {
+		command = command,
+		args = args,
 	}
 
 	return data
