@@ -61,6 +61,23 @@ function Character.load(path)
 	return deserialized[1]
 end
 
+---@param path string
+---@return engine.Character[]
+function Character.load_all(path)
+	local characters = {}
+	local items = nativefs.getDirectoryItems(path)
+
+	for _, file in pairs(items) do
+		local character = Character.load(path .. "/" .. file)
+
+		if character then
+			characters[character.name] = character
+		end
+	end
+
+	return characters
+end
+
 ---@private
 function Character:__tostring()
 	return "Character"

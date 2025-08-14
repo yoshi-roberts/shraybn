@@ -31,6 +31,10 @@ editor.characters = {
 	current = nil, ---@type editor.CharacterData
 }
 
+function editor.save_project()
+	editor.loaded_project:save(nativefs.getWorkingDirectory())
+end
+
 function editor.save_scene()
 	local proj_path = nativefs.getWorkingDirectory()
 	editor.loaded_project:save(proj_path)

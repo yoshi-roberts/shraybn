@@ -71,6 +71,11 @@ local handlers = {
 		dialogue_manager.blocked = true
 		return false
 	end,
+
+	["COMMAND"] = function(line)
+
+		-- TODO: Handle commands
+	end,
 }
 
 function dialogue_manager.update()

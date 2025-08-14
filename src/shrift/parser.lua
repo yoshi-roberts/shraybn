@@ -254,6 +254,7 @@ end
 
 local commands = {
 	["show"] = { "string", "string" },
+	["play"] = { "string" },
 }
 
 local function validate_type(str)

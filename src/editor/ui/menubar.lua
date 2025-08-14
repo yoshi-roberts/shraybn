@@ -68,6 +68,7 @@ local function project_menu()
 	if imgui.MenuItem_Bool(font_icon.ICON_FLOPPY_O .. " Save", nil, nil) then
 		editor.save_all_scenes()
 		editor.save_all_characters()
+		editor.save_project()
 	end
 end
 

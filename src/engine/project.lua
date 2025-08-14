@@ -5,6 +5,7 @@ local log = require("libs.log")
 
 local engine = require("engine")
 local assets = require("engine.assets")
+local Character = require("engine.character")
 local Scene = require("engine.scene")
 local Layer = require("engine.layer")
 local Canvas = require("engine.canvas")
@@ -57,6 +58,8 @@ function Project:set()
 	engine.loaded_project = self
 	assets.init(self.file_path, true)
 	assets.load()
+
+	Character.load_all(self.file_path)
 
 	local main_scn_file = Scene.load(self.main_scene)
 	local main_scn = engine.add_scene(main_scn_file)
