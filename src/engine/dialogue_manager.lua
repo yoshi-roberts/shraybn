@@ -73,8 +73,10 @@ local handlers = {
 	end,
 
 	["COMMAND"] = function(line)
-
 		-- TODO: Handle commands
+		print(line.command)
+
+		return true
 	end,
 }
 

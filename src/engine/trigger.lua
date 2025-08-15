@@ -2,6 +2,7 @@ local Entity = require("engine.entity")
 
 local engine = require("engine")
 local input = require("engine.input")
+local log = require("libs.log")
 
 ---@class engine.Trigger: engine.Entity
 ---@field action engine.Action
@@ -22,17 +23,41 @@ function Trigger:init(verticies, name)
 	end
 end
 
-local function area(x1, y1, x2, y2, x3, y3)
-	return math.abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0)
+local function point_in_triangle(px, py, tri)
+	local ax, ay = tri[1], tri[2]
+	local bx, by = tri[3], tri[4]
+	local cx, cy = tri[5], tri[6]
+
+	-- Compute vectors
+	local v0x, v0y = cx - ax, cy - ay
+	local v1x, v1y = bx - ax, by - ay
+	local v2x, v2y = px - ax, py - ay
+
+	-- Compute dot products
+	local dot00 = v0x * v0x + v0y * v0y
+	local dot01 = v0x * v1x + v0y * v1y
+	local dot02 = v0x * v2x + v0y * v2y
+	local dot11 = v1x * v1x + v1y * v1y
+	local dot12 = v1x * v2x + v1y * v2y
+
+	-- Compute barycentric coordinates
+	local invDenom = 1 / (dot00 * dot11 - dot01 * dot01)
+	local u = (dot11 * dot02 - dot01 * dot12) * invDenom
+	local v = (dot00 * dot12 - dot01 * dot02) * invDenom
+
+	-- Check if point is in triangle
+	return (u >= 0) and (v >= 0) and (u + v < 1)
 end
 
-local function in_tri(x, y, p)
-	local a = area(p[1], p[2], p[3], p[4], p[5], p[6])
-	local a1 = area(x, y, p[3], p[4], p[5], p[6])
-	local a2 = area(p[1], p[2], x, y, p[5], p[6])
-	local a3 = area(p[1], p[2], p[3], p[4], x, y)
-
-	return a == a1 + a2 + a3
+local function translate_tri(tri, t)
+	return {
+		tri[1] + t.x,
+		tri[2] + t.y,
+		tri[3] + t.x,
+		tri[4] + t.y,
+		tri[5] + t.x,
+		tri[6] + t.y,
+	}
 end
 
 function Trigger:update()
@@ -41,7 +66,7 @@ function Trigger:update()
 
 	-- Check if mouse coords intersect any of the triangles.
 	for _, tri in pairs(self.tris) do
-		if in_tri(mpos.x, mpos.y, tri) then
+		if point_in_triangle(mpos.x, mpos.y, translate_tri(tri, self.position)) then
 			self.foccused = true
 			break
 		end
@@ -49,6 +74,7 @@ function Trigger:update()
 
 	if self.foccused and self.action then
 		if input.button_pressed(input.mouse_button.LEFT) then
+			log.info("[TRIGGER] Activated trigger")
 			self.action:execute()
 		end
 	end
@@ -57,12 +83,20 @@ end
 function Trigger:draw()
 	love.graphics.setColor(1, 0, 1, 0.4)
 
-	love.graphics.push()
-	love.graphics.translate(self.position.x, self.position.y)
+	-- love.graphics.push()
+	-- love.graphics.translate(self.position.x, self.position.y)
 	for _, tri in pairs(self.tris) do
-		love.graphics.polygon("fill", tri)
+		local t = {
+			tri[1] + self.position.x,
+			tri[2] + self.position.y,
+			tri[3] + self.position.x,
+			tri[4] + self.position.y,
+			tri[5] + self.position.x,
+			tri[6] + self.position.y,
+		}
+		love.graphics.polygon("fill", t)
 	end
-	love.graphics.pop()
+	-- love.graphics.pop()
 end
 
 function Trigger:__tostring()

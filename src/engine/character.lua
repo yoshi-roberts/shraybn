@@ -64,6 +64,8 @@ end
 ---@param path string
 ---@return engine.Character[]
 function Character.load_all(path)
+	-- NOTE: Does this need to be put on a thread?
+
 	local characters = {}
 	local items = nativefs.getDirectoryItems(path)
 

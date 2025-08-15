@@ -35,7 +35,9 @@ local ext_types = {
 ---@type {[string]: function}
 local data_functions = {
 	["image"] = love.graphics.newImage,
-	["script"] = love.filesystem.read,
+	["script"] = function(data)
+		return data
+	end,
 }
 
 ---@type {[string]: function}
@@ -112,6 +114,11 @@ function assets.import(name)
 
 	local res_data = assets.get_resource_data(name)
 	local resource_function = resource_functions[asset.type]
+
+	if not resource_function then
+		return false
+	end
+
 	resource_function(asset.resource, res_data)
 end
 

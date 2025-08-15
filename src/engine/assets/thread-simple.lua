@@ -24,6 +24,9 @@ local processes = {
 	["image"] = function(data)
 		return love.data.newByteData(data)
 	end,
+	["script"] = function(data)
+		return data
+	end,
 }
 
 -- Check if a file extension is one we care about.

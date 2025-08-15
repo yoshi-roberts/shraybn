@@ -59,7 +59,7 @@ function Project:set()
 	assets.init(self.file_path, true)
 	assets.load()
 
-	Character.load_all(self.file_path)
+	Character.load_all(nativefs.getWorkingDirectory() .. "/characters")
 
 	local main_scn_file = Scene.load(self.main_scene)
 	local main_scn = engine.add_scene(main_scn_file)

@@ -97,11 +97,11 @@ function inspector.trigger()
 	end
 
 	if trigger.action and trigger.action:is(ChangeSceneAction) then
-		widgets.resource(trigger.action, "scene_path", editor.scenes.current)
+		widgets.resource(trigger.action, "scene_path", "Scene", editor.scenes.current)
 	end
 
 	if trigger.action and trigger.action:is(Dialogue) then
-		widgets.resource(trigger.action, "script_path", editor.scenes.current)
+		widgets.resource(trigger.action, "script_path", "Script", editor.scenes.current)
 	end
 
 	imgui.Separator()
