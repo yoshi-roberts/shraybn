@@ -74,7 +74,6 @@ function Trigger:update()
 
 	if self.foccused and self.action then
 		if input.button_pressed(input.mouse_button.LEFT) then
-			log.info("[TRIGGER] Activated trigger")
 			self.action:execute()
 		end
 	end

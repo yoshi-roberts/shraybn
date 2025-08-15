@@ -105,6 +105,7 @@ function dialogue_manager.update()
 		if dialogue_manager.current_line > parser.line_count then
 			dialogue_box.hide()
 			dialogue_manager.active = false
+			dialogue_manager.current_line = 1
 		end
 	end
 end

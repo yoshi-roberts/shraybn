@@ -15,6 +15,8 @@ function DialogueAction:init(name)
 end
 
 function DialogueAction:execute()
+	DialogueAction.super.execute(self)
+
 	local script = assets.get(self.script_path).resource
 	dialogue_manager.run(Parser:new(script))
 end
