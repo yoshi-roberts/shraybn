@@ -20,6 +20,7 @@ local log = require("libs.log")
 local engine = {}
 
 engine.canvases = {} ---@type engine.Canvas[]
+engine.characters = {} ---@type engine.Character[]
 engine.scenes = {} ---@type engine.Scene[]
 engine.active_scene = nil ---@type engine.Scene
 engine.loaded_project = nil ---@type engine.Project

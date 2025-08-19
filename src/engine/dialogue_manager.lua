@@ -1,6 +1,8 @@
 local input = require("engine.input")
 local evaluator = require("shrift.evaluator")
 local dialogue_box = require("engine.dialogue_box")
+local engine = require("engine")
+local assets = require("engine.assets")
 local signal = require("engine.signal")
 
 ---@class engine.dialogue_manager: Class
@@ -11,6 +13,7 @@ dialogue_manager.active = false
 dialogue_manager.blocked = false
 dialogue_manager.parser = nil ---@type shrift.Parser
 dialogue_manager.current_line = 1
+dialogue_manager.current_portrait = nil ---@type engine.Portrait
 
 ---@param parser shrift.Parser
 function dialogue_manager.run(parser)
@@ -26,7 +29,14 @@ local function handle_choice(line)
 	end
 end
 
-local handlers = {
+local command_handlers = {
+	["show"] = function(data)
+		local character = engine.characters[data.args[1]] ---@type engine.Character
+		dialogue_manager.current_portrait = character:get_portrait(data.args[2])
+	end,
+}
+
+local line_handlers = {
 	["ASSIGN"] = function(line)
 		local result = evaluator.eval_line(line, dialogue_manager.env)
 		return true
@@ -73,8 +83,8 @@ local handlers = {
 	end,
 
 	["COMMAND"] = function(line)
-		-- TODO: Handle commands
-		print(line.command)
+		local handler = command_handlers[line.data.command]
+		handler(line.data)
 
 		return true
 	end,
@@ -90,7 +100,7 @@ function dialogue_manager.update()
 	local proceed = nil
 
 	if proceed == nil then
-		local handler = handlers[line.type]
+		local handler = line_handlers[line.type]
 
 		if handler then
 			proceed = handler(line)
@@ -107,6 +117,14 @@ function dialogue_manager.update()
 			dialogue_manager.active = false
 			dialogue_manager.current_line = 1
 		end
+	end
+end
+
+function dialogue_manager.draw()
+	if dialogue_manager.current_portrait then
+		local portrait_asset = assets.get(dialogue_manager.current_portrait.asset_path)
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.draw(portrait_asset.resource)
 	end
 end
 

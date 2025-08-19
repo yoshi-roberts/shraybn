@@ -20,6 +20,7 @@ local function ui_update(dt)
 end
 
 local function ui_draw()
+	dialogue_manager.draw()
 	dialogue_box.draw()
 	local mpos = engine.camera:get_mouse_position()
 	love.graphics.circle("fill", mpos.x, mpos.y, 8)

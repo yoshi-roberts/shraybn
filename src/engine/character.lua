@@ -14,6 +14,7 @@ function Character:init(name)
 	self.portraits = {} ---@type engine.Portrait[]
 	self.portrait_ids = {}
 	self.path = nil
+	self.visible = false
 
 	self:add_portrait("neutral")
 	self:add_portrait("happy")
@@ -31,6 +32,37 @@ function Character:add_portrait(mood, asset_path)
 		asset_path = asset_path,
 	})
 	self.portrait_ids[mood] = id
+end
+
+---@param mood string
+---@return engine.Portrait?
+function Character:get_portrait(mood)
+	local id = self.portrait_ids[mood]
+
+	if not id then
+		log.error(
+			"[CHARACTER] Mood '" .. mood .. "' not found for character '" .. self.name .. "'"
+		)
+		return
+	end
+
+	local portrait = self.portraits[id]
+
+	return portrait
+end
+
+function Character:show(mood)
+	local id = self.portrait_ids[mood]
+
+	if not id then
+		log.error(
+			"[CHARACTER] Mood '" .. mood .. "' not found for character '" .. self.name .. "'"
+		)
+		return
+	end
+
+	self.mood = mood
+	self.visible = true
 end
 
 ---@param path string
@@ -61,6 +93,7 @@ function Character.load(path)
 	return deserialized[1]
 end
 
+-- TODO: This should probably be a function of project
 ---@param path string
 ---@return engine.Character[]
 function Character.load_all(path)
