@@ -1,4 +1,5 @@
 require("love.image")
+require("love.sound")
 require("love.filesystem")
 
 local log = require("libs.log")
@@ -23,6 +24,9 @@ local ext_types = {
 local processes = {
 	["image"] = function(data)
 		return love.data.newByteData(data)
+	end,
+	["audio"] = function(data)
+		return love.filesystem.newFileData(data)
 	end,
 	["script"] = function(data)
 		return data

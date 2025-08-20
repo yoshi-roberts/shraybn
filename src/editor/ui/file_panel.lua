@@ -5,6 +5,7 @@ local signal = require("engine.signal")
 
 local file_icons = {
 	["image"] = font_icon.ICON_FILE_IMAGE_O,
+	["audio"] = font_icon.ICON_MUSIC,
 	["project"] = font_icon.ICON_FILE,
 	["scene"] = font_icon.ICON_FILM .. " ",
 	["character"] = font_icon.ICON_USER,

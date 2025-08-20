@@ -30,6 +30,9 @@ local filetypes = {
 	["png"] = "image",
 	["jpg"] = "image",
 	["jpeg"] = "image",
+	["mp3"] = "audio",
+	["wav"] = "audio",
+	["ogg"] = "audio",
 }
 
 function file_panel.open_file(file)
