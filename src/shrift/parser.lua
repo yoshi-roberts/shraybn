@@ -254,6 +254,7 @@ end
 
 local commands = {
 	["show"] = { "string", "string" },
+	["hide"] = { "string" },
 	["play"] = { "string" },
 }
 

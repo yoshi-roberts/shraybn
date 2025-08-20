@@ -34,6 +34,10 @@ local command_handlers = {
 		local character = engine.characters[data.args[1]] ---@type engine.Character
 		dialogue_manager.current_portrait = character:get_portrait(data.args[2])
 	end,
+
+	["hide"] = function(data)
+		dialogue_manager.current_portrait = nil
+	end,
 }
 
 local line_handlers = {
@@ -116,15 +120,26 @@ function dialogue_manager.update()
 			dialogue_box.hide()
 			dialogue_manager.active = false
 			dialogue_manager.current_line = 1
+			dialogue_manager.current_portrait = nil
 		end
 	end
 end
 
 function dialogue_manager.draw()
+	if not dialogue_manager.active then
+		return
+	end
+
 	if dialogue_manager.current_portrait then
 		local portrait_asset = assets.get(dialogue_manager.current_portrait.asset_path)
+		local res = portrait_asset.resource
+
+		local canvas = engine.game_canvas
+		local x = (canvas.width / 2) - (res:getWidth() / 2)
+		local y = (canvas.height / 2) - (res:getHeight() / 2)
+
 		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.draw(portrait_asset.resource)
+		love.graphics.draw(res, x, y)
 	end
 end
 
