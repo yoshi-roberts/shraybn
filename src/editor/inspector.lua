@@ -192,4 +192,16 @@ function inspector.asset_image()
 	widgets.combo(resource_data, "filter", filters, "Filter")
 end
 
+function inspector.asset_audio()
+	local asset = inspector.item[1]
+	local resource_data = inspector.item[2]
+
+	imgui.Text(asset.path)
+	imgui.Separator()
+
+	if imgui.Button("Play") then
+		love.audio.play(asset.resource)
+	end
+end
+
 return inspector

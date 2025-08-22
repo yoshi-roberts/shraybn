@@ -8,6 +8,8 @@ local function display(inspector)
 	if inspector.item then
 		if inspector.type == "image" then
 			inspector.asset_image()
+		elseif inspector.type == "audio" then
+			inspector.asset_audio()
 		elseif inspector.type == "entity" then
 			inspector.entity()
 		elseif inspector.type == "layer" then

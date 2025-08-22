@@ -23,10 +23,13 @@ local ext_types = {
 
 local processes = {
 	["image"] = function(data)
-		return love.data.newByteData(data)
+		-- return love.data.newByteData(data)
+		return data
 	end,
 	["audio"] = function(data)
-		return love.filesystem.newFileData(data)
+		-- local file_data = nativefs.newFileData(data)
+		-- print(file_data)
+		return data
 	end,
 	["script"] = function(data)
 		return data
@@ -113,7 +116,8 @@ local function add_asset(path, target, resources)
 		return
 	end
 
-	local file_data = nativefs.read(path)
+	-- local file_data = nativefs.read(path)
+	local file_data = nativefs.newFileData(path)
 	local process = processes[type]
 	local asset_data = process(file_data)
 

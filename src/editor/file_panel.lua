@@ -55,6 +55,11 @@ function file_panel.open_file(file)
 			"image",
 			{ assets.get(file.path), assets.get_resource_data(file.path) }
 		)
+	elseif file.type == "audio" then
+		inspector.inspect(
+			"audio",
+			{ assets.get(file.path), assets.get_resource_data(file.path) }
+		)
 	elseif file.type == "project" then
 		inspector.inspect("project", editor.loaded_project)
 	end

@@ -35,6 +35,9 @@ local ext_types = {
 ---@type {[string]: function}
 local data_functions = {
 	["image"] = love.graphics.newImage,
+	["audio"] = function(data)
+		return love.audio.newSource(data, "static")
+	end,
 	["script"] = function(data)
 		return data
 	end,
@@ -142,6 +145,7 @@ function assets.get(name)
 		-- local asset_type = ext_types[ext]
 
 		local data_function = data_functions[asset.type]
+
 		asset.resource = data_function(asset.data)
 		assets.import(name)
 	end
