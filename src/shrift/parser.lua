@@ -58,7 +58,8 @@ function Parser:split_lines()
 	local i = 1
 	local id = 1
 
-	for str in self.input:gmatch("([^\n]*)\n?") do
+	-- for str in self.input:gmatch("([^\n]*)\n?") do
+	for str in string.gmatch(self.input, "([^\n]*)\n?") do
 		local stripped = utils.strip_trailing_whitespace(str)
 		stripped = stripped:match("^(.-)#") or stripped
 		stripped = utils.strip_trailing_whitespace(stripped)
@@ -280,32 +281,26 @@ function Parser:parse_command(line)
 	local line_content = line.str:sub(2, #line.str)
 	line_content = utils.strip_trailing_whitespace(line_content)
 
-	local parts = utils.split_by_whitespace(line_content)
-	local command = parts[1]
+	-- TODO: Split by first whitespace, then split by commas
+
+	local first, rest = line_content:match("^(%S+)%s+(.*)$")
+
+	local command = first
 
 	if not commands[command] then
 		self:error(line, "'" .. command .. "' is not a valid command.")
 		return {}
 	end
 
+	local args = {}
 	local expected_types = commands[command]
 
-	local expected_count = #expected_types
-	local count = (#parts - 1)
+	local i = 1
+	for arg in rest:gmatch("[^,]+") do
+		arg = arg:match("^%s*(.-)%s*$")
 
-	-- Check that we got the right amount of args
-	if count ~= expected_count then
-		self:error(line, "Expected " .. expected_count .. " arguments but received " .. count)
-		return {}
-	end
-
-	local args = {}
-
-	-- Check that the args are the right types
-	for i = 2, #parts, 1 do
-		local arg = parts[i]
 		local type = validate_type(arg)
-		local expected_type = expected_types[i - 1]
+		local expected_type = expected_types[i]
 
 		if type ~= expected_type then
 			self:error(
@@ -320,6 +315,16 @@ function Parser:parse_command(line)
 		end
 
 		table.insert(args, arg)
+		i = i + 1
+	end
+
+	local expected_count = #expected_types
+	local count = #args
+
+	-- Check that we got the right amount of args
+	if count ~= expected_count then
+		self:error(line, "Expected " .. expected_count .. " arguments but received " .. count)
+		return {}
 	end
 
 	local data = {

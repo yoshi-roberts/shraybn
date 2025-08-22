@@ -38,6 +38,11 @@ local command_handlers = {
 	["hide"] = function(data)
 		dialogue_manager.current_portrait = nil
 	end,
+
+	["play"] = function(data)
+		local asset = assets.get(data.args[1])
+		print(asset)
+	end,
 }
 
 local line_handlers = {

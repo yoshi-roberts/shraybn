@@ -39,7 +39,7 @@ local data_functions = {
 		return love.audio.newSource(data, "static")
 	end,
 	["script"] = function(data)
-		return data
+		return data:getString()
 	end,
 }
 
