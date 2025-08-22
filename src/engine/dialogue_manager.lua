@@ -41,7 +41,7 @@ local command_handlers = {
 
 	["play"] = function(data)
 		local asset = assets.get(data.args[1])
-		print(asset)
+		love.audio.play(asset.resource)
 	end,
 }
 
