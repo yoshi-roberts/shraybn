@@ -1,6 +1,6 @@
 local engine = require("engine")
-local Project = require("engine.project")
 local window = require("engine.window")
+local Project = require("engine.project")
 
 local Layer = require("engine.layer")
 

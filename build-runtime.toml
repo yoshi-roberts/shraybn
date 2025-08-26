@@ -1,0 +1,9 @@
+[package]
+name = "runtime"
+
+[directories]
+source = ".build-tmp"
+build = "build"
+
+[build]
+default = ["love", "win64", "linux"]
