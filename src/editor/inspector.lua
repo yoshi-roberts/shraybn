@@ -32,7 +32,7 @@ local inspector = {
 	check_bool = ffi.new("bool[1]", 0),
 	current_combo_item = nil,
 
-	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
+	bk_grid = love.graphics.newImage("editor/res/bk_grid.png"),
 
 	display = require("editor.ui.inspector"),
 }

@@ -8,11 +8,11 @@ else
 	print("Options are 'runtime' or 'editor'")
 end
 
-local cmd = "love src/ " .. target
-if arg[2] then
-	cmd = cmd .. " " .. arg[2]
+if target == "runtime" then
+	os.execute("cp build-runtime.toml lover.toml")
+elseif target == "editor" then
+	os.execute("cp run-editor.toml lover.toml")
 end
 
-print(cmd)
-
-os.execute(cmd)
+os.execute("lover run " .. target)
+os.execute("rm lover.toml")

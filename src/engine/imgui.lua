@@ -37,18 +37,20 @@ function imgui.engine.init(docking, save_state)
 	local lover_context = os.getenv("LOVER_CONTEXT")
 
 	local working_dir = nativefs.getWorkingDirectory()
-	local res_path = working_dir .. "/res"
+
+	local res_path = ""
+
+	if lover_context == "build" then
+		res_path = working_dir .. "/res"
+	elseif lover_context == "run" then
+		res_path = working_dir .. "/src/editor/res"
+	end
 
 	local read_func = nativefs.read
 	local info_func = nativefs.getInfo
 
-	-- if lover_context == "build" then
-	-- 	res_path = working_dir .. "/resources/"
-	-- end
-
 	local fnt_path = res_path .. "/Roboto/Roboto-Regular.ttf"
 	local info = info_func(fnt_path)
-	print(info)
 
 	local content, size = nativefs.read(fnt_path)
 	local fnt_data = ffi.cast("void*", content)
@@ -68,7 +70,6 @@ function imgui.engine.init(docking, save_state)
 	config.GlyphMinAdvanceX = icon_font_size
 
 	local icon_fnt_path = res_path .. "/" .. font_icon.FILE_NAME_FK
-	print(icon_fnt_path)
 	io.Fonts:AddFontFromFileTTF(icon_fnt_path, icon_font_size, config, icon_ranges)
 
 	imgui.love.BuildFontAtlas()

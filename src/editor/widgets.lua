@@ -19,7 +19,7 @@ local widgets = {
 	viewer_height = 384,
 	viewer_image = nil,
 
-	bk_grid = love.graphics.newImage("editor/resources/bk_grid.png"),
+	bk_grid = love.graphics.newImage("editor/res/bk_grid.png"),
 }
 
 signal.register("editor_file_drag", function(payload)

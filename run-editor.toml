@@ -1,0 +1,5 @@
+[package]
+name = "editor"
+
+[directories]
+source = "src"
